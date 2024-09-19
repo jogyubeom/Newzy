@@ -1,5 +1,5 @@
-import React from "react";
 import Profile from "../pages/profile/Profile";
+import { AppRouter } from "app/routers/appRouter";
 
 function App() {
   return (
@@ -8,6 +8,9 @@ function App() {
         <p>사이드바입니다.</p>
       </header> */}
       <Profile />
+      <header className="App-header">
+        <AppRouter />
+      </header>
     </div>
   );
 }
