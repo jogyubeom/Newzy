@@ -7,9 +7,9 @@ import {
 
 import { Layout } from "app/layout/layout";
 import { Home } from "pages/home";
-// import NewsList from "pages/newsList";
-// import NewzyList from "pages/newzyList";
-// import Profile from "pages/profile";
+import { NewsList } from "pages/newsList";
+import { NewzyList } from "pages/newzyList";
+import { Profile } from "pages/profile";
 
 // const router = createBrowserRouter([
 //   {
@@ -26,9 +26,9 @@ export const AppRouter = () => {
   const routers = createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       <Route path="/" element={<Home />} />
-      {/* <Route path="news" element={<NewsList />} />
-        <Route path="newzy" element={<NewzyList />} />
-        <Route path="profile" element={<Profile />} /> */}
+      <Route path="news" element={<NewsList />} />
+      <Route path="newzy" element={<NewzyList />} />
+      <Route path="profile" element={<Profile />} />
     </Route>
   );
 

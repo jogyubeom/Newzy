@@ -1,5 +1,3 @@
-function NewzyEdit() {
+export const NewzyEdit = () => {
   return <div></div>;
-}
-
-export default NewzyEdit;
+};
