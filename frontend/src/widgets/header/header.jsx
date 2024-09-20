@@ -3,7 +3,7 @@ import { FaUserCircle } from "react-icons/fa";
 
 export const Header = () => {
   return (
-    <header className="h-[77px] flex justify-between items-center px-[48px]">
+    <header className="w-full h-[77px] flex justify-between items-center px-[48px]">
       <div className="flex-shrink-0 h-[72px] text-[#26262C] whitespace-nowrap text-ellipsis font-[Open Sans] text-[36px] leading-[24px] font-semibold flex items-center justify-between text-justify">
         Newzy
       </div>
@@ -20,4 +20,3 @@ export const Header = () => {
   );
 };
 
-export default Header;

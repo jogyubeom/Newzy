@@ -1,7 +1,7 @@
-const Mynewzy = () => {
+const myNewzy = () => {
   return (
-    <div>Mynewzy Page</div>
+    <div className="mx-20">Mynewzy Page</div>
   )
 }
 
-export default Mynewzy
+export default myNewzy

@@ -1,7 +1,7 @@
-const Words = () => {
+const words = () => {
   return (
-    <div>Words Page</div>
+    <div className="mx-20">Words Page</div>
   )
 }
 
-export default Words
+export default words
