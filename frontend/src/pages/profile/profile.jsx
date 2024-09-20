@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import Header from "../../widgets/Header";
+import React, { useState } from "react";
 import { getGrade } from "../../shared/getGrade";
 import MenuBar from "../../widgets/profilePage/Menubar";
-import Mynewzy from '../../widgets/profilePage/Mynewzy';
-import Bookmark from '../../widgets/profilePage/Bookmark';
-import Words from '../../widgets/profilePage/Words';
+import Mynewzy from "../../widgets/profilePage/Mynewzy";
+import Bookmark from "../../widgets/profilePage/Bookmark";
+import Words from "../../widgets/profilePage/Words";
 
 // 임시 유저 더미데이터
 const user = {
@@ -37,7 +36,6 @@ const Profile = () => {
 
   return (
     <div className="overflow-x-auto">
-      <Header />
       <div className="min-w-[1200px] h-[409px] bg-[#132956] relative flex items-center px-8 mb-12">
         <div>
           <div className="absolute top-[70px] left-[53px] w-[270px] h-[270px] rounded-full border-[24px] border-yellow-500 flex items-center justify-center">
@@ -47,7 +45,10 @@ const Profile = () => {
             />
           </div>
           <div className="absolute top-[263px] left-[249px] w-[100px] h-[100px] bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-            <img src={getGrade(user.grade)} className="w-[60px] h-[60px] object-cover" />
+            <img
+              src={getGrade(user.grade)}
+              className="w-[60px] h-[60px] object-cover"
+            />
           </div>
         </div>
 
@@ -94,15 +95,17 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      
+
       {/* MenuBar에 선택된 메뉴 상태와 상태 변경 함수 전달 */}
-      <MenuBar selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu} menus={["My Newzy", "BookMark", "Words"]} />
+      <MenuBar
+        selectedMenu={selectedMenu}
+        setSelectedMenu={setSelectedMenu}
+        menus={["My Newzy", "BookMark", "Words"]}
+      />
 
       {/* 선택된 메뉴에 따라 다른 컴포넌트 렌더링 */}
       {renderContent()}
-      <div className='h-[500px] mx-20 my-20 text-[32px]'>Content</div>
+      <div className="h-[500px] mx-20 my-20 text-[32px]">Content</div>
     </div>
   );
 };
-
-export default Profile;
