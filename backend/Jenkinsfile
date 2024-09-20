@@ -31,7 +31,7 @@ pipeline {
                               branches: [[name: "*/${TARGET_BRANCH}"]],
                               doGenerateSubmoduleConfigurations: false,
                               extensions: [[$class: 'CleanCheckout']],
-                              userRemoteConfigs: [[url: 'https://lab.ssafy.com/s11-webmobile2-sub2/S11P12B308.git',
+                              userRemoteConfigs: [[url: 'https://lab.ssafy.com/s11-bigdata-recom-sub1/S11P21B305.git',
                               credentialsId: 'gitlab-token']]  // credentialsId를 올바르게 설정
                     ])
                 }
