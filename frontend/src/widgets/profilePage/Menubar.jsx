@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
 
 const MenuBar = ({ menus, selectedMenu, setSelectedMenu }) => {
   return (
-    <div className="flex items-center border-b-2 border-gray-300 font-semibold text-[28px] mx-20">
+    <div className="flex items-center border-b-2 border-gray-300 font-semibold text-[28px] mx-10">
       {menus.map((menu, index) => (
         <div 
           key={index}
@@ -23,4 +22,4 @@ const MenuBar = ({ menus, selectedMenu, setSelectedMenu }) => {
   );
 };
 
-export default MenuBar;
+export default MenuBar

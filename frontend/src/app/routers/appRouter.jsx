@@ -11,6 +11,7 @@ import { NewsList } from "pages/newsList";
 import { NewzyList } from "pages/newzyList";
 import { Profile } from "pages/profile";
 
+
 // const router = createBrowserRouter([
 //   {
 //     path: "/",
