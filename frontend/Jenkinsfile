@@ -83,7 +83,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: '**/frontend/build/**/*', fingerprint: true
+            archiveArtifacts artifacts: '**/frontend/dist/**/*', fingerprint: true
         }
         success {
             echo 'Deployment successful!'
