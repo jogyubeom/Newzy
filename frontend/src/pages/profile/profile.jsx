@@ -10,7 +10,7 @@ import FollowIndexModal from "widgets/profilePage/followIndexModal";
 const user = {
   name: "정지훈",
   grade: 3,
-  introduce: "안녕하세요. 잘 부탁드립니다! 하하",
+  introduce: "안녕하세요. 잘 부탁드립니다! 하하하",
   img: null,
   followers: 42,
   newzy: 7,
