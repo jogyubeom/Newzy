@@ -20,8 +20,8 @@ FROM nginx:alpine
 # 빌드 결과물을 Nginx의 기본 경로로 복사
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Nginx 설정 파일을 복사
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Nginx 템플릿 파일을 복사 (nginx.template 사용)
+COPY nginx.template /etc/nginx/conf.d/default.conf.template
 
-# Nginx 실행
-CMD ["nginx", "-g", "daemon off;"]
+# Nginx 설정 파일에 환경 변수를 치환하고 적용
+CMD ["/bin/sh", "-c", "envsubst '${LISTEN_PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
