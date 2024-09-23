@@ -10,7 +10,7 @@ public interface NewzyService {
 
     NewzyResponseDTO update(Long newzyId, NewzyRequestDTO dto);
 
-    List<NewzyResponseDTO> findNewzies();
+    List<NewzyResponseDTO> findAllNewzies();
 
     void delete(Long newzyId);
 

@@ -29,13 +29,15 @@ public class NewzyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<NewzyResponseDTO>> getAllUsers(){
-        List<NewzyResponseDTO> users = newzyServiceImpl.findNewzies();
+    @Operation(summary = "모든 뉴지 게시글 조회", description = "모든 뉴지 게시글을 조회합니다.")
+    public ResponseEntity<List<NewzyResponseDTO>> getAllNewzies(){
+        List<NewzyResponseDTO> users = newzyServiceImpl.findAllNewzies();
 
         return ResponseEntity.status(200).body(users);
     }
 
     @PatchMapping(value = "/{newzyId}")
+    @Operation(summary = "뉴지 게시글 수정", description = "해당 뉴지를 수정합니다.")
     public ResponseEntity<BaseResponseBody> updateNewzyInfo (
             @PathVariable("newzyId") Long newzyId,
             @RequestBody @Validated NewzyRequestDTO dto){
@@ -46,6 +48,7 @@ public class NewzyController {
     }
 
     @DeleteMapping(value = "/{newzyId}")
+    @Operation(summary = "뉴지 게시글 삭제", description = "해당 뉴지를 삭제합니다.")
     public ResponseEntity<BaseResponseBody> deleteNewzyInfo (@PathVariable("newzyId") Long newzyId){
         newzyServiceImpl.delete(newzyId);
 

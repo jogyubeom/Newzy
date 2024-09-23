@@ -39,9 +39,7 @@ public class NewzyServiceImpl implements NewzyService {
     }
 
     private NewzyResponseDTO convertToDTO(Newzy newzy){
-        if (newzy == null){
-            return null;
-        }
+        if (newzy == null){ return null; }
 
         return new NewzyResponseDTO(newzy.getNewzyId(), newzy.getTitle(), newzy.getContent(), newzy.getCategory());
     }
@@ -57,14 +55,14 @@ public class NewzyServiceImpl implements NewzyService {
     @Transactional
     public NewzyResponseDTO update(Long newzyId, NewzyRequestDTO dto) {
         Newzy updatedNewzy = convertToEntity(newzyId, dto);
-        Newzy newzy = newzyRepository.updateInfo(updatedNewzy);
+        Newzy newzy = newzyRepository.updateNewzyInfo(updatedNewzy);
         NewzyResponseDTO newzyResponseDTO = convertToDTO(newzy);
 
         return newzyResponseDTO;
     }
 
     @Override
-    public List<NewzyResponseDTO> findNewzies() {
+    public List<NewzyResponseDTO> findAllNewzies() {
         List<Newzy> newzies = newzyRepository.findAll();
         List<NewzyResponseDTO> newziesResponseDTO = new ArrayList<>();
 
@@ -80,6 +78,6 @@ public class NewzyServiceImpl implements NewzyService {
 
     @Override
     public void delete(Long newzyId) {
-        newzyRepository.deleteById(newzyId);
+        newzyRepository.deleteNewzyById(newzyId);
     }
 }

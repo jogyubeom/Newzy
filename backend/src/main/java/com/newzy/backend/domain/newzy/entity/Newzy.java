@@ -1,15 +1,12 @@
 package com.newzy.backend.domain.newzy.entity;
 
-import com.newzy.backend.global.model.BaseEntity;
+import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,15 +15,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "newzy")
-public class Newzy extends BaseEntity {
+public class Newzy extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "newzy_id", unique = true, nullable = false)
     private Long newzyId;
 
-    @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "user_id", updatable = false)
-    private User user;
+//    @ManyToOne(targetEntity = User.class)
+//    @JoinColumn(name = "user_id", updatable = false)
+//    private User user;
 
     @Column(name = "title")
     private String title;
@@ -50,9 +47,9 @@ public class Newzy extends BaseEntity {
     @Column(name = "visit_cnt")
     private int visitCnt = 0;
 
-    @OneToMany(mappedBy = "newzy")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "newzy")
     private List<Bookmark> newzyBookmarks = new ArrayList<>();
 
-
-
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "newzy")
+    private List<NewzyComment> newzyComments = new ArrayList<>();
 }

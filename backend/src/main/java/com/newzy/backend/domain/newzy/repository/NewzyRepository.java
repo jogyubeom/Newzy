@@ -12,11 +12,11 @@ public interface NewzyRepository extends JpaRepository<Newzy, Long> {
     List<Newzy> findByTitle(String title);
 
     @Transactional
-    default Newzy updateInfo(Newzy nzy) {
+    default Newzy updateNewzyInfo(Newzy nzy) {
         Newzy newzy = findByNewzyId(nzy.getNewzyId());
 
         if (newzy == null) {
-            new IllegalStateException("Newzy not found with ID: " + nzy.getNewzyId());
+            new IllegalStateException("Newzy not found with ID");
         }
         newzy.setTitle(nzy.getTitle());
         newzy.setContent(nzy.getContent());
@@ -25,9 +25,9 @@ public interface NewzyRepository extends JpaRepository<Newzy, Long> {
         // Todo saveAndFlush() ?
         return save(newzy);
     }
-//
-//    @Transactional
-    default void deleteById(Long newzyId) {
+
+    @Transactional
+    default void deleteNewzyById(Long newzyId) {
         Newzy newzy = findByNewzyId(newzyId);
         if (newzy == null) {
             new IllegalStateException("Newzy not found with ID: " + newzyId);
