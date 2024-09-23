@@ -109,3 +109,5 @@ const Profile = () => {
     </div>
   );
 };
+
+export default Profile;  // Profile을 기본으로 export
