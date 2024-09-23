@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-@Entity
+@Entity(name = "newzy_like")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

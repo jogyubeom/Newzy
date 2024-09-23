@@ -2,14 +2,18 @@ package com.newzy.backend.domain.newzy.repository;
 
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface NewzyRepository extends JpaRepository<Newzy, Long> {
+
     Newzy findByNewzyId(Long id);
 
-    List<Newzy> findByTitle(String title);
+    @Query("SELECT n FROM Newzy n WHERE n.isDeleted = false")
+    List<Newzy> findAllActiveNewzies();
 
     @Transactional
     default Newzy updateNewzyInfo(Newzy nzy) {
@@ -26,13 +30,13 @@ public interface NewzyRepository extends JpaRepository<Newzy, Long> {
         return save(newzy);
     }
 
+
     @Transactional
     default void deleteNewzyById(Long newzyId) {
-        Newzy newzy = findByNewzyId(newzyId);
-        if (newzy == null) {
-            new IllegalStateException("Newzy not found with ID: " + newzyId);
-        }
+        Newzy newzy = findById(newzyId).orElseThrow(() -> new IllegalStateException("newzy not found with ID: " + newzyId));
+
         newzy.setIsDeleted(true);
+        System.out.println(newzy.toString());
         save(newzy);
     }
 

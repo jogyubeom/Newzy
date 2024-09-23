@@ -41,7 +41,7 @@ public class NewzyServiceImpl implements NewzyService {
     private NewzyResponseDTO convertToDTO(Newzy newzy){
         if (newzy == null){ return null; }
 
-        return new NewzyResponseDTO(newzy.getNewzyId(), newzy.getTitle(), newzy.getContent(), newzy.getCategory());
+        return new NewzyResponseDTO(newzy.getNewzyId(), newzy.getTitle(), newzy.getContent(), newzy.getCategory(), newzy.getLikeCnt(), newzy.getVisitCnt());
     }
 
     @Override
@@ -68,7 +68,7 @@ public class NewzyServiceImpl implements NewzyService {
 
         for (Newzy newzy : newzies){
             NewzyResponseDTO dto = convertToDTO(newzy);
-            if (! newzy.getIsDeleted()){
+            if (! newzy.isDeleted()){
                 newziesResponseDTO.add(dto);
             }
         }
@@ -77,6 +77,7 @@ public class NewzyServiceImpl implements NewzyService {
     }
 
     @Override
+    @Transactional
     public void delete(Long newzyId) {
         newzyRepository.deleteNewzyById(newzyId);
     }

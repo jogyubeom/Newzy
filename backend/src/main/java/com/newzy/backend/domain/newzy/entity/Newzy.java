@@ -2,10 +2,7 @@ package com.newzy.backend.domain.newzy.entity;
 
 import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "newzy")
+@ToString
 public class Newzy extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,10 +34,10 @@ public class Newzy extends BaseTimeEntity {
     private Category category;
 
     @Column(name = "is_updated")
-    private Boolean isUpdated = false;
+    private boolean isUpdated = Boolean.FALSE;
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted = false;
+    private boolean isDeleted = Boolean.FALSE;
 
     @Column(name = "like_cnt")
     private int likeCnt = 0;
@@ -52,4 +50,9 @@ public class Newzy extends BaseTimeEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "newzy")
     private List<NewzyComment> newzyComments = new ArrayList<>();
+
+
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }

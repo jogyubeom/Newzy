@@ -1,14 +1,15 @@
 package com.newzy.backend.global.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Getter
 @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)  // Auditing 기능 포함
 public abstract class BaseTimeEntity {
     // created_at
     @Column(name = "create_at", updatable = false)
@@ -17,4 +18,13 @@ public abstract class BaseTimeEntity {
     // updated_at
     @Column(name = "update_at")
     private LocalDateTime updatedAt ;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

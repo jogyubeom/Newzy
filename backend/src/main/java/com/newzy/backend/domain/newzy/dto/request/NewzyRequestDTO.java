@@ -2,7 +2,7 @@ package com.newzy.backend.domain.newzy.dto.request;
 
 import com.newzy.backend.domain.newzy.entity.Bookmark;
 import com.newzy.backend.domain.newzy.entity.Category;
-import com.newzy.backend.domain.newzy.entity.User;
+//import com.newzy.backend.domain.newzy.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
