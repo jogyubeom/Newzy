@@ -14,18 +14,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/newzy/{newzyId}/newzyComments")
+@RequestMapping("/api/newzy/{newzyId}/newzyComments")
 public class NewzyCommentController {
 
      private final NewzyCommentServiceImpl newzyCommentServiceImpl;
 
-    @PostMapping("new")
+    @PostMapping
     @Operation(summary = "뉴지 댓글 추가", description = "새로운 뉴지 댓글을 등록합니다.")
     public ResponseEntity<BaseResponseBody> createComment(
             @PathVariable("newzyId") Long newzyId,
             @RequestBody @Validated NewzyCommentRequestDTO dto
             ){
-        newzyCommentServiceImpl.saveComment(dto);
+        System.out.println("newzyId " + newzyId);
+        newzyCommentServiceImpl.saveComment(newzyId, dto);
 
         return ResponseEntity.status(201).body(BaseResponseBody.of(201, "뉴지 댓글 등록이 완료되었습니다."));
     }

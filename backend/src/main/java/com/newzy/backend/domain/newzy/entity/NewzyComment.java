@@ -1,12 +1,13 @@
 package com.newzy.backend.domain.newzy.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.newzy.backend.domain.newzy.dto.request.NewzyCommentRequestDTO;
+import com.newzy.backend.domain.newzy.repository.NewzyCommentRepository;
+import com.newzy.backend.domain.newzy.repository.NewzyRepository;
 import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Table(name = "newzy_comment")
 public class NewzyComment extends BaseTimeEntity {
 
@@ -38,13 +40,9 @@ public class NewzyComment extends BaseTimeEntity {
     @JoinColumn(name = "parent_comment_id")
     private NewzyComment parentComment;
 
-    @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
-    private List<NewzyComment> children = new ArrayList<>();
-
     // 댓글 내용
     @Column(name = "newzy_comment")
     private String newzyComment;
-
 
     @Column(name = "is_updated")
     private
@@ -52,4 +50,34 @@ public class NewzyComment extends BaseTimeEntity {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted = false;
+
+    public static NewzyComment convertToEntityByNewzyCommentId(Long newzyCommentId, NewzyCommentRequestDTO requestDTO){
+        NewzyComment newzyComment = new NewzyComment();
+        newzyComment.setNewzyCommentId(newzyCommentId);
+        newzyComment.setNewzyComment(requestDTO.getNewzyComment());
+
+        return newzyComment;
+    }
+
+    public static NewzyComment convertToEntityByNewzyId(NewzyCommentRequestDTO dto, Newzy newzy) {
+
+        NewzyComment newzyComment = new NewzyComment();
+        newzyComment.setNewzyComment(dto.getNewzyComment());
+        newzyComment.setNewzy(newzy);
+        newzyComment.setNewzyCommentId(dto.getNewzyCommentId());
+
+        NewzyComment parentComment = new NewzyComment();
+
+        if (dto.getNewzyCommentId() != null) {
+            newzyComment.setNewzyCommentId(dto.getNewzyCommentId());
+        }
+
+        if (dto.getNewzyParentCommentId() != null) {
+            parentComment.setNewzyCommentId(dto.getNewzyParentCommentId());
+            newzyComment.setParentComment(parentComment);
+        }
+
+        return newzyComment;
+    }
+
 }

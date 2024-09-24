@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface NewzyCommentService {
 
-    void saveComment(NewzyCommentRequestDTO requestDTO);
+    void saveComment(Long newzyId, NewzyCommentRequestDTO requestDTO);
 
     NewzyCommentResponseDTO updateComment(Long newzyCommentId, NewzyCommentRequestDTO requestDTO);
 

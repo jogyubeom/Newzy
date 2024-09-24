@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.entity;
 
+import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,14 +46,26 @@ public class Newzy extends BaseTimeEntity {
     @Column(name = "visit_cnt")
     private int visitCnt = 0;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "newzy")
-    private List<Bookmark> newzyBookmarks = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "newzy")
-    private List<NewzyComment> newzyComments = new ArrayList<>();
-
-
     public void setIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public static Newzy convertToEntity(NewzyRequestDTO dto){
+        Newzy newzy = new Newzy();
+        newzy.setTitle(dto.getTitle());
+        newzy.setContent(dto.getContent());
+        newzy.setCategory(dto.getCategory());
+
+        return newzy;
+    }
+
+    public static Newzy convertToEntity(Long newzyId , NewzyRequestDTO dto){
+        Newzy newzy = new Newzy();
+        newzy.setNewzyId(newzyId);
+        newzy.setTitle(dto.getTitle());
+        newzy.setContent(dto.getContent());
+        newzy.setCategory(dto.getCategory());
+
+        return newzy;
     }
 }

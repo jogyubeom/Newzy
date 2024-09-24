@@ -1,13 +1,15 @@
 package com.newzy.backend.domain.newzy.dto.response;
 
 import com.newzy.backend.domain.newzy.entity.Category;
-import com.newzy.backend.global.model.BaseTimeEntity;
+import com.newzy.backend.domain.newzy.entity.Newzy;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @AllArgsConstructor
+@Schema(title = "NEWZY_RES : 뉴지 응답 DTO")
 public class NewzyResponseDTO {
 
     @Schema(description = "뉴지 pk", example = "1")
@@ -29,6 +31,12 @@ public class NewzyResponseDTO {
     private int visitCnt;
 
     // 유저 정보 추후 추가하기
+
+    public static NewzyResponseDTO convertToDTO(Newzy newzy){
+        if (newzy == null){ return null; }
+
+        return new NewzyResponseDTO(newzy.getNewzyId(), newzy.getTitle(), newzy.getContent(), newzy.getCategory(), newzy.getLikeCnt(), newzy.getVisitCnt());
+    }
 }
 
 

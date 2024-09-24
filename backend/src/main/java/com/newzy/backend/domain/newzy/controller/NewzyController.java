@@ -14,12 +14,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/newzy")
+@RequestMapping("/api/newzy")
 public class NewzyController {
 
     private final NewzyServiceImpl newzyServiceImpl;
 
-    @PostMapping("/new")
+    @PostMapping
     @Operation(summary = "뉴지 게시글 추가", description = "새로운 뉴지를 등록합니다.")
     public ResponseEntity<BaseResponseBody> create(@RequestBody @Validated NewzyRequestDTO dto){
 

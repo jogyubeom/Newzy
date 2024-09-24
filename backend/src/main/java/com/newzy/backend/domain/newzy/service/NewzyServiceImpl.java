@@ -19,61 +19,34 @@ public class NewzyServiceImpl implements NewzyService {
 
     private final NewzyRepository newzyRepository;
 
-    private Newzy convertToEntity(NewzyRequestDTO dto){
-        Newzy newzy = new Newzy();
-        newzy.setTitle(dto.getTitle());
-        newzy.setContent(dto.getContent());
-        newzy.setCategory(dto.getCategory());
-
-        return newzy;
-    }
-
-    private Newzy convertToEntity(Long newzyId , NewzyRequestDTO dto){
-        Newzy newzy = new Newzy();
-        newzy.setNewzyId(newzyId);
-        newzy.setTitle(dto.getTitle());
-        newzy.setContent(dto.getContent());
-        newzy.setCategory(dto.getCategory());
-
-        return newzy;
-    }
-
-    private NewzyResponseDTO convertToDTO(Newzy newzy){
-        if (newzy == null){ return null; }
-
-        return new NewzyResponseDTO(newzy.getNewzyId(), newzy.getTitle(), newzy.getContent(), newzy.getCategory(), newzy.getLikeCnt(), newzy.getVisitCnt());
-    }
-
-    @Override
-    @Transactional
-    public void save(NewzyRequestDTO dto) {
-        Newzy newzy = convertToEntity(dto);
-         newzyRepository.save(newzy);
-    }
-
-    @Override
-    @Transactional
-    public NewzyResponseDTO update(Long newzyId, NewzyRequestDTO dto) {
-        Newzy updatedNewzy = convertToEntity(newzyId, dto);
-        Newzy newzy = newzyRepository.updateNewzyInfo(updatedNewzy);
-        NewzyResponseDTO newzyResponseDTO = convertToDTO(newzy);
-
-        return newzyResponseDTO;
-    }
-
     @Override
     public List<NewzyResponseDTO> findAllNewzies() {
         List<Newzy> newzies = newzyRepository.findAll();
         List<NewzyResponseDTO> newziesResponseDTO = new ArrayList<>();
 
         for (Newzy newzy : newzies){
-            NewzyResponseDTO dto = convertToDTO(newzy);
-            if (! newzy.isDeleted()){
-                newziesResponseDTO.add(dto);
-            }
+            NewzyResponseDTO dto = NewzyResponseDTO.convertToDTO(newzy);
+            if (! newzy.isDeleted()){   newziesResponseDTO.add(dto);    }
         }
 
         return newziesResponseDTO;
+    }
+
+    @Override
+    @Transactional
+    public void save(NewzyRequestDTO dto) {
+        Newzy newzy = Newzy.convertToEntity(dto);
+         newzyRepository.save(newzy);
+    }
+
+    @Override
+    @Transactional
+    public NewzyResponseDTO update(Long newzyId, NewzyRequestDTO dto) {
+        Newzy updatedNewzy =  Newzy.convertToEntity(newzyId, dto);
+        Newzy newzy = newzyRepository.updateNewzyInfo(updatedNewzy);
+        NewzyResponseDTO newzyResponseDTO = NewzyResponseDTO.convertToDTO(newzy);
+
+        return newzyResponseDTO;
     }
 
     @Override

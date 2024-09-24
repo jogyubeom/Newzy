@@ -3,16 +3,16 @@
 //import com.newzy.backend.global.model.BaseTimeEntity;
 //import jakarta.persistence.*;
 //import lombok.*;
+//import org.hibernate.annotations.DynamicUpdate;
 //
 //import java.time.LocalDate;
-//import java.util.ArrayList;
-//import java.util.List;
 //
 //@Entity
 //@Getter @Setter
 //@AllArgsConstructor
 //@NoArgsConstructor
 //@Table(name = "user")
+//@DynamicUpdate
 //public class User extends BaseTimeEntity {
 //
 //    @Id
@@ -38,6 +38,8 @@
 //    @Column(name = "exp")
 //    private int exp = 0;
 //
+//    //
+//
 //    @Column(name = "economy_score")
 //    private int economyScore;
 //
@@ -49,29 +51,6 @@
 //
 //    @Column(name = "state", nullable = false)
 //    private int state;
-//
-//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-//    private  List<Newzy> newzy = new ArrayList<>();
-//
-//    // 뉴지 댓글
-//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-//    private List<NewzyComment> newzyComments = new ArrayList<>();
-//
-//    // 뉴지 북마크
-//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-//    private List<Bookmark> newzyBookmarks = new ArrayList<>();
-//
-//    // 뉴지 좋아요
-//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-//    private List<Like> newzyLike = new ArrayList<>();
-//
-//    // 팔로잉 ( to_id )
-//    @OneToMany(mappedBy = "fromId", fetch = FetchType.LAZY)
-//    private List<Follow> followings = new ArrayList<>();
-//    // 팔로워 ( from_id )
-//    @OneToMany(mappedBy = "toId", fetch = FetchType.LAZY)
-//    private List<Follow> followers = new ArrayList<>();
-//
 //
 //    @Builder
 //    public User(String nickname, String password, String email, LocalDate birth){
