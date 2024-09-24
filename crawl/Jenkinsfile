@@ -1,0 +1,106 @@
+pipeline {
+    agent any
+
+    environment {
+        TARGET_BRANCH = 'develop-crawl'  // 목표 브랜치 이름 설정
+        REMOTE_USER = 'ubuntu'
+        REMOTE_HOST = 'j11b305.p.ssafy.io'
+        REMOTE_DIR = '/home/ubuntu/newzy'  // 원격 서버에서 프로젝트가 위치한 경로
+    }
+
+    stages {
+        stage('Check Branch') { // 내가 원하는 브랜치인지 필터링 진행
+            when {
+                expression {
+                    return env.GIT_BRANCH == "origin/${TARGET_BRANCH}"
+                }
+            }
+            steps {
+                echo "Building branch: ${env.GIT_BRANCH}"
+            }
+        }
+
+        stage('Cleanup Workspace') {
+            steps {
+                deleteDir() // 작업 공간 초기화
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                script {
+                    checkout([$class: 'GitSCM',
+                              branches: [[name: "*/${TARGET_BRANCH}"]],
+                              doGenerateSubmoduleConfigurations: false,
+                              extensions: [[$class: 'CleanCheckout']],
+                              userRemoteConfigs: [[url: 'https://lab.ssafy.com/s11-bigdata-recom-sub1/S11P21B305.git',
+                              credentialsId: 'gitlab-token']]  // credentialsId를 올바르게 설정
+                    ])
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Django 프로젝트를 Docker 이미지로 빌드
+                    sh 'docker build -t crawl:latest -f crawl/Dockerfile crawl/.'
+                }
+            }
+        }
+
+        stage('Deploy with docker-compose') {
+            steps {
+                script {
+                    // SSH 키를 사용하여 원격 서버에 연결하고 배포 스크립트 실행
+                    sh """
+                        ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/.ssh/jenkins_rsa ${REMOTE_USER}@${REMOTE_HOST} "
+                        cd ${REMOTE_DIR}/crawl &&
+                        docker-compose down &&
+                        docker-compose up -d --build
+                        "
+                    """
+                }
+            }
+        }
+
+        stage('Notification') {  // 알림 추가
+            steps {
+                echo 'Sending notification to Mattermost...'
+            }
+            post {
+                success {
+                    script {
+                        def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                        def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                        mattermostSend(color: 'good',
+                            message: "배포 성공: ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}(${Author_Name})\n(<${env.BUILD_URL}|Details>)",
+                            endpoint: 'https://meeting.ssafy.com/hooks/your-mattermost-webhook-url',
+                            channel: 'Jenkins_Build_Result'
+                        )
+                    }
+                }
+                failure {
+                    script {
+                        def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                        def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                        mattermostSend(color: 'danger',
+                            message: "배포 실패: ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}(${Author_Name})\n(<${env.BUILD_URL}|Details>)",
+                            endpoint: 'https://meeting.ssafy.com/hooks/your-mattermost-webhook-url',
+                            channel: 'Jenkins_Build_Result'
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed!'
+        }
+    }
+}
