@@ -22,7 +22,7 @@ def start_scheduler():
             scheduler.add_job(schedule_batch_task, 'cron', hour=time, minute=0)
 
         # TEST
-        scheduler.add_job(schedule_batch_task, 'cron', hour=14, minute=45)
+        # scheduler.add_job(schedule_batch_task, 'cron', hour=14, minute=45)
         scheduler.start()
 
 
@@ -44,7 +44,7 @@ def schedule_batch_task():
 
     # TEST
     # start_date = (end_date - timedelta(days=1)).replace(hour=16)
-    start_date = end_date.replace(hour=13)
+    # start_date = end_date.replace(hour=13)
     
     logging.info(
         f"########### Batch task started. Start date: {start_date}, End date: {end_date} ###########")

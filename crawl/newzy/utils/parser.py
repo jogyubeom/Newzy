@@ -127,6 +127,7 @@ def parse_relative_time(relative_time):
     # 불필요한 공백 제거 및 초가 없는 시간 처리
     relative_time = re.sub(r'\s+', ' ', relative_time).strip()  # 불필요한 공백 제거
     relative_time = relative_time.replace('.', '-').strip()
+    relative_time = re.sub(r'-\s+', ' ', relative_time).strip()
 
     # '시간 전' 또는 '분 전'으로 끝나는지 확인하고 값 추출
     match = re.match(r'(\d+)(시간|분) 전', relative_time)

@@ -2,8 +2,10 @@ import logging
 import time
 
 from bs4 import BeautifulSoup
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from newzy.db_operations import insert_news_to_db
 from newzy.utils.analyzer import analyze_difficulty_of_news
 from newzy.utils.parser import parse_relative_time, extract_times
@@ -29,9 +31,14 @@ def crawl_news(driver,
         url = url_template.format(page=page)
         try:
             driver.get(url)
+            # 5초 동안 페이지 로드 대기, 5초 지나도 응답이 없으면 TimeoutException 발생
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+        except TimeoutException:
+            logging.error(f"URL {url} 접속 시 5초 이내 응답이 없어 타임아웃이 발생했습니다.")
+            return False
         except Exception as e:
             logging.error(f"URL 접속할 때 오류가 발생하였습니다. {e}")
-        time.sleep(2)  # 페이지 로딩 대기
+            return False
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         ul_tag = soup.find(ul_type, class_=ul_class)
@@ -76,7 +83,6 @@ def crawl_news(driver,
                         full_link = link_prefix + link_tag['href']
 
                         if full_link in url_set:
-                            logging.error(f">>> {full_link} : 이미 추가된 URL 입니다.")
                             continue
 
                         url_set.add(full_link)
@@ -124,9 +130,14 @@ def crawl_news_by_button(driver,
 
     try:
         driver.get(url_template)
+        # 5초 동안 페이지 로드 대기, 5초 지나도 응답이 없으면 TimeoutException 발생
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+    except TimeoutException:
+        logging.error(f"URL {url_template} 접속 시 5초 이내 응답이 없어 타임아웃이 발생했습니다.")
+        return False
     except Exception as e:
         logging.error(f"URL 접속할 때 오류가 발생하였습니다. {e}")
-    time.sleep(2)
+        return False
 
     page = 1
     while page <= max_pages:
@@ -213,10 +224,15 @@ def crawl_news_detail(driver, url: str,
                       content_type: str, content_selector: str):
     try:
         driver.get(url)
+        # 5초 동안 페이지 로드 대기, 5초 지나도 응답이 없으면 TimeoutException 발생
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+    except TimeoutException:
+        logging.error(f"URL {url} 접속 시 5초 이내 응답이 없어 타임아웃이 발생했습니다.")
+        return False
     except Exception as e:
         logging.error(f"URL 접속할 때 오류가 발생하였습니다. {e}")
+        return False
 
-    time.sleep(2)  # 페이지 로딩 대기
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
     if publisher == '세계 일보':
