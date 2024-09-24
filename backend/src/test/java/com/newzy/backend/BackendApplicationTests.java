@@ -11,10 +11,10 @@ class BackendApplicationTests {
     //    @Test
 //    void contextLoads() {
 //    }
-    @Test
-    public void testAlwaysPasses() {
-        // 무조건 통과하는 테스트
-        assertTrue(true);
-    }
+    // @Test
+    // public void testAlwaysPasses() {
+    //     // 무조건 통과하는 테스트
+    //     assertTrue(true);
+    // }
 
 }
