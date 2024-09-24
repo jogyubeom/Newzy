@@ -22,7 +22,7 @@ def start_scheduler():
             scheduler.add_job(schedule_batch_task, 'cron', hour=time, minute=0)
 
         # TEST
-        scheduler.add_job(schedule_batch_task, 'cron', hour=14, minute=35)
+        scheduler.add_job(schedule_batch_task, 'cron', hour=14, minute=40)
         scheduler.start()
 
 
