@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import { getGrade } from "../../shared/getGrade";
-import MenuBar from "../../widgets/profilePage/Menubar";
-import Mynewzy from "../../widgets/profilePage/Mynewzy";
-import Bookmark from "../../widgets/profilePage/Bookmark";
-import Words from "../../widgets/profilePage/Words";
+import { getGrade } from "shared/getGrade";
+import MenuBar from "widgets/profilePage/menuBar";
+import MyNewzy from "widgets/profilePage/myNewzy";
+import BookMark from "widgets/profilePage/bookMark";
+import Words from "widgets/profilePage/words";
+import FollowIndexModal from "widgets/profilePage/followIndexModal";
 
 // 임시 유저 더미데이터
 const user = {
   name: "정지훈",
   grade: 3,
-  introduce: "안녕하세요. 잘 부탁드립니다!",
+  introduce: "안녕하세요. 잘 부탁드립니다! 하하하",
   img: null,
   followers: 42,
   newzy: 7,
@@ -24,9 +25,9 @@ export const Profile = () => {
   const renderContent = () => {
     switch (selectedMenu) {
       case 0:
-        return <Mynewzy />;
+        return <MyNewzy />;
       case 1:
-        return <Bookmark />;
+        return <BookMark />;
       case 2:
         return <Words />;
       default:
@@ -34,9 +35,15 @@ export const Profile = () => {
     }
   };
 
+  const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
+
+  // 모달 열기 및 닫기 함수
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
+
   return (
-    <div className="overflow-x-auto">
-      <div className="min-w-[1200px] h-[409px] bg-[#132956] relative flex items-center px-8 mb-12">
+    <div className="overflow-x-auto bg-[#FFFFFF]">
+      <div className="h-[409px] bg-[#132956] relative flex px-8 mb-12">
         <div>
           <div className="absolute top-[70px] left-[53px] w-[270px] h-[270px] rounded-full border-[24px] border-yellow-500 flex items-center justify-center">
             <img
@@ -53,24 +60,16 @@ export const Profile = () => {
         </div>
 
         <div className="ml-[350px]">
-          <div className="h-[103px] text-white font-[Open Sans] text-[46px] leading-[24px] font-semibold flex items-center">
+          <div className="h-[103px] mt-[80px] text-white font-[Open Sans] text-[46px] leading-[24px] font-semibold flex items-center">
             {user.name}
           </div>
-          <div className="w-[200px] text-white font-[Open Sans] text-[24px] leading-[36px] font-semibold flex items-center text-left break-words whitespace-normal pe-5">
+          <div className="w-[200px] h-[210px] text-white font-[Open Sans] text-[24px] leading-[36px] font-semibold flex items-center text-left break-words whitespace-normal">
             {user.introduce}
           </div>
         </div>
 
         <div className="flex flex-col items-center ml-auto mt-auto">
-          <div className="flex gap-20">
-            <div className="flex flex-col items-center">
-              <div className="w-[166px] h-[103px] text-white font-[Poppins] text-[36px] font-semibold flex items-center">
-                Followers
-              </div>
-              <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {user.followers}
-              </div>
-            </div>
+          <div className="flex gap-16">
             <div className="flex flex-col items-center">
               <div className="w-[123px] h-[103px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center">
                 Newzy
@@ -79,7 +78,15 @@ export const Profile = () => {
                 {user.newzy}
               </div>
             </div>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
+              <div className="w-[166px] h-[103px] text-white font-[Poppins] text-[36px] font-semibold flex items-center">
+                Followers
+              </div>
+              <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
+                {user.followers}
+              </div>
+            </div>
+            <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
               <div className="w-[188px] h-[103px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center">
                 Followings
               </div>
@@ -105,7 +112,9 @@ export const Profile = () => {
 
       {/* 선택된 메뉴에 따라 다른 컴포넌트 렌더링 */}
       {renderContent()}
-      <div className="h-[500px] mx-20 my-20 text-[32px]">Content</div>
+
+      {/* 모달 컴포넌트 렌더링 */}
+      <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 };
