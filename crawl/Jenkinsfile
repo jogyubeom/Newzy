@@ -64,7 +64,7 @@ pipeline {
                     // SSH 키를 사용하여 원격 서버에 연결하고 배포 스크립트 실행
                     sh """
                         ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/.ssh/jenkins_rsa ${REMOTE_USER}@${REMOTE_HOST} "
-                        cd ${REMOTE_DIR}/crawl &&
+                        cd ${REMOTE_DIR} &&
                         docker-compose stop crawl &&
                         docker-compose rm -f crawl &&
                         docker-compose up -d crawl
