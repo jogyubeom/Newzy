@@ -1,14 +1,14 @@
 # Python 3.8 이미지 사용 (slim 버전은 경량화된 이미지)
 FROM python:3.8-slim
 
-# 시스템 패키지 업데이트 및 OpenJDK 21 설치
+# 시스템 패키지 업데이트 및 OpenJDK 17 설치
 RUN apt-get update && apt-get install -y \
-    openjdk-21-jdk \
+    openjdk-17-jdk \
     curl \
     && apt-get clean
 
-# 환경 변수 설정 (Java 21 설치 경로)
-ENV JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64
+# 환경 변수 설정 (Java 17 설치 경로)
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # 작업 디렉토리 설정
