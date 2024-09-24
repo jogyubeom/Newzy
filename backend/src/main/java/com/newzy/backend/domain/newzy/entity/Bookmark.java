@@ -32,6 +32,7 @@ public class Bookmark extends BaseTimeEntity {
 //    @OnDelete(action = OnDeleteAction.CASCADE)
 //    private User user;
 
+    // hard delete
     @Column
     private boolean isDeleted = Boolean.FALSE;
 

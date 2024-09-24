@@ -14,6 +14,6 @@ public interface NewzyService {
 
     void delete(Long newzyId);
 
-
+//    void bookmark(Long newzyId, NewzyRequestDTO dto);
 
 }

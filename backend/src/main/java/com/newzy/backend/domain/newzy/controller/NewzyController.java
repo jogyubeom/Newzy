@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/newzy")
+@RequestMapping("/newzy")
 public class NewzyController {
 
     private final NewzyServiceImpl newzyServiceImpl;
@@ -55,20 +55,17 @@ public class NewzyController {
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "뉴지 삭제가 완료되었습니다."));
     }
 
+//    @PatchMapping(value = "/{newzyId}/bookmark")
+//    @Operation(summary = "뉴지 북마크", description = "해당 뉴지를 북마크합니다.")
+//    public ResponseEntity<BaseResponseBody> bookmarkNewzy (
+//            @PathVariable("newzyId") Long newzyId,
+//            @RequestBody @Validated NewzyRequestDTO dto){
+//
+//        newzyServiceImpl.bookmark(newzyId, dto);
+//
+//        return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴지를 북마크했습니다."));
+//    }
+
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

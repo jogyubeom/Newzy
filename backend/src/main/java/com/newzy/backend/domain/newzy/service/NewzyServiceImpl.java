@@ -13,13 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class NewzyServiceImpl implements NewzyService {
 
     private final NewzyRepository newzyRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<NewzyResponseDTO> findAllNewzies() {
         List<Newzy> newzies = newzyRepository.findAll();
         List<NewzyResponseDTO> newziesResponseDTO = new ArrayList<>();
@@ -33,14 +34,12 @@ public class NewzyServiceImpl implements NewzyService {
     }
 
     @Override
-    @Transactional
     public void save(NewzyRequestDTO dto) {
         Newzy newzy = Newzy.convertToEntity(dto);
          newzyRepository.save(newzy);
     }
 
     @Override
-    @Transactional
     public NewzyResponseDTO update(Long newzyId, NewzyRequestDTO dto) {
         Newzy updatedNewzy =  Newzy.convertToEntity(newzyId, dto);
         Newzy newzy = newzyRepository.updateNewzyInfo(updatedNewzy);
@@ -50,8 +49,13 @@ public class NewzyServiceImpl implements NewzyService {
     }
 
     @Override
-    @Transactional
     public void delete(Long newzyId) {
         newzyRepository.deleteNewzyById(newzyId);
     }
+
+//    @Override
+//    public void bookmark(Long newzyId, NewzyRequestDTO dto) {
+//
+//    }
+
 }

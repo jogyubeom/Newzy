@@ -6,15 +6,17 @@ import com.newzy.backend.domain.newzy.service.NewzyCommentServiceImpl;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/newzy/{newzyId}/newzyComments")
+@RequestMapping("/newzy/{newzyId}/newzyComments")
 public class NewzyCommentController {
 
      private final NewzyCommentServiceImpl newzyCommentServiceImpl;
@@ -25,7 +27,7 @@ public class NewzyCommentController {
             @PathVariable("newzyId") Long newzyId,
             @RequestBody @Validated NewzyCommentRequestDTO dto
             ){
-        System.out.println("newzyId " + newzyId);
+        log.info(">> [POST] /newzy - 요청파라미터: newzyId - {}", newzyId);
         newzyCommentServiceImpl.saveComment(newzyId, dto);
 
         return ResponseEntity.status(201).body(BaseResponseBody.of(201, "뉴지 댓글 등록이 완료되었습니다."));
