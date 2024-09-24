@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { getGrade } from "shared/getGrade";
+import { MdAdd, MdDelete } from "react-icons/md";
 import MenuBar from "widgets/profilePage/menuBar";
 import MyNewzy from "widgets/profilePage/myNewzy";
 import BookMark from "widgets/profilePage/bookMark";
@@ -15,11 +16,47 @@ const user = {
   followers: 42,
   newzy: 7,
   followings: 25,
+  birth: "2001-03-05",
 };
 
 export const Profile = () => {
-  // 선택된 메뉴를 추적하는 상태
   const [selectedMenu, setSelectedMenu] = useState(0);
+  const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
+
+  // 편집 모드 관리
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: user.name,
+    introduce: user.introduce,
+    img: user.img,
+    birth: user.birth,
+  });
+
+  // 글자수 제한
+  const maxIntroduceLength = 30;
+
+  // 모달 열기 및 닫기 함수
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
+
+  // 저장 버튼 클릭 시 변경 사항 저장
+  const handleSave = () => {
+    console.log("저장된 데이터:", profileData);
+    setIsEditing(false);
+  };
+
+  // 이미지 변경 핸들러
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileData({ ...profileData, img: URL.createObjectURL(file) });
+    }
+  };
+
+  // 이미지 제거 핸들러
+  const handleImageRemove = () => {
+    setProfileData({ ...profileData, img: null });
+  };
 
   // 선택된 메뉴에 따라 다른 컴포넌트 렌더링
   const renderContent = () => {
@@ -35,39 +72,87 @@ export const Profile = () => {
     }
   };
 
-  const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
-
-  // 모달 열기 및 닫기 함수
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
-
   return (
     <div className="overflow-x-auto bg-[#FFFFFF]">
       <div className="h-[409px] bg-[#132956] relative flex px-8 mb-12">
-        <div>
-          <div className="absolute top-[70px] left-[53px] w-[270px] h-[270px] rounded-full border-[24px] border-yellow-500 flex items-center justify-center">
+        <div className="relative">
+          <div className={`absolute top-[70px] left-[0px] w-[270px] h-[270px] rounded-full border-[24px] border-yellow-500 flex items-center justify-center ${isEditing ? 'opacity-60' : ''}`}>
             <img
-              src="https://cgeimage.commutil.kr/phpwas/restmb_allidxmake.php?pp=002&idx=3&simg=20240122131247036757d8bc5f1a81839820248.jpg&nmt=27"
+              src={profileData.img || "https://via.placeholder.com/270"}
               className="w-full h-full object-cover rounded-full"
+              alt="프로필 이미지"
             />
+            {isEditing && (
+              <div className="absolute top-2 right-2 flex gap-2">
+                <label htmlFor="profile-upload" className="cursor-pointer">
+                  <MdAdd className="text-white bg-blue-500 rounded-full w-6 h-6" />
+                  <input
+                    id="profile-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageChange}
+                  />
+                </label>
+                <MdDelete
+                  className="text-white bg-red-500 rounded-full w-6 h-6 cursor-pointer"
+                  onClick={handleImageRemove}
+                />
+              </div>
+            )}
           </div>
-          <div className="absolute top-[263px] left-[249px] w-[100px] h-[100px] bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+
+          <div className="absolute top-[263px] left-[196px] w-[100px] h-[100px] bg-white bg-opacity-20 rounded-full flex items-center justify-center">
             <img
               src={getGrade(user.grade)}
               className="w-[60px] h-[60px] object-cover"
             />
           </div>
+
+          {isEditing && (
+            <input
+              type="date"
+              className="absolute top-[370px] left-[60px] w-[200px] p-2 border border-gray-600 rounded-md bg-black text-white"
+              value={profileData.birth}
+              onChange={(e) => setProfileData({ ...profileData, birth: e.target.value })}
+            />
+          )}
         </div>
 
-        <div className="ml-[350px]">
-          <div className="h-[103px] mt-[80px] text-white font-[Open Sans] text-[46px] leading-[24px] font-semibold flex items-center">
-            {user.name}
+        <div className="ml-[320px]">
+          <div className={`h-[103px] mt-[80px] ${isEditing ? 'bg-gray-800 opacity-100 text-white' : ' text-white'} font-[Open Sans] text-[46px] leading-[24px] font-semibold flex items-center`}>
+            {isEditing ? (
+              <input
+                type="text"
+                value={profileData.name}
+                onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                className="bg-transparent outline-none w-full p-2 text-white"
+              />
+            ) : (
+              profileData.name
+            )}
           </div>
-          <div className="w-[200px] h-[210px] text-white font-[Open Sans] text-[24px] leading-[36px] font-semibold flex items-center text-left break-words whitespace-normal">
-            {user.introduce}
+
+          <div className={`w-[250px] h-[210px] ${isEditing ? 'bg-gray-800 opacity-100 text-white' : ' text-white'} font-[Open Sans] text-[24px] leading-[36px] font-semibold flex items-center text-left break-words whitespace-pre-wrap`}>
+            {isEditing ? (
+              <textarea
+                value={profileData.introduce}
+                onChange={(e) => setProfileData({ ...profileData, introduce: e.target.value })}
+                maxLength={maxIntroduceLength}
+                className="bg-transparent outline-none w-full p-2 text-white"
+              />
+            ) : (
+              profileData.introduce
+            )}
           </div>
+          {isEditing && (
+            <div className="text-sm text-gray-400 text-left">
+              {profileData.introduce.length}/{maxIntroduceLength}
+            </div>
+          )}
         </div>
 
+        {/* Followers, Followings, Newzy 요소 */}
         <div className="flex flex-col items-center ml-auto mt-auto">
           <div className="flex gap-16">
             <div className="flex flex-col items-center">
@@ -95,25 +180,38 @@ export const Profile = () => {
               </div>
             </div>
           </div>
-          <div className="w-[293px] h-[103px] relative mt-10 mb-7">
-            <button className="w-full h-[73px] rounded-[45px] font-[Open Sans] bg-[#3578FF] hover:bg-[#2a61cc] flex items-center justify-center text-white text-[32px] font-semibold transition-colors duration-300">
-              프로필 편집
-            </button>
-          </div>
+
+          {/* 프로필 편집 및 저장 버튼 */}
+          {isEditing ? (
+            <div className="w-[293px] h-[103px] relative mt-10 mb-7">
+              <button
+                className="w-full h-[73px] rounded-[10px] font-[Open Sans] bg-green-600 flex items-center justify-center text-white text-[32px] font-semibold transition-colors duration-300"
+                onClick={handleSave}
+              >
+                SAVE
+              </button>
+            </div>
+          ) : (
+            <div className="w-[293px] h-[103px] relative mt-10 mb-7">
+              <button
+                className="w-full h-[73px] rounded-[10px] font-[Open Sans] bg-[#3578FF] hover:bg-[#2a61cc] flex items-center justify-center text-white text-[32px] font-semibold transition-colors duration-300"
+                onClick={() => setIsEditing(true)}
+              >
+                프로필 편집
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* MenuBar에 선택된 메뉴 상태와 상태 변경 함수 전달 */}
       <MenuBar
         selectedMenu={selectedMenu}
         setSelectedMenu={setSelectedMenu}
         menus={["My Newzy", "BookMark", "Words"]}
       />
 
-      {/* 선택된 메뉴에 따라 다른 컴포넌트 렌더링 */}
       {renderContent()}
 
-      {/* 모달 컴포넌트 렌더링 */}
       <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
