@@ -42,7 +42,7 @@ export const Profile = () => {
   const closeModal = () => setModalOpen(false);
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto bg-[#FFFFFF]">
       <div className="h-[409px] bg-[#132956] relative flex px-8 mb-12">
         <div>
           <div className="absolute top-[70px] left-[53px] w-[270px] h-[270px] rounded-full border-[24px] border-yellow-500 flex items-center justify-center">
@@ -112,7 +112,6 @@ export const Profile = () => {
 
       {/* 선택된 메뉴에 따라 다른 컴포넌트 렌더링 */}
       {renderContent()}
-      <div className="h-[500px] mx-20 my-20 text-[32px]">Content</div>
 
       {/* 모달 컴포넌트 렌더링 */}
       <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} />
