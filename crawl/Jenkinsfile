@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        TARGET_BRANCH = 'develop-crawl'  // 목표 브랜치 이름 설정
+        TARGET_BRANCH = 'develop-data'  // 목표 브랜치 이름 설정
         REMOTE_USER = 'ubuntu'
         REMOTE_HOST = 'j11b305.p.ssafy.io'
         REMOTE_DIR = '/home/ubuntu/newzy'  // 원격 서버에서 프로젝트가 위치한 경로
@@ -19,13 +19,11 @@ pipeline {
                 echo "Building branch: ${env.GIT_BRANCH}"
             }
         }
-
         stage('Cleanup Workspace') {
             steps {
                 deleteDir() // 작업 공간 초기화
             }
         }
-
         stage('Checkout') {
             steps {
                 script {
@@ -39,7 +37,19 @@ pipeline {
                 }
             }
         }
+        stage('Copy .env') {
+            steps {
+               script {
+                    withCredentials([file(credentialsId: 'crawl-env', variable: 'ENV_FILE')]) {
+                        // .env 파일 복사
+                        sh 'cp $ENV_FILE crawl/.env'
 
+                        // 복사된 파일 내용 확인
+                        sh 'cat crawl/.env'
+                    }
+                }
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 script {
@@ -48,7 +58,6 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy with docker-compose') {
             steps {
                 script {
@@ -56,8 +65,9 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/.ssh/jenkins_rsa ${REMOTE_USER}@${REMOTE_HOST} "
                         cd ${REMOTE_DIR}/crawl &&
-                        docker-compose down &&
-                        docker-compose up -d --build
+                        docker-compose stop crawl &&
+                        docker-compose rm -f crawl &&
+                        docker-compose up -d crawl
                         "
                     """
                 }
@@ -66,7 +76,7 @@ pipeline {
 
         stage('Notification') {  // 알림 추가
             steps {
-                echo 'Sending notification to Mattermost...'
+                echo 'jenkins notification!'
             }
             post {
                 success {
@@ -75,7 +85,7 @@ pipeline {
                         def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
                         mattermostSend(color: 'good',
                             message: "배포 성공: ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}(${Author_Name})\n(<${env.BUILD_URL}|Details>)",
-                            endpoint: 'https://meeting.ssafy.com/hooks/your-mattermost-webhook-url',
+                            endpoint: 'https://meeting.ssafy.com/hooks/xnw8ojosjpbczjqcq1g1c8yg7e',
                             channel: 'Jenkins_Build_Result'
                         )
                     }
@@ -86,7 +96,7 @@ pipeline {
                         def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
                         mattermostSend(color: 'danger',
                             message: "배포 실패: ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}(${Author_Name})\n(<${env.BUILD_URL}|Details>)",
-                            endpoint: 'https://meeting.ssafy.com/hooks/your-mattermost-webhook-url',
+                            endpoint: 'https://meeting.ssafy.com/hooks/xnw8ojosjpbczjqcq1g1c8yg7e',
                             channel: 'Jenkins_Build_Result'
                         )
                     }
