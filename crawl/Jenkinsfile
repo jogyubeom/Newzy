@@ -67,7 +67,9 @@ pipeline {
                         cd ${REMOTE_DIR} &&
                         docker-compose stop crawl &&
                         docker-compose rm -f crawl &&
-                        docker-compose up -d crawl
+                        docker-compose up -d crawl &&
+                        docker container prune -f &&
+                        docker image prune -a -f
                         "
                     """
                 }
