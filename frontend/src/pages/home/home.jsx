@@ -1,3 +1,9 @@
+import { Header } from "./ui/header";
+
 export const Home = () => {
-  return <div>하하</div>;
+  return (
+    <div className="relative">
+      <Header />
+    </div>
+  );
 };

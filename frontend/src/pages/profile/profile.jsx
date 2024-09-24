@@ -16,7 +16,7 @@ const user = {
   followings: 25,
 };
 
-const Profile = () => {
+export const Profile = () => {
   // 선택된 메뉴를 추적하는 상태
   const [selectedMenu, setSelectedMenu] = useState(0);
 
