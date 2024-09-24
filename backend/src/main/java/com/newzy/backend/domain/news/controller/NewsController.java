@@ -34,7 +34,7 @@ public class NewsController {
     @GetMapping
     public ResponseEntity<List<NewsListGetResponseDto>> getNewsList(
             @Parameter(description = "페이지 번호") @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-            @Parameter(description = "카테고리") @RequestParam(value="category", required = false, defaultValue = "3") int category) {
+            @Parameter(description = "카테고리") @RequestParam(value = "category", required = false, defaultValue = "3") int category) {
         log.info(">>> [GET] /news - 요청 파라미터: page - {}, category - {}", page, category);
         List<NewsListGetResponseDto> newsListGetResponseDtoList = newsService.getNewsList(page, category);
         return ResponseEntity.status(200).body(newsListGetResponseDtoList);

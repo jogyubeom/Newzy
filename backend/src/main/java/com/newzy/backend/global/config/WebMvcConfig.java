@@ -78,17 +78,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         WebMvcConfigurer.super.addCorsMappings(registry);
         registry.addMapping("/**")
-                .allowedOrigins("*",
-                        "${server.domain.host}",
-                        "https://i11b308.p.ssafy.io/**",
-                        "http://localhost:3000",
-                        "http://localhost:3000/**",
-                        "http://localhost:8080/**",
-                        "https://plogbucket.s3.ap-northeast-2.amazonaws.com/**",
-                        "https://plogbucket.s3.ap-northeast-2.amazonaws.com"
-                        )
+                .allowedOrigins("*")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization")
-                .allowedMethods("OPTIONS","GET","POST","PUT","DELETE","PATCH");
+                .allowedMethods("OPTIONS", "GET", "POST", "PUT", "DELETE", "PATCH");
     }
 }
