@@ -10,23 +10,12 @@ import { Home } from "pages/home";
 import { NewsList } from "pages/newsList";
 import { NewzyList } from "pages/newzyList";
 import { Profile } from "pages/profile";
-
-
-// const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <Home />,
-//   },
-// ]);
-
-// export const AppRouter = () => {
-//   return <RouterProvider router={router} />;
-// };
+import { NewsDatail } from "../../pages/newsDetail/newsDetail";
 
 export const AppRouter = () => {
   const routers = createRoutesFromElements(
     <Route path="/" element={<Layout />}>
-      <Route path="/" element={<Home />} />
+      <Route index element={<Home />} />
       <Route path="news" element={<NewsList />} />
       <Route path="newzy" element={<NewzyList />} />
       <Route path="profile" element={<Profile />} />
