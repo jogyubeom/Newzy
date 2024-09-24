@@ -14,7 +14,7 @@ RUN apt-get install -y ./google-chrome-stable_current_amd64.deb
 RUN rm ./google-chrome-stable_current_amd64.deb
 
 # ChromeDriver 버전 수동 지정 (Chrome 버전에 맞는 버전으로 변경)
-RUN CHROME_DRIVER_VERSION=129.0.6668.59 \
+RUN CHROME_DRIVER_VERSION=129.0.6668.58 \
     && curl -sS https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -o /tmp/chromedriver.zip \
     && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
     && rm /tmp/chromedriver.zip
