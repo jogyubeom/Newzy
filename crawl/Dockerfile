@@ -8,16 +8,11 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && apt-get clean
 
+
 # Chrome 다운로드 및 설치
 RUN curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 RUN apt-get install -y ./google-chrome-stable_current_amd64.deb
 RUN rm ./google-chrome-stable_current_amd64.deb
-
-# ChromeDriver 버전 수동 지정 (Chrome 버전에 맞는 버전으로 변경)
-RUN CHROME_DRIVER_VERSION=129.0.6668.58 \
-    && curl -sS https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -o /tmp/chromedriver.zip \
-    && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
-    && rm /tmp/chromedriver.zip
 
 # 환경 변수 설정 (Java 17 설치 경로)
 ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
