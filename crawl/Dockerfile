@@ -13,11 +13,13 @@ RUN curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd
 RUN apt-get install -y ./google-chrome-stable_current_amd64.deb
 RUN rm ./google-chrome-stable_current_amd64.deb
 
-# ChromeDriver 다운로드 및 설치
-RUN curl -sS https://chromedriver.storage.googleapis.com/$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip -o /tmp/chromedriver.zip
-RUN unzip /tmp/chromedriver.zip -d /usr/local/bin/
-RUN rm /tmp/chromedriver.zip
-
+# Chrome 버전 확인 후 해당 버전에 맞는 ChromeDriver 다운로드 및 설치
+RUN CHROME_VERSION=$(google-chrome --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+') \
+    && DRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION") \
+    && curl -sS https://chromedriver.storage.googleapis.com/$DRIVER_VERSION/chromedriver_linux64.zip -o /tmp/chromedriver.zip \
+    && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
+    && rm /tmp/chromedriver.zip
+    
 # 환경 변수 설정 (Java 17 설치 경로)
 ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH $JAVA_HOME/bin:$PATH

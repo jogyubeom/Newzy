@@ -1,6 +1,5 @@
 from konlpy.tag import Okt
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 
 
 def create_webdriver():
