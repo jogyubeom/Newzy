@@ -9,7 +9,9 @@ def create_webdriver():
     chrome_options.add_argument('--disable-cache')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
+
+    driver = webdriver.Chrome(options=chrome_options)
     return driver
 
 
