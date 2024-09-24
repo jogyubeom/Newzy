@@ -7,6 +7,19 @@ RUN apt-get update && apt-get install -y \
     curl \
     && apt-get clean
 
+#Download and install Chrome
+RUN curl https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm > ./google-chrome-stable_current_x86_64.rpm
+RUN yum install -y ./google-chrome-stable_current_x86_64.rpm
+RUN rm ./google-chrome-stable_current_x86_64.rpm
+
+#Download and install chromedriver
+RUN yum install -y unzip
+RUN curl http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip > /tmp/chromedriver.zip
+RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+RUN rm /tmp/chromedriver.zip
+RUN yum remove -y unzip
+
+
 # 환경 변수 설정 (Java 17 설치 경로)
 ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH $JAVA_HOME/bin:$PATH
