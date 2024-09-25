@@ -78,7 +78,7 @@
     </div>
     <br>
     <div align="center">
-        [front-end]
+        [back-end]
     <div/>
     <div align="center">
         <img src="./img/NewzyComment_delete&find.png" width="500"/>
