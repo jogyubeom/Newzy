@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 
 
 @Configuration
-@EnableJpaAuditing
+// @EnableJpaAuditing
 public class JpaConfig {
     @PersistenceContext
     private EntityManager entityManager;
