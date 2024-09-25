@@ -47,6 +47,12 @@
     - 유저의 어휘력 수준에 반영
 
 8. **뉴스 스크랩/좋아요**
+    <div align="center">
+        <img src="./img/NewzyComment_delete&find.png" width="500"/>
+    </div>
+    <div align="center">
+        <img src="./img/newzy_save.png" width="500"/>
+    </div>
     - 유저가 관심 있는 뉴스를 스크랩하거나 좋아요를 눌러 저장할 수 있는 기능
     - 좋아요는 추천 알고리즘에 반영
 
