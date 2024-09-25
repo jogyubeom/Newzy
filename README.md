@@ -183,6 +183,6 @@
 
 ### **3.4** 백엔드
 1. **폴더 구조**
-    <div align="center">
+    <div>
         <img src="./img/directory_structure.png" width="300"/>
     </div>
