@@ -32,16 +32,16 @@
 4. **나만의 단어장**
     - 유저가 검색한 단어들을 모아 조회, 삭제할 수 있는 단어장 기능
     <div align="center">
-        <img src="./img/Profile_Page_나만의_단어장.JPG" width="700"/>
+        <img src="./img/Profile_Page_나만의_단어장.JPG" width="800"/>
     </div>
     <br>
 
     - 단어장에 등록된 단어로 단어 테스트 가능
     <div align="center">
-        <img src="./img/Profile_Page_나만의_단어장_단어테스트_문제.JPG" width="700"/>
+        <img src="./img/Profile_Page_나만의_단어장_단어테스트_문제.JPG" width="800"/>
     </div>
     <div align="center">
-        <img src="./img/Profile_Page_나만의_단어장_단어테스트_결과.JPG" width="700"/>
+        <img src="./img/Profile_Page_나만의_단어장_단어테스트_결과.JPG" width="800"/>
     </div>
     <br>
 
