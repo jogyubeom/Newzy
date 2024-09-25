@@ -64,6 +64,15 @@
 
 9. **내가 쓰는 기사 - 뉴지**
     <div align="center">
+        <img src="./img/newzy_list.png" width="500"/>
+    </div>
+    <div align="center">
+        <img src="./img/newzy_edit.png" width="500"/>
+    </div>
+    <div align="center">
+        <img src="./img/newzy_detail.png" width="500"/>
+    </div>
+    <div align="center">
         <img src="./img/NewzyComment_delete&find.png" width="500"/>
     </div>
     <div align="center">
