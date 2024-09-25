@@ -6,12 +6,13 @@ import MyNewzy from "widgets/profilePage/myNewzy";
 import BookMark from "widgets/profilePage/bookMark";
 import Words from "widgets/profilePage/words";
 import FollowIndexModal from "widgets/profilePage/followIndexModal";
+import userProfile from "shared/images/user.png";
 
 // 임시 유저 더미데이터
 const user = {
   name: "정지훈",
-  grade: 3,
-  introduce: "안녕하세요. 잘 부탁드립니다! 하하하",
+  grade: 1,
+  introduce: `안녕하세요\n잘 부탁드립니다!!`,
   img: null,
   followers: 42,
   newzy: 7,
@@ -78,7 +79,7 @@ export const Profile = () => {
         <div className="relative">
           <div className={`absolute top-[70px] left-[0px] w-[270px] h-[270px] rounded-full border-[24px] border-yellow-500 flex items-center justify-center ${isEditing ? 'opacity-60' : ''}`}>
             <img
-              src={profileData.img || "https://via.placeholder.com/270"}
+              src={profileData.img || userProfile}
               className="w-full h-full object-cover rounded-full"
               alt="프로필 이미지"
             />
@@ -112,7 +113,7 @@ export const Profile = () => {
           {isEditing && (
             <input
               type="date"
-              className="absolute top-[370px] left-[60px] w-[200px] p-2 border border-gray-600 rounded-md bg-black text-white"
+              className="absolute top-[360px] left-[10px] w-[140px] px-2 py-1 rounded-md bg-gray-800 text-white"
               value={profileData.birth}
               onChange={(e) => setProfileData({ ...profileData, birth: e.target.value })}
             />
@@ -120,33 +121,41 @@ export const Profile = () => {
         </div>
 
         <div className="ml-[320px]">
-          <div className={`h-[103px] mt-[80px] ${isEditing ? 'bg-gray-800 opacity-100 text-white' : ' text-white'} font-[Open Sans] text-[46px] leading-[24px] font-semibold flex items-center`}>
+          <div className="h-[100px] mt-[80px] text-white font-[Open Sans] text-[46px] leading-[24px] font-semibold flex items-center">
             {isEditing ? (
               <input
                 type="text"
                 value={profileData.name}
                 onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                className="bg-transparent outline-none w-full p-2 text-white"
+                className="outline-none w-full p-2 mr-5 text-white bg-gray-800 opacity-100"
               />
             ) : (
-              profileData.name
+              <p className="p-2">{profileData.name}</p>
             )}
           </div>
 
-          <div className={`w-[250px] h-[210px] ${isEditing ? 'bg-gray-800 opacity-100 text-white' : ' text-white'} font-[Open Sans] text-[24px] leading-[36px] font-semibold flex items-center text-left break-words whitespace-pre-wrap`}>
+          <div className="w-[250px] h-[200px] text-white font-[Open Sans] text-[24px] leading-[36px] font-semibold flex items-center text-left break-words whitespace-pre-wrap">
             {isEditing ? (
               <textarea
                 value={profileData.introduce}
-                onChange={(e) => setProfileData({ ...profileData, introduce: e.target.value })}
+                onChange={(e) => {
+                  const lines = e.target.value.split('\n');
+                  // 최대 5줄까지만 입력 가능하도록 제한
+                  if (lines.length <= 5) {
+                    setProfileData({ ...profileData, introduce: e.target.value });
+                  }
+                }}
+                rows={5} // 기본 5줄
                 maxLength={maxIntroduceLength}
-                className="bg-transparent outline-none w-full p-2 text-white"
+                className="outline-none w-full h-[200px] p-2 text-white bg-gray-800 opacity-100"
+                placeholder={`자기소개 문구를\n작성해주세요!`}
               />
             ) : (
-              profileData.introduce
+              <p className="p-2">{profileData.introduce}</p>
             )}
           </div>
           {isEditing && (
-            <div className="text-sm text-gray-400 text-left">
+            <div className="font-semibold text-gray-200 text-left">
               {profileData.introduce.length}/{maxIntroduceLength}
             </div>
           )}
