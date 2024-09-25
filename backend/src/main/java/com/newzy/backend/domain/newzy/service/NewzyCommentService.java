@@ -11,7 +11,7 @@ public interface NewzyCommentService {
 
     NewzyCommentResponseDTO updateComment(Long newzyCommentId, NewzyCommentRequestDTO requestDTO);
 
-    List<NewzyCommentResponseDTO> findAllCommentsByNewzyId(Long newzyId);
+    List<NewzyCommentResponseDTO> getNewzyCommentListByNewzyId(Long newzyId, int page, int size);
 
     void deleteComment(Long newzyCommentId);
 

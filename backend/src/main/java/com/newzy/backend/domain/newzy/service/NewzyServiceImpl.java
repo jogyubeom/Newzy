@@ -2,16 +2,22 @@ package com.newzy.backend.domain.newzy.service;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
+import com.newzy.backend.domain.newzy.entity.Category;
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.newzy.repository.NewzyRepository;
 import io.swagger.v3.oas.annotations.servers.Server;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -21,13 +27,18 @@ public class NewzyServiceImpl implements NewzyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NewzyResponseDTO> findAllNewzies() {
-        List<Newzy> newzies = newzyRepository.findAll();
+    public List<NewzyResponseDTO> getNewzyList(int page, Category category) {
+        log.info(">>> newzyServiceImpl getNewzyList - pages: {}. category: {}", page, category);
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Newzy> newzies = newzyRepository.findByCategory(category, pageable);
         List<NewzyResponseDTO> newziesResponseDTO = new ArrayList<>();
 
         for (Newzy newzy : newzies){
-            NewzyResponseDTO dto = NewzyResponseDTO.convertToDTO(newzy);
-            if (! newzy.isDeleted()){   newziesResponseDTO.add(dto);    }
+            if(! newzy.isDeleted()) {
+                NewzyResponseDTO dto =
+                        NewzyResponseDTO.convertToDTO(newzy);
+                newziesResponseDTO.add(dto);
+            }
         }
 
         return newziesResponseDTO;

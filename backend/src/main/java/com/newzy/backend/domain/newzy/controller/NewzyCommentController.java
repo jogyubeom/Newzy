@@ -5,6 +5,7 @@ import com.newzy.backend.domain.newzy.dto.response.NewzyCommentResponseDTO;
 import com.newzy.backend.domain.newzy.service.NewzyCommentServiceImpl;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class NewzyCommentController {
             @PathVariable("newzyId") Long newzyId,
             @RequestBody @Validated NewzyCommentRequestDTO dto
             ){
-        log.info(">> [POST] /newzy - 요청파라미터: newzyId - {}", newzyId);
+        log.info(">> [POST] /newzyCommentController - 요청파라미터: newzyId - {}, dto - {}", newzyId, dto.toString());
         newzyCommentServiceImpl.saveComment(newzyId, dto);
 
         return ResponseEntity.status(201).body(BaseResponseBody.of(201, "뉴지 댓글 등록이 완료되었습니다."));
@@ -36,12 +37,15 @@ public class NewzyCommentController {
     @GetMapping
     @Operation(summary = "해당 뉴지 댓글 조회", description = "해당 뉴지의 모든 댓글을 조회합니다.")
     public ResponseEntity<List<NewzyCommentResponseDTO>> getAllNewzyComments(
-            @PathVariable Long newzyId
-    ){
-        // newzyId 사용하는 코드 빠짐
-        List<NewzyCommentResponseDTO> newzyComments = newzyCommentServiceImpl.findAllCommentsByNewzyId(newzyId);
+            @PathVariable Long newzyId,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        log.info(">> [GET] /newzyCommentController - 요청파라미터: newzyId - {}, page - {}, size - {}", newzyId, page, size);
 
-        return ResponseEntity.status(200).body(newzyComments);
+        List<NewzyCommentResponseDTO> newzyCommentList = newzyCommentServiceImpl.getNewzyCommentListByNewzyId(newzyId, page, size);
+
+        return ResponseEntity.status(200).body(newzyCommentList);
     }
 
     @PatchMapping(value = "/{newzyCommentId}")

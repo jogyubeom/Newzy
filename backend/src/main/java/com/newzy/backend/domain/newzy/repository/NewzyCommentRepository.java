@@ -1,11 +1,8 @@
 package com.newzy.backend.domain.newzy.repository;
-
-import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.newzy.entity.NewzyComment;
-import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -16,7 +13,7 @@ public interface NewzyCommentRepository extends JpaRepository<NewzyComment, Long
     NewzyComment findByNewzy_NewzyIdAndNewzyCommentIdAndIsDeletedFalse(Long newzyId, Long newzyCommentId);
 
     // SELECT nc FROM NewzyComment nc WHERE nc.newzy.newzyId = :newzyId AND nc.isDeleted = false
-    List<NewzyComment> findAllByNewzy_NewzyIdAndIsDeletedFalse(Long newzyId);
+    Page<NewzyComment> findAllByNewzy_NewzyIdAndIsDeletedFalse(Long newzyId, Pageable pageable);
 
     default NewzyComment updateNewzyCommentById(NewzyComment newzyComment) {
        NewzyComment updatedComment = findById(newzyComment.getNewzyCommentId()).orElse(null);

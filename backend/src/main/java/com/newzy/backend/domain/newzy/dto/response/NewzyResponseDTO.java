@@ -5,10 +5,14 @@ import com.newzy.backend.domain.newzy.entity.Newzy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
-@AllArgsConstructor
+@Builder
+@ToString
 @Schema(title = "NEWZY_RES : 뉴지 응답 DTO")
 public class NewzyResponseDTO {
 
@@ -30,12 +34,27 @@ public class NewzyResponseDTO {
     @Schema(description = "뉴지 방문자 수", example = "0")
     private int visitCnt;
 
+    @Schema(description = "삭제 여부", example = "false")
+    private boolean isDeleted;
+
+    @Schema(description = "뉴지 작성시간")
+    private LocalDateTime createdAt;
+
     // 유저 정보 추후 추가하기
-
-    public static NewzyResponseDTO convertToDTO(Newzy newzy){
-        if (newzy == null){ return null; }
-
-        return new NewzyResponseDTO(newzy.getNewzyId(), newzy.getTitle(), newzy.getContent(), newzy.getCategory(), newzy.getLikeCnt(), newzy.getVisitCnt());
+    public static NewzyResponseDTO convertToDTO(Newzy newzy) {
+        if (newzy == null) {
+            throw new IllegalArgumentException("Newzy entity cannot be null");
+        }
+        return NewzyResponseDTO.builder()
+                .newzyId(newzy.getNewzyId())
+                .title(newzy.getTitle())
+                .content(newzy.getContent())
+                .category(newzy.getCategory())
+                .likeCnt(newzy.getLikeCnt())
+                .visitCnt(newzy.getVisitCnt())
+                .createdAt(newzy.getCreatedAt())
+                .isDeleted(newzy.isDeleted())  // 삭제 여부 추가
+                .build();
     }
 }
 

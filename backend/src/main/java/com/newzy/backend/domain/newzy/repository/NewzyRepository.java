@@ -1,9 +1,17 @@
 package com.newzy.backend.domain.newzy.repository;
 
+import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
+import com.newzy.backend.domain.newzy.entity.Category;
 import com.newzy.backend.domain.newzy.entity.Newzy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface NewzyRepository extends JpaRepository<Newzy, Long> {
+
+    Page<Newzy> findByCategory(Category category, Pageable pageable);
 
     Newzy findByNewzyId(Long id);
 
