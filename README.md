@@ -63,7 +63,10 @@
     - 좋아요는 추천 알고리즘에 반영
 
 9. **내가 쓰는 기사 - 뉴지**
-    [front-end]
+    <br>
+    <div align="center">
+        [front-end]
+    <div/>
     <div align="center">
         <img src="./img/newzy_list.png" width="500"/>
     </div>
@@ -73,7 +76,10 @@
     <div align="center">
         <img src="./img/newzy_detail.png" width="500"/>
     </div>
-    [back-end]
+    <br>
+    <div align="center">
+        [front-end]
+    <div/>
     <div align="center">
         <img src="./img/NewzyComment_delete&find.png" width="500"/>
     </div>
