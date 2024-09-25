@@ -63,6 +63,7 @@
     - 좋아요는 추천 알고리즘에 반영
 
 9. **내가 쓰는 기사 - 뉴지**
+    [front-end]
     <div align="center">
         <img src="./img/newzy_list.png" width="500"/>
     </div>
@@ -72,6 +73,7 @@
     <div align="center">
         <img src="./img/newzy_detail.png" width="500"/>
     </div>
+    [back-end]
     <div align="center">
         <img src="./img/NewzyComment_delete&find.png" width="500"/>
     </div>
@@ -174,3 +176,9 @@
 | pages | 전체 페이지 또는 중첩 라우팅에서 페이지의 주요 부분 |
 | shared | 범용적으로 사용되는 재사용가능한 컴포넌트와 유틸리티를 포함하는 레이어 |
 | widgets | 독립적으로 작동하는 대규모 기능 또는 UI 컴포넌트 |
+
+### **3.4** 백엔드
+1. **폴더 구조**
+    <div align="center">
+        <img src="./img/directory_structure.png" width="800"/>
+    </div>
