@@ -25,5 +25,6 @@ public class LogConfig implements CommandLineRunner {
     @Override
     public void run(String... args) {
         // 추가 초기화 작업
+        logger.info("로그 파일이 생성되었습니다: {}", System.getProperty("LOG_FILE_NAME"));
     }
 }
