@@ -82,11 +82,8 @@
     <div/>
     <div align="center">
         <img src="./img/NewzyComment_delete&find.png" width="500"/>
-    </div>
-    <div align="center">
         <img src="./img/newzy_save.png" width="500"/>
     </div>
-    <br>
     - 사용자가 직접 작성한 기사를 메인 페이지에 배치(진짜 기사와는 구별)
     <br>
     - 다른 사용자들과 공유하고 소통하는 기능
