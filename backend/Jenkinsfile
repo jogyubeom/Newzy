@@ -45,15 +45,20 @@ pipeline {
                 }
             }
         }
-        stage('Copy application.yml') {
+        stage('Copy Config Files') {  // 기존 'Copy application.yml' 스테이지를 확장
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'application-backend-yml', variable: 'APP_YML')]) {
-                        // 파일 복사
+                    withCredentials([file(credentialsId: 'application-backend-yml', variable: 'APP_YML'),
+                                     file(credentialsId: 'logback-spring-xml', variable: 'LOGBACK_XML')]) {
+                        // application.yml 복사
                         sh 'cp $APP_YML backend/src/main/resources/application.yml'
+
+                        // logback-spring.xml 복사
+                        sh 'cp $LOGBACK_XML backend/src/main/resources/logback-spring.xml'
 
                         // 복사된 파일 내용 확인
                         sh 'cat backend/src/main/resources/application.yml'
+                        sh 'cat backend/src/main/resources/logback-spring.xml'
                     }
                 }
             }
