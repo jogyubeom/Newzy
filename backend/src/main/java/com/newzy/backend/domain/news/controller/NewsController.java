@@ -21,10 +21,12 @@ import java.util.List;
 public class NewsController {
     private final NewsService newsService;
 
+    // 식물 => 뉴스 수정   by. 다율
     @GetMapping("/{newsId}")
-    @Operation(summary = "뉴스 정보 조회", description = "식물 ID로 식물의 상세 정보를 조회합니다.")
+    @Operation(summary = "뉴스 정보 조회", description = "뉴스 ID로 뉴스의 상세 정보를 조회합니다.")
     public ResponseEntity<NewsDetailGetResponseDto> getNews(
-            @Parameter(description = "뉴스 ID", required = true) @PathVariable Long newsId) {
+            @Parameter(description = "뉴스 ID", required = true)
+            @PathVariable Long newsId) {
         log.info(">>> [GET] /news/{} - 요청 ID: {}", newsId, newsId);
 
         NewsDetailGetResponseDto newsDetailGetResponseDto = newsService.getNewsDetail(newsId);
@@ -33,8 +35,10 @@ public class NewsController {
 
     @GetMapping
     public ResponseEntity<List<NewsListGetResponseDto>> getNewsList(
-            @Parameter(description = "페이지 번호") @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-            @Parameter(description = "카테고리") @RequestParam(value = "category", required = false, defaultValue = "3") int category) {
+            @Parameter(description = "페이지 번호")
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @Parameter(description = "카테고리")
+            @RequestParam(value = "category", required = false, defaultValue = "3") int category) {
         log.info(">>> [GET] /news - 요청 파라미터: page - {}, category - {}", page, category);
         List<NewsListGetResponseDto> newsListGetResponseDtoList = newsService.getNewsList(page, category);
         return ResponseEntity.status(200).body(newsListGetResponseDtoList);
