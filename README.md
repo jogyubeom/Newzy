@@ -125,3 +125,49 @@
     - 경제: [매일경제](https://www.mk.co.kr/news/economy/), [한국경제](https://www.hankyung.com/economy), [머니투데이](https://news.mt.co.kr/newsList.html?pDepth1=politics&pDepth2=Ptotal)
     - 사회: [연합뉴스](https://www.yna.co.kr/society/all/), [YTN](https://www.ytn.co.kr/news/list.php?mcd=0103), [채널A](https://www.ichannela.com/news/main/news_part.do?catecode=000404)
     - 세계: [뉴시스](https://www.newsis.com/world/list/?cid=10100&scid=10101), [세계일보](https://segye.com/newsList/0101040100000), [SBS BIZ](https://biz.sbs.co.kr/news/list.html?menu=j1_8)
+
+### **3.3** 프론트엔드
+
+1. **FSD(Feature-Sliced Design) 아키텍처**
+    - 기능을 중심으로 UI, 로직, 상태 관리를 모듈화하여 구성
+2. 폴더 구조
+
+```
+📦src
+ ┣ 📂app
+ ┃ ┣ 📂layout
+ ┃ ┣ 📂routers
+ ┃ ┗ 📜App.jsx
+ ┣ 📂entities
+ ┣ 📂features
+ ┣ 📂pages
+ ┃ ┣ 📂home
+ ┃ ┣ 📂newsDetail
+ ┃ ┣ 📂newsList
+ ┃ ┣ 📂newzyDetail
+ ┃ ┣ 📂newzyEdit
+ ┃ ┣ 📂newzyList
+ ┃ ┗ 📂profile
+ ┣ 📂shared
+ ┃ ┣ 📂api
+ ┃ ┣ 📂images
+ ┃ ┣ 📂utils
+ ┃ ┣ 📜getGrade.js
+ ┃ ┗ 📜index.js
+ ┣ 📂widgets
+ ┃ ┣ 📂footer
+ ┃ ┣ 📂header
+ ┃ ┣ 📂profilePage
+ ┃ ┗ 📂sidebar
+ ┣ 📜main.css
+ ┗ 📜main.jsx
+```
+
+3. 폴더 설명
+| app | 최상단 레이어로 앱의 로직이 초기화되는 곳 |
+| --- | --- |
+| entities | 프로젝트가 다루는 비즈니스 엔티티 (예를 들어, 유저, 댓글 등) |
+| features | 제품 전반에 걸쳐 재사용되는 기능 구현체로, 사용자에게 실질적인 비즈니스 가치를 제공하는 동작(예를 들어, 좋아요, 리뷰작성,등) |
+| pages | 전체 페이지 또는 중첩 라우팅에서 페이지의 주요 부분 |
+| shared | 범용적으로 사용되는 재사용가능한 컴포넌트와 유틸리티를 포함하는 레이어 |
+| widgets | 독립적으로 작동하는 대규모 기능 또는 UI 컴포넌트 |
