@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,14 +38,14 @@ public class NewzyCommentController {
 
     @GetMapping
     @Operation(summary = "해당 뉴지 댓글 조회", description = "해당 뉴지의 모든 댓글을 조회합니다.")
-    public ResponseEntity<List<NewzyCommentResponseDTO>> getAllNewzyComments(
+    public ResponseEntity<Page<NewzyCommentResponseDTO>> getAllNewzyComments(
             @PathVariable Long newzyId,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
         log.info(">> [GET] /newzyCommentController - 요청파라미터: newzyId - {}, page - {}, size - {}", newzyId, page, size);
 
-        List<NewzyCommentResponseDTO> newzyCommentList = newzyCommentServiceImpl.getNewzyCommentListByNewzyId(newzyId, page, size);
+        Page<NewzyCommentResponseDTO> newzyCommentList = newzyCommentServiceImpl.getNewzyCommentListByNewzyId(newzyId, page, size);
 
         return ResponseEntity.status(200).body(newzyCommentList);
     }

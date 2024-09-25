@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface NewzyRepository extends JpaRepository<Newzy, Long> {
 
-    Page<Newzy> findByCategory(Category category, Pageable pageable);
+    Page<Newzy> findByCategoryAndIsDeletedFalse(Category category, Pageable pageable);
 
     Newzy findByNewzyId(Long id);
 

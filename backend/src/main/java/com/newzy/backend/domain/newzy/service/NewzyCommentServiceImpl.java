@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,23 +31,27 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NewzyCommentResponseDTO> getNewzyCommentListByNewzyId(Long newzyId, int page, int size) {
+    public Page<NewzyCommentResponseDTO> getNewzyCommentListByNewzyId(Long newzyId, int page, int size) {
         log.info(">>> newzyCommentServiceImpl getNewzyCommentList - newzyId: {}, page: {}, size: {}", newzyId, page, size);
 
         Pageable pageable = PageRequest.of(page, size);
         Page<NewzyComment> newzyCommentPage = newzyCommentRepository.findAllByNewzy_NewzyIdAndIsDeletedFalse(newzyId, pageable);
 
-        List<NewzyCommentResponseDTO> newzyCommentsResponseDTO = new ArrayList<>();
+        // 새로운 List를 생성하여 isDeleted가 false인 항목들만 필터링
+        List<NewzyCommentResponseDTO> filteredComments = new ArrayList<>();
 
         for (NewzyComment newzyComment : newzyCommentPage.getContent()) {  // getContent()로 리스트 변환
-            if (!newzyComment.getIsDeleted()) {
+            if (!newzyComment.getIsDeleted()) {  // isDeleted 필터링
                 NewzyCommentResponseDTO responseDTO = NewzyCommentResponseDTO.convertToDTO(newzyComment);
-                newzyCommentsResponseDTO.add(responseDTO);
+                filteredComments.add(responseDTO);
             }
         }
 
-        return newzyCommentsResponseDTO;
+        // 필터링한 리스트를 Page로 다시 변환
+        return new PageImpl<>(filteredComments, pageable, newzyCommentPage.getTotalElements());
     }
+
+    
 
     @Override
     public void saveComment(Long newzyId, NewzyCommentRequestDTO dto){

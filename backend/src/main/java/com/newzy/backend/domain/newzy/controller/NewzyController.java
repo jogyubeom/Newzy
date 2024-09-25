@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -34,14 +35,14 @@ public class NewzyController {
 
     @GetMapping
     @Operation(summary = "모든 뉴지 게시글 조회", description = "모든 뉴지 게시글을 조회합니다.")
-    public ResponseEntity<List<NewzyResponseDTO>> getNewzyList(
+    public ResponseEntity<Page<NewzyResponseDTO>> getNewzyList(
             @Parameter(description = "페이지 번호")
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @Parameter(description = "카테고리")
             @RequestParam(value = "category", required = false, defaultValue = "자유") Category category
     ){
         log.info(">>> [GET] /newzy getNewzyList - 요청 파라미터: page - {}, category - {}", page, category);
-        List<NewzyResponseDTO> newzyList = newzyServiceImpl.getNewzyList(page, category);
+        Page<NewzyResponseDTO> newzyList = newzyServiceImpl.getNewzyList(page, category);
 
         return ResponseEntity.status(200).body(newzyList);
     }

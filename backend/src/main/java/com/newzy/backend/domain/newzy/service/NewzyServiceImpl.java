@@ -27,21 +27,12 @@ public class NewzyServiceImpl implements NewzyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NewzyResponseDTO> getNewzyList(int page, Category category) {
+    public Page<NewzyResponseDTO> getNewzyList(int page, Category category) {
         log.info(">>> newzyServiceImpl getNewzyList - pages: {}. category: {}", page, category);
         Pageable pageable = PageRequest.of(page, 10);
-        Page<Newzy> newzies = newzyRepository.findByCategory(category, pageable);
-        List<NewzyResponseDTO> newziesResponseDTO = new ArrayList<>();
+        Page<Newzy> newzies = newzyRepository.findByCategoryAndIsDeletedFalse(category, pageable);
 
-        for (Newzy newzy : newzies){
-            if(! newzy.isDeleted()) {
-                NewzyResponseDTO dto =
-                        NewzyResponseDTO.convertToDTO(newzy);
-                newziesResponseDTO.add(dto);
-            }
-        }
-
-        return newziesResponseDTO;
+        return newzies.map(NewzyResponseDTO::convertToDTO);
     }
 
     @Override
