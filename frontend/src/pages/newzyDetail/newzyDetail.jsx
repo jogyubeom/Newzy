@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import NewzyInfo from './ui/newzyInfo';
 import Content from './ui/content';
 import UtilityButtons from './ui/utilityButtons';
 
 export const NewzyDetail = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const { id } = useParams();
 
   const htmlContent = `<p>여기에 본문 내용이 들어갑니다.</p>`;

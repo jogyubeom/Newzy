@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TitleInput from './ui/titleInput';
 import CategorySelector from './ui/categorySelector';
 import ContentEditor from './ui/contentEditor';
 
 export const NewzyEdit = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [formData, setFormData] = useState({
     title: '',
     category: '시사',

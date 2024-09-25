@@ -1,6 +1,6 @@
 import React from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 const ContentEditor = ({ content, setContent }) => {
   const modules = {
@@ -16,7 +16,7 @@ const ContentEditor = ({ content, setContent }) => {
 
   return (
     <ReactQuill
-      style={{ width: '100%', height: '400px' }}
+      style={{ width: '100%', height: '60%' }}
       modules={modules}
       value={content}
       onChange={setContent}
