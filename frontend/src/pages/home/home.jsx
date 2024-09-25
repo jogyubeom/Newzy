@@ -1,7 +1,7 @@
 import { Header } from "./ui/header";
 import { RecommendNews } from "./ui/recommendNews";
 import { Top3News } from "./ui/top3News";
-import { WordCloud } from "./ui/wordCloud";
+import { WordSearchCloud } from "./ui/wordSearchCloud";
 import { WeekCardWinner } from "./ui/weekCardWinner";
 import { WeekNewpoter } from "./ui/weekNewporter";
 import { HotNewzy } from "./ui/hotNewzy";
@@ -22,20 +22,25 @@ export const Home = () => {
           <Top3News />
         </div>
 
-        <div className="ml:col-span-12 lg:col-span-6">
-          <WordCloud />
-        </div>
+        <div className="flex col-span-12 lg:col-span-12">
+          <div className="flex flex-col">
+            <div className="mb-4">
+              <WordSearchCloud />
+            </div>
 
-        <div className="ml:col-span-12 lg:col-span-6">
-          <WeekCardWinner />
-        </div>
+            <div>
+              <WeekNewpoter />
+            </div>
+          </div>
 
-        <div className="ml:col-span-12 lg:col-span-6">
-          <HotNewzy />
-        </div>
-
-        <div className="ml:col-span-12 lg:col-span-6">
-          <WeekNewpoter />
+          <div className="flex flex-col">
+            <div className="mb-4">
+              <WeekCardWinner />
+            </div>
+            <div>
+              <HotNewzy />
+            </div>
+          </div>
         </div>
       </div>
     </div>

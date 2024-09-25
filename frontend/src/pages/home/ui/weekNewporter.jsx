@@ -9,13 +9,13 @@ const dummyData = [
   },
   {
     newporterid: 2,
-    nickname: "John Doe",
+    nickname: "이영원",
     like_cnt: 28,
     profile_img: "https://i.pravatar.cc/75?random=2",
   },
   {
     newporterid: 3,
-    nickname: "Jane Doe",
+    nickname: "이다율",
     like_cnt: 15,
     profile_img: "https://i.pravatar.cc/75?random=3",
   },
