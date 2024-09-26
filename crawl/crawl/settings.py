@@ -196,7 +196,7 @@ LOGGING = {
         'apscheduler': {  # 스케줄러 로그도 처리
             'handlers': ['file', 'console'],
             'level': 'INFO',
-            'propagate': False,
+            'propagate': True,
         },
     },
 }
