@@ -1,4 +1,5 @@
 import React from 'react';
+import CategoryBadge from '../../../shared/categoryBadge';
 
 const PostItem = ({ post, onPostClick }) => {
   return (
@@ -27,7 +28,10 @@ const PostItem = ({ post, onPostClick }) => {
         onClick={() => onPostClick(post.id)}
       >
         <div className="pr-4">
-          <h2 className="text-lg font-semibold mb-2">{post.title}</h2>
+          <div className="flex items-center mb-2">
+            <CategoryBadge category={"시사"} />
+            <h2 className="text-xl font-semibold ml-2">{post.title}</h2>
+          </div>
           <p className="text-sm text-gray-700">{post.content}</p>
         </div>
         <div>

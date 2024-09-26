@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const UtilityButtons = () => {
+const UtilityButtons = ( { onActiveSidebar, activeSidebar } ) => {
   const [activeButtons, setActiveButtons] = useState([false, false]);
 
   const handleButtonClick = (index) => {
@@ -10,11 +10,15 @@ const UtilityButtons = () => {
         newActiveButtons[index] = !newActiveButtons[index];
         return newActiveButtons;
       });
+    } else if (index === 2) {
+      onActiveSidebar("댓글");
+    } else if (index === 3) {
+      onActiveSidebar("검색");
     }
   };
 
   return (
-    <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 p-4">
+    <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 p-4" style={{ zIndex: 20 }}>
       <div className="flex items-center justify-center rounded-lg shadow-md bg-white p-2">
         {[
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
@@ -35,7 +39,8 @@ const UtilityButtons = () => {
             key={index}
             onClick={() => handleButtonClick(index)}
             className={`flex items-center justify-center text-gray-500 focus:outline-none mx-2 ${
-              index < 2 && activeButtons[index] ? 'text-purple-500' : ''
+              ((index < 2 && activeButtons[index]) || (index === 2 && activeSidebar === "댓글") || (index === 3 && activeSidebar === "검색") )
+               ? 'text-purple-500' : ''
             }`}
           >
             {icon}

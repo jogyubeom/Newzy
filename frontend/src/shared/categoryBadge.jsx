@@ -19,7 +19,7 @@ const CategoryBadge = ({ category }) => {
 
   return (
     <div
-      className="w-[80px] h-[34px] rounded-full flex items-center justify-center"
+      className="w-[80px] h-[34px] min-w-20 rounded-full flex items-center justify-center"
       style={{ backgroundColor }}
     >
       <span className="text-[#3D3D3D] text-[20px] leading-[24px] font-bold">

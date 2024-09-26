@@ -5,7 +5,7 @@ export const posts = [
       date: '2024-09-19',
       views: 123,
       likes: 10,
-      title: '첫 번째 게시물 제목입니다',
+      title: '첫 번째 게시물 제목입니다 첫 번째 게시물 제목입니다 첫 번째 게시물 제목입니다 첫 번째 게시물 제목입니다',
       content: '여기에 게시물의 일부 내용이 표시됩니다. 이 내용을 읽고 본문을 더 확인하고 싶다면 클릭하세요.',
       thumbnail: 'https://via.placeholder.com/100',
     },
