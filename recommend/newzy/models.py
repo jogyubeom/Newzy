@@ -16,7 +16,7 @@ class Cluster(models.Model):
 
 
 class User(models.Model):
-    user_id = models.BigIntegerField(primary_key=True)
+    user_id = models.BigAutoField(primary_key=True)
     image_id = models.BigIntegerField(default=1)
     nickname = models.CharField(max_length=20, null=True, blank=True)
     email = models.CharField(max_length=100, null=True, blank=True)
@@ -28,7 +28,7 @@ class User(models.Model):
     society_score = models.PositiveSmallIntegerField(null=True, blank=True)
     international_score = models.PositiveSmallIntegerField(null=True, blank=True)
     state = models.PositiveSmallIntegerField(default=0)  # 기본, 탈퇴, 정지 상태
-    cluster_id = models.ForeignKey(Cluster, on_delete=models.SET_NULL, null=True, blank=True)  # Cluster 모델과의 관계 설정
+    cluster = models.ForeignKey(Cluster, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
