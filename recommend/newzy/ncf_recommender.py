@@ -8,13 +8,13 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 
 class NCFModel(torch.nn.Module):  # torch.nn.Module : PyTorch에서 모든 신경망 모델의 기본 클래스.
-    def __init__(self, num_users, max_news_id, embedding_size=50):
+    def __init__(self, num_users, num_news, embedding_size=50):
         super(NCFModel, self).__init__()
         logging.info(
-            f"NCFModel 초기화: num_users={num_users}, max_news_id={max_news_id}, embedding_size={embedding_size}")
+            f"NCFModel 초기화: num_users={num_users}, num_news={num_news}, embedding_size={embedding_size}")
 
         self.user_embedding = torch.nn.Embedding(num_users + 1, embedding_size)  # +1을 해서 범위 초과 방지
-        self.news_embedding = torch.nn.Embedding(max_news_id + 1, embedding_size)  # +1을 해서 범위 초과 방지
+        self.news_embedding = torch.nn.Embedding(num_news + 1, embedding_size)  # +1을 해서 범위 초과 방지
 
         self.fc1 = torch.nn.Linear(embedding_size * 2, 128)
         self.fc2 = torch.nn.Linear(128, 64)
@@ -26,14 +26,9 @@ class NCFModel(torch.nn.Module):  # torch.nn.Module : PyTorch에서 모든 신�
         user_embed = self.user_embedding(user_id)
         news_embed = self.news_embedding(news_id)
 
-        # news_id 텐서의 마지막 값을 가져옴
-        last_news_id = news_id[-1].item()
+        user_embed_expanded = user_embed.expand_as(news_embed)
 
-        # user_embed를 last_news_id 만큼 확장
-        user_embed_expanded = user_embed.repeat(last_news_id, 1)
-        news_embed_expanded = news_embed.repeat(last_news_id, 1)
-
-        x = torch.cat([user_embed_expanded, news_embed_expanded], dim=-1)
+        x = torch.cat([user_embed_expanded, news_embed], dim=-1)
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
         x = torch.sigmoid(self.fc3(x))
@@ -49,11 +44,11 @@ class NCFRecommender:
 
     def _load_model(self):
         # user의 개수와 최대 news_id를 사용
-        num_users = User.objects.filter(cluster_id=self.cluster_id).count()
-        max_news_id = News.objects.order_by('-news_id').first().news_id  # 최대 news_id를 가져옴
+        num_users = User.objects.count()
+        num_news = News.objects.count()
 
-        logging.info(f"모델 로드: num_users={num_users}, max_news_id={max_news_id}")
-        model = NCFModel(num_users, max_news_id)
+        logging.info(f"모델 로드: num_users={num_users}, num_news={num_news}")
+        model = NCFModel(num_users, num_news)
         return model
 
     def recommend(self, user_id):
