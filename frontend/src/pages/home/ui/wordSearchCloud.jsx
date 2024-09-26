@@ -5,7 +5,7 @@ const words = [
   { text: "감언이설", value: 50, category: 0 },
   { text: "액트지오", value: 40, category: 1 },
   { text: "상충", value: 30, category: 2 },
-  { text: "국정감사", value: 25, category: 3 },
+  { text: "대선", value: 25, category: 3 },
   { text: "시추", value: 20, category: 2 },
   { text: "유망 구조", value: 28, category: 2 },
   { text: "석유공사", value: 18, category: 1 },
@@ -58,8 +58,8 @@ export function WordSearchCloud() {
             className={`px-4 py-2 rounded-lg transition duration-300 
             ${
               category === cat.id
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-blue-500 hover:text-white"
+                ? "bg-gray-800 text-white"
+                : " text-gray-800 hover:text-white"
             }`}
             onClick={() => setCategory(cat.id)}
           >
