@@ -32,7 +32,8 @@ def crawl_news(driver,
         try:
             driver.set_page_load_timeout(10)
             driver.get(url)
-            WebDriverWait(driver, 5).until(lambda d: d.execute_script('return document.readyState') == 'complete')
+            WebDriverWait(driver, 5).until(
+                lambda d: d.execute_script('return document.readyState') == 'complete')
         except TimeoutException:
             logging.error(f"URL {url} 접속 시 타임아웃이 발생했습니다.")
             return False
@@ -102,14 +103,12 @@ def crawl_news(driver,
                     logging.warning(
                         f">>> {publisher} : 범위를 벗어난 기사가 발견되었습니다. 기사 작성 시간: {article_time}")
                     end_times[publisher] = time.time()
-                    # driver.quit()
                     return
         if page >= max_pages:
             logging.info(f">>> {publisher} : {max_pages}개의 페이지 조회가 완료되었습니다.")
             break
         page += 1
     end_times[publisher] = time.time()
-    # driver.quit()
 
 
 # '더보기'버튼으로 다음 페이지 넘어가는 크롤링 함수
@@ -129,7 +128,8 @@ def crawl_news_by_button(driver,
     try:
         driver.set_page_load_timeout(10)
         driver.get(url_template)
-        WebDriverWait(driver, 5).until(lambda d: d.execute_script('return document.readyState') == 'complete')
+        WebDriverWait(driver, 5).until(
+            lambda d: d.execute_script('return document.readyState') == 'complete')
     except TimeoutException:
         logging.error(f"URL {url_template} 접속 시 타임아웃이 발생했습니다.")
         return False
@@ -205,10 +205,8 @@ def crawl_news_by_button(driver,
                     logging.warning(
                         f">>> {publisher} : 범위를 벗어난 기사가 발견되었습니다. 기사 작성 시간: {article_time}")
                     end_times[publisher] = time.time()
-                    # driver.quit()
                     return
     end_times[publisher] = time.time()
-    # driver.quit()
 
 
 def crawl_news_detail(driver, url: str,
@@ -220,7 +218,8 @@ def crawl_news_detail(driver, url: str,
     try:
         driver.set_page_load_timeout(10)
         driver.get(url)
-        WebDriverWait(driver, 5).until(lambda d: d.execute_script('return document.readyState') == 'complete')
+        WebDriverWait(driver, 5).until(
+            lambda d: d.execute_script('return document.readyState') == 'complete')
     except TimeoutException:
         logging.error(f"URL {url} 접속 시 타임아웃이 발생했습니다.")
         return False

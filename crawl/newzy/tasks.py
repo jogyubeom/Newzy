@@ -7,15 +7,13 @@ from newzy.utils.international_crawler import newsis, segye, sbsbiz
 from newzy.utils.society_crawler import yna, ytn, channelA
 
 
-def economy(start_times, end_times, difficulty_distribution, start_date, end_date):
+def economy(driver, start_times, end_times, difficulty_distribution, start_date, end_date):
     logging.info(f"경제 카테고리 기사 크롤링 시작 - start_date: {start_date}, end_date: {end_date}")
 
     economy_article_count_by_hour = {f'{hour:02d}': 0 for hour in range(24)}
     economy_hankyung_news_link_list = []  # 1. 한국 경제
     economy_mk_news_link_list = []  # 2. 매일 경제
     economy_mt_news_link_list = []  # 3. 머니 투데이
-
-    driver = create_webdriver()
 
     hankyung(driver, economy_article_count_by_hour, economy_hankyung_news_link_list, start_times,
              end_times, difficulty_distribution, start_date, end_date)
@@ -24,20 +22,17 @@ def economy(start_times, end_times, difficulty_distribution, start_date, end_dat
     mt(driver, economy_article_count_by_hour, economy_mt_news_link_list, start_times, end_times,
        difficulty_distribution, start_date, end_date)
 
-    driver.quit()
 
     return
 
 
-def society(start_times, end_times, difficulty_distribution, start_date, end_date):
+def society(driver, start_times, end_times, difficulty_distribution, start_date, end_date):
     logging.info(f"사회 카테고리 기사 크롤링 시작 - start_date: {start_date}, end_date: {end_date}")
 
     society_article_count_by_hour = {f'{hour:02d}': 0 for hour in range(24)}
     society_yna_news_link_list = []  # 1. 연합 뉴스
     society_ytn_news_link_list = []  # 2. YTN
     society_channelA_news_link_list = []  # 3. 채널 A
-
-    driver = create_webdriver()
 
     yna(driver, society_article_count_by_hour, society_yna_news_link_list, start_times, end_times,
         difficulty_distribution, start_date, end_date)
@@ -46,20 +41,16 @@ def society(start_times, end_times, difficulty_distribution, start_date, end_dat
     channelA(driver, society_article_count_by_hour, society_channelA_news_link_list, start_times,
              end_times, difficulty_distribution, start_date, end_date)
 
-    driver.quit()
-
     return
 
 
-def international(start_times, end_times, difficulty_distribution, start_date, end_date):
+def international(driver, start_times, end_times, difficulty_distribution, start_date, end_date):
     logging.info(f"세계 카테고리 기사 크롤링 시작 - start_date: {start_date}, end_date: {end_date}")
 
     international_article_count_by_hour = {f'{hour:02d}': 0 for hour in range(24)}
     international_newsis_news_link_list = []  # 1. 뉴시스
     international_segye_news_link_list = []  # 2. 세계일보
     international_sbs_biz_news_link_list = []  # 3. SBS Biz
-
-    driver = create_webdriver()
 
     newsis(driver, international_article_count_by_hour, international_newsis_news_link_list,
            start_times, end_times,
@@ -71,8 +62,6 @@ def international(start_times, end_times, difficulty_distribution, start_date, e
            start_times, end_times,
            difficulty_distribution, start_date, end_date)
 
-    driver.quit()
-
     return
 
 
@@ -81,9 +70,16 @@ def run_crawl(start_date, end_date):
     end_times = {}
     difficulty_distribution = {}
 
-    economy(start_times, end_times, difficulty_distribution, start_date, end_date)
-    society(start_times, end_times, difficulty_distribution, start_date, end_date)
-    international(start_times, end_times, difficulty_distribution, start_date, end_date)
+    driver = create_webdriver()  # 드라이버를 한 번만 생성
+
+    try:
+        # 여러 메서드에서 같은 driver를 공유
+        economy(start_times, end_times, difficulty_distribution, start_date, end_date, driver)
+        society(start_times, end_times, difficulty_distribution, start_date, end_date, driver)
+        international(start_times, end_times, difficulty_distribution, start_date, end_date, driver)
+    finally:
+        # 모든 작업이 끝난 후에 드라이버 종료
+        driver.quit()
 
     # 각 프로세스의 시작과 종료 시간 출력 및 총 소요 시간 계산
     for process_name in start_times.keys():
