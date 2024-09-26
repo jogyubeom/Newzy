@@ -20,8 +20,8 @@ export const AppRouter = () => {
       <Route index element={<Home />} />
       <Route path="news" element={<NewsList />} />
       <Route path="newzy" element={<NewzyList />} />
-      <Route path="profile" element={<Profile />} />
       <Route path="edit" element={<NewzyEdit />} />
+      <Route path="profile" element={<Profile />} />
       <Route path="/newzy/:id" element={<NewzyDetail />} />
     </Route>
   );

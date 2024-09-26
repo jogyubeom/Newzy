@@ -10,8 +10,8 @@ export const Layout = () => {
         <Sidebar />
       </div>
       <div className="flex flex-col flex-grow ml-36 mr-32 mb-8 ">
-        <div className="fixed w-[calc(100%-272px)] z-40 bg-purple-200">
-          <div className="mt-12 flex-grow rounded-t-3xl bg-gray-100 ">
+        <div className="fixed w-full z-40 bg-purple-200">
+          <div className="w-[calc(100%-272px)] mt-12 flex-grow rounded-t-3xl bg-gray-100 ">
             <Header />
           </div>
         </div>

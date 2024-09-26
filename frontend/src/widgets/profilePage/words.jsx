@@ -72,10 +72,10 @@ const Words = () => {
   return (
     <>
       <div className="flex justify-end gap-10 items-center py-5 px-10">
-        <select className="w-[125px] h-[36px] font-['Open_Sans'] text-[24px] font-semibold leading-[24px] tracking-[-0.04em] text-[#91929F] flex items-center shadow-sm border-none focus:outline-none text-end">
-          <option className="text-center" value={"latest"}>최신 순</option>
-          <option className="text-center" value={"oldest"}>오래된 순</option>
-        </select>
+      <select className="w-[150px] h-[60px] font-['Open_Sans'] text-[20px] font-semibold leading-[24px] tracking-[-0.04em] text-[#91929F] flex items-center border-none focus:outline-none text-center rounded-[45px] bg-[#F4F4F4] hover:bg-[#EAEAEA] shadow-md transition-colors duration-300">
+        <option className="text-center" value={"latest"}>최신 순</option>
+        <option className="text-center" value={"oldest"}>오래된 순</option>
+      </select>
         <button
           onClick={openModal}
           className="w-[234px] h-[60px] rounded-[45px] font-['Open_Sans'] bg-[#BF2EF0] hover:bg-[#A229CC] opacity-100 text-white text-[28px] font-semibold transition-colors duration-300 shadow-md"

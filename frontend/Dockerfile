@@ -5,7 +5,7 @@ WORKDIR /app
 
 # 의존성 설치
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # .env 파일 복사(필요하다면)
 # COPY .env .env
