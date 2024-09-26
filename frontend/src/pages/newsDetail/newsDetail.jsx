@@ -1,3 +1,3 @@
-export const NewsDatail = () => {
+export const NewsDetail = () => {
   return <div></div>;
 };
