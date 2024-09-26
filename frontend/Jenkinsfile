@@ -53,7 +53,7 @@ pipeline {
         stage('Build with npm') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
+                    sh 'npm install --legacy-peer-deps'
                     sh 'CI=false npm run build'  // CI 환경 변수를 false로 설정
                 }
             }
