@@ -8,6 +8,7 @@ def newsis(driver, international_article_count_by_hour, international_newsis_new
            start_times, end_times, difficulty_distribution,
            start_date, end_date
            ):
+    logging.info(f"뉴시스: {start_date} - {end_date}")
     url_set = set()
     crawl_news(
         driver=driver,
@@ -59,6 +60,7 @@ def segye(driver, international_article_count_by_hour, international_segye_news_
           start_times, end_times, difficulty_distribution,
           start_date, end_date
           ):
+    logging.info(f"세계 일보: {start_date} - {end_date}")
     url_set = set()
     crawl_news(
         driver=driver,
@@ -110,6 +112,7 @@ def sbsbiz(driver, international_article_count_by_hour, international_sbs_biz_ne
            start_times, end_times, difficulty_distribution,
            start_date, end_date
            ):
+    logging.info(f"SBS BIZ: {start_date} - {end_date}")
     url_set = set()
     crawl_news_by_button(
         driver=driver,

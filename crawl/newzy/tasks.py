@@ -23,6 +23,9 @@ def economy(start_times, end_times, difficulty_distribution, start_date, end_dat
        difficulty_distribution, start_date, end_date)
     mt(driver, economy_article_count_by_hour, economy_mt_news_link_list, start_times, end_times,
        difficulty_distribution, start_date, end_date)
+
+    driver.quit()
+
     return
 
 
@@ -42,6 +45,9 @@ def society(start_times, end_times, difficulty_distribution, start_date, end_dat
         difficulty_distribution, start_date, end_date)
     channelA(driver, society_article_count_by_hour, society_channelA_news_link_list, start_times,
              end_times, difficulty_distribution, start_date, end_date)
+
+    driver.quit()
+
     return
 
 
@@ -64,6 +70,9 @@ def international(start_times, end_times, difficulty_distribution, start_date, e
     sbsbiz(driver, international_article_count_by_hour, international_sbs_biz_news_link_list,
            start_times, end_times,
            difficulty_distribution, start_date, end_date)
+
+    driver.quit()
+
     return
 
 

@@ -8,6 +8,7 @@ def hankyung(driver, economy_article_count_by_hour, economy_hankyung_news_link_l
              start_times, end_times, difficulty_distribution,
              start_date, end_date
              ):
+    logging.info(f"한국 경제: {start_date} - {end_date}")
     url_set = set()
     crawl_news(
         driver=driver,
@@ -60,6 +61,7 @@ def mk(driver, economy_article_count_by_hour, economy_mk_news_link_list,
        start_times, end_times, difficulty_distribution,
        start_date, end_date
        ):
+    logging.info(f"매일 경제: {start_date} - {end_date}")
     url_set = set()
     crawl_news_by_button(
         driver=driver,
@@ -113,6 +115,7 @@ def mt(driver, economy_article_count_by_hour, economy_mt_news_link_list,
        start_times, end_times, difficulty_distribution,
        start_date, end_date
        ):
+    logging.info(f"머니 투데이: {start_date} - {end_date}")
     url_set = set()
     crawl_news(
         driver=driver,
