@@ -80,7 +80,7 @@ def mk(driver, economy_article_count_by_hour, economy_mk_news_link_list,
         title_selector="news_ttl",
         link_selector='a.news_item',
         link_prefix='',
-        max_pages=20,
+        max_pages=10,
         article_count_by_hour=economy_article_count_by_hour,
         news_link_list=economy_mk_news_link_list,
         button_selector='//*[@id="container"]/section/div[2]/div/div/div[1]/section[2]/div/div/div/button'

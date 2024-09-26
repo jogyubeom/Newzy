@@ -131,7 +131,7 @@ def sbsbiz(driver, international_article_count_by_hour, international_sbs_biz_ne
         title_selector='md_alc_title',
         link_selector='a.md_al_cont',
         link_prefix='',
-        max_pages=20,
+        max_pages=10,
         article_count_by_hour=international_article_count_by_hour,
         news_link_list=international_sbs_biz_news_link_list,
         button_selector="//button[@id='cnbc-front-articleListContent-more']"

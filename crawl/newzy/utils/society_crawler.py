@@ -137,7 +137,7 @@ def channelA(driver, society_article_count_by_hour, society_channelA_news_link_l
         title_selector="title",
         link_selector='a.btn_movie_detail',
         link_prefix='https://www.ichannela.com',
-        max_pages=20,
+        max_pages=10,
         article_count_by_hour=society_article_count_by_hour,
         news_link_list=society_channelA_news_link_list,
         button_selector='//*[@id="wrapper"]/section[2]/div/div[4]/div/button'
