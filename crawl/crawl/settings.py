@@ -16,15 +16,16 @@ from decouple import config
 
 # mysqlclient 설치 시 오류 발생 -> pymysql 통해 db 연결
 import pymysql
+
 pymysql.install_as_MySQLdb()
 
 import logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
+
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
+#                     datefmt='%Y-%m-%d %H:%M:%S')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -36,7 +37,6 @@ SECRET_KEY = 'django-insecure-wj+tco2s5%fc*k&fufue@axvjixdhs_uqlkph*^&eq$icgb_#4
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -85,7 +85,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'crawl.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -108,7 +107,6 @@ DATABASES = {
     }
 }
 
-# TODO 서버에서 어떻게 하는지 조사
 # konlpy와 관련된 JAVA_HOME 설정
 JAVA_HOME = config('JAVA_HOME')
 os.environ["JAVA_HOME"] = JAVA_HOME
@@ -132,7 +130,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -145,7 +142,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -196,7 +192,12 @@ LOGGING = {
         'apscheduler': {  # 스케줄러 로그도 처리
             'handlers': ['file', 'console'],
             'level': 'INFO',
-            'propagate': True,
+            'propagate': False,
         },
+        'my_logger': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        }
     },
 }

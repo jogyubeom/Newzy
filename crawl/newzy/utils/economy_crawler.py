@@ -3,6 +3,8 @@ import random
 
 from newzy.utils.crawler import crawl_news, crawl_news_detail, crawl_news_by_button
 
+logging = logging.getLogger('my_logger')
+
 
 def hankyung(driver, economy_article_count_by_hour, economy_hankyung_news_link_list,
              start_times, end_times, difficulty_distribution,

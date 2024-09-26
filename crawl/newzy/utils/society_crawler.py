@@ -3,12 +3,13 @@ import random
 
 from newzy.utils.crawler import crawl_news, crawl_news_detail, crawl_news_by_button
 
+logging = logging.getLogger('my_logger')
+
 
 def yna(driver, society_article_count_by_hour, society_yna_news_link_list,
         start_times, end_times, difficulty_distribution,
         start_date, end_date
         ):
-
     logging.info(f"연합뉴스: {start_date} - {end_date}")
     url_set = set()
     crawl_news(

@@ -3,6 +3,8 @@ import random
 
 from newzy.utils.crawler import crawl_news, crawl_news_detail, crawl_news_by_button
 
+logging = logging.getLogger('my_logger')
+
 
 def newsis(driver, international_article_count_by_hour, international_newsis_news_link_list,
            start_times, end_times, difficulty_distribution,

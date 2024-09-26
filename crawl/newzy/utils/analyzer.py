@@ -6,6 +6,7 @@ from newzy.models import GeneralWord
 from newzy.utils.parser import extract_text_from_html
 
 
+logging = logging.getLogger('my_logger')
 def get_tokens_from_content(text):
     okt = get_okt()
     return okt.nouns(text)
