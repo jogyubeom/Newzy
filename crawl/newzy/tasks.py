@@ -72,7 +72,7 @@ def international(driver, start_times, end_times, difficulty_distribution, start
 def kill_driver_processes():
     # 현재 프로세스의 PID를 구함 (run_crawl의 프로세스 ID)
     current_pid = os.getpid()
-
+    logging.info(f"현재 프로세스 pid: {current_pid}")
     # 현재 프로세스에서 실행 중인 모든 하위 프로세스를 검색
     for proc in psutil.process_iter(['pid', 'name', 'ppid']):
         try:
