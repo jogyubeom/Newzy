@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+
 from newzy.db_operations import insert_news_to_db
 from newzy.utils.analyzer import analyze_difficulty_of_news
 from newzy.utils.parser import parse_relative_time, extract_times
@@ -30,11 +30,11 @@ def crawl_news(driver,
     while True:
         url = url_template.format(page=page)
         try:
+            driver.set_page_load_timeout(10)
             driver.get(url)
-            # 5초 동안 페이지 로드 대기, 5초 지나도 응답이 없으면 TimeoutException 발생
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+            WebDriverWait(driver, 5).until(lambda d: d.execute_script('return document.readyState') == 'complete')
         except TimeoutException:
-            logging.error(f"URL {url} 접속 시 5초 이내 응답이 없어 타임아웃이 발생했습니다.")
+            logging.error(f"URL {url} 접속 시 타임아웃이 발생했습니다.")
             return False
         except Exception as e:
             logging.error(f"URL 접속할 때 오류가 발생하였습니다. {e}")
@@ -97,8 +97,6 @@ def crawl_news(driver,
 
                         # 이미지 링크가 있든 없든 한 번만 리스트에 추가
                         news_link_list.append([full_link, img_link])
-                    else:
-                        logging.error(f">>> {publisher} : 원문 링크를 찾을 수 없습니다.")
 
                 else:
                     logging.warning(
@@ -129,11 +127,11 @@ def crawl_news_by_button(driver,
     start_times[publisher] = time.time()
 
     try:
+        driver.set_page_load_timeout(10)
         driver.get(url_template)
-        # 5초 동안 페이지 로드 대기, 5초 지나도 응답이 없으면 TimeoutException 발생
-        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+        WebDriverWait(driver, 5).until(lambda d: d.execute_script('return document.readyState') == 'complete')
     except TimeoutException:
-        logging.error(f"URL {url_template} 접속 시 5초 이내 응답이 없어 타임아웃이 발생했습니다.")
+        logging.error(f"URL {url_template} 접속 시 타임아웃이 발생했습니다.")
         return False
     except Exception as e:
         logging.error(f"URL 접속할 때 오류가 발생하였습니다. {e}")
@@ -190,7 +188,6 @@ def crawl_news_by_button(driver,
                         full_link = link_prefix + link_tag['href']
 
                         if full_link in url_set:
-                            logging.error(f">>> {full_link} : 이미 추가된 URL 입니다.")
                             continue
 
                         url_set.add(full_link)
@@ -204,8 +201,6 @@ def crawl_news_by_button(driver,
                                 img_link = img_src  # 실제 이미지 링크만 추가
 
                         news_link_list.append([full_link, img_link])
-                    else:
-                        logging.error(f">>> {publisher} : 원문 링크를 찾을 수 없습니다.")
                 else:
                     logging.warning(
                         f">>> {publisher} : 범위를 벗어난 기사가 발견되었습니다. 기사 작성 시간: {article_time}")
@@ -223,11 +218,11 @@ def crawl_news_detail(driver, url: str,
                       title_type: str, title_selector: str,
                       content_type: str, content_selector: str):
     try:
+        driver.set_page_load_timeout(10)
         driver.get(url)
-        # 5초 동안 페이지 로드 대기, 5초 지나도 응답이 없으면 TimeoutException 발생
-        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+        WebDriverWait(driver, 5).until(lambda d: d.execute_script('return document.readyState') == 'complete')
     except TimeoutException:
-        logging.error(f"URL {url} 접속 시 5초 이내 응답이 없어 타임아웃이 발생했습니다.")
+        logging.error(f"URL {url} 접속 시 타임아웃이 발생했습니다.")
         return False
     except Exception as e:
         logging.error(f"URL 접속할 때 오류가 발생하였습니다. {e}")

@@ -9,43 +9,49 @@ from django_apscheduler.jobstores import DjangoJobStore
 
 from newzy.tasks import run_crawl
 
-times = [0, 4, 8, 10, 12, 14, 16, 18, 20]
+# Define constants for clarity
+TIME_ZONES = 'Asia/Seoul'
+BATCH_TIMES = [0, 4, 8, 10, 12, 14, 16, 18, 20]
 
 
 def start_scheduler():
-    if os.environ.get('RUN_MAIN') != 'true':  # Django의 더블 실행 방지
+    if os.environ.get('RUN_MAIN') != 'true':  # Prevent Django double execution
         scheduler = BackgroundScheduler()
         scheduler.add_jobstore(DjangoJobStore(), "default")
 
-        # 시간에 맞춰 작업을 예약
-        for time in times:
-            scheduler.add_job(schedule_batch_task, 'cron', hour=time, minute=0)
+        # Register tasks if not already added
+        for time in BATCH_TIMES:
+            job_id = f"batch_task_{time}"
+            if not scheduler.get_job(job_id):  # Check if job exists
+                scheduler.add_job(schedule_batch_task, 'cron', hour=time, minute=0, id=job_id,
+                                  replace_existing=True)
 
         # TEST
-        # scheduler.add_job(schedule_batch_task, 'cron', hour=17, minute=4)
+        # job_id_test = "test_task_15_24"
+        # if not scheduler.get_job(job_id_test):
+        #     scheduler.add_job(schedule_batch_task, 'cron', hour=15, minute=24, id=job_id_test,
+        #                       replace_existing=True)
+
         scheduler.start()
 
 
 def schedule_batch_task():
-    seoul_tz = pytz.timezone('Asia/Seoul')
+    seoul_tz = pytz.timezone(TIME_ZONES)
     now = timezone.localtime(datetime.now(seoul_tz))
 
-    # end_date는 현재 시간 (배치가 실행되는 순간)
-    end_date = now.replace(minute=00, second=0, microsecond=0)
+    # Set end_date as the current time when the batch runs
+    end_date = now.replace(minute=0, second=0, microsecond=0)
 
-    # 현재 end_date가 times 리스트에서 몇 번째 인덱스인지 찾음
-    end_index = times.index(end_date.hour)
+    # Find the index of end_date in BATCH_TIMES
+    end_index = BATCH_TIMES.index(end_date.hour)
 
-    # start_date는 end_index의 이전 값, 만약 end_index가 0이면 전날 20시로 설정
+    # Set start_date based on the previous time in BATCH_TIMES or previous day's 20:00
     if end_index == 0:
         start_date = (end_date - timedelta(days=1)).replace(hour=20)
     else:
-        start_date = end_date.replace(hour=times[end_index - 1])
+        start_date = end_date.replace(hour=BATCH_TIMES[end_index - 1])
 
-    # TEST
-    # start_date = (end_date - timedelta(days=1)).replace(hour=16)
-    # start_date = end_date.replace(hour=13)
-    
+    # start_date = end_date.replace(hour=13, minute=0, second=0, microsecond=0)
     logging.info(
         f"########### Batch task started. Start date: {start_date}, End date: {end_date} ###########")
 

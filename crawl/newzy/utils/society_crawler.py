@@ -8,6 +8,8 @@ def yna(driver, society_article_count_by_hour, society_yna_news_link_list,
         start_times, end_times, difficulty_distribution,
         start_date, end_date
         ):
+
+    logging.info(f"연합뉴스: {start_date} - {end_date}")
     url_set = set()
     crawl_news(
         driver=driver,
@@ -61,6 +63,7 @@ def ytn(driver, society_article_count_by_hour, society_ytn_news_link_list,
         start_times, end_times, difficulty_distribution,
         start_date, end_date
         ):
+    logging.info(f"YTN: {start_date} - {end_date}")
     url_set = set()
     crawl_news_by_button(
         driver=driver,
@@ -115,6 +118,7 @@ def channelA(driver, society_article_count_by_hour, society_channelA_news_link_l
              start_times, end_times, difficulty_distribution,
              start_date, end_date
              ):
+    logging.info(f"채널 A: {start_date} - {end_date}")
     url_set = set()
     crawl_news_by_button(
         driver=driver,
@@ -133,7 +137,7 @@ def channelA(driver, society_article_count_by_hour, society_channelA_news_link_l
         title_selector="title",
         link_selector='a.btn_movie_detail',
         link_prefix='https://www.ichannela.com',
-        max_pages=20,
+        max_pages=10,
         article_count_by_hour=society_article_count_by_hour,
         news_link_list=society_channelA_news_link_list,
         button_selector='//*[@id="wrapper"]/section[2]/div/div[4]/div/button'
