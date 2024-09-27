@@ -30,9 +30,8 @@ public class Newzy extends BaseTimeEntity {
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "category")
-    private Category category;
+    private int category;
 
     @Column(name = "is_updated")
     private boolean isUpdated = Boolean.FALSE;

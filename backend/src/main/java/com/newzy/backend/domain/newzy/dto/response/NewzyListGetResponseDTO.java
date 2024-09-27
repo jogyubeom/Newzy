@@ -6,17 +6,16 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Getter @Setter
 @Builder
 @ToString
-public class NewzyListResponseDto {
+public class NewzyListGetResponseDTO {
+
     private Long newzyId;
     private String title;
     private String content;
-    private Integer category;
+    private int category;
+    private int likeCnt;
+    private int visitCnt;
     private LocalDateTime createdAt;
-    private Integer likeCnt;
-    private Integer visitCnt;
-
 }

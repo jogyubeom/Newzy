@@ -1,12 +1,8 @@
 package com.newzy.backend.domain.news.repository;
 
 import com.newzy.backend.domain.news.entity.News;
+import com.newzy.backend.domain.news.entity.NewsBookmark;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface NewsRepository extends JpaRepository<News, Long> {
-
-
+public interface NewsBookmarkRepository extends JpaRepository<NewsBookmark, Long> {
 }
-

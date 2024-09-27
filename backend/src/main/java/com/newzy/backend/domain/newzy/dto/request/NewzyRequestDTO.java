@@ -1,6 +1,5 @@
 package com.newzy.backend.domain.newzy.dto.request;
 
-import com.newzy.backend.domain.newzy.entity.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -22,7 +21,7 @@ public class NewzyRequestDTO {
 
     @NotNull(message = "카테고리를 입력해주세요!")
     @Schema(description = "뉴지 카테고리", example = "category")
-    private Category category;
+    private int category;
 
     // 유저 정보 추후 추가하기
 

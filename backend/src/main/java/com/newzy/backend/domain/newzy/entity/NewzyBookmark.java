@@ -5,27 +5,25 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity(name = "newzyBookmark")
-@Getter
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "newzy_bookmark")
-public class Bookmark extends BaseTimeEntity {
+public class NewzyBookmark extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "newzy_bookmark_id", unique = true, nullable = false)
     private Long newzyBookMarkId;
 
-    // user가 지워지면, 해당 Bookmark 레코드도 사라질 수 있도록 하기 위해 외래키 제약조건 CASCADE
-    @ManyToOne
-    @JoinColumn(name = "newzy_id")
+    @Column(name = "newzy_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Newzy newzy;
+    private Long newzyId;
 
 //    @ManyToOne
 //    @JoinColumn(name = "user_id")
@@ -33,7 +31,5 @@ public class Bookmark extends BaseTimeEntity {
 //    private User user;
 
     // hard delete
-    @Column
-    private boolean isDeleted = Boolean.FALSE;
 
 }

@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.newzy.controller;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyCommentRequestDTO;
+import com.newzy.backend.domain.newzy.dto.response.NewzyCommentListGetResponseDto;
 import com.newzy.backend.domain.newzy.dto.response.NewzyCommentResponseDTO;
 import com.newzy.backend.domain.newzy.service.NewzyCommentServiceImpl;
 import com.newzy.backend.global.model.BaseResponseBody;
@@ -19,10 +20,23 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/newzy/{newzyId}/newzyComments")
+@RequestMapping("/newzy/{newzyId}/comments")
 public class NewzyCommentController {
 
      private final NewzyCommentServiceImpl newzyCommentServiceImpl;
+
+     @GetMapping
+     @Operation(summary = "", description = "")
+     public ResponseEntity<List<NewzyCommentListGetResponseDto>> getNewzyCommentList(
+             @PathVariable("newzyId") Long newzyId,
+             @Parameter(description = "페이지 번호")
+             @RequestParam(value = "page", required = false, defaultValue = "0") int page
+     ){
+         log.info(">>> [GET] /newzyCommentController getNewzyCommentList - 요청 파라미터: newzyId - {}, page - {}", newzyId, page);
+         List<NewzyCommentListGetResponseDto> commentList = newzyCommentServiceImpl.getNewzyCommentList(newzyId, page);
+
+         return ResponseEntity.status(200).body(commentList);
+     }
 
     @PostMapping
     @Operation(summary = "뉴지 댓글 추가", description = "새로운 뉴지 댓글을 등록합니다.")
@@ -34,20 +48,6 @@ public class NewzyCommentController {
         newzyCommentServiceImpl.saveComment(newzyId, dto);
 
         return ResponseEntity.status(201).body(BaseResponseBody.of(201, "뉴지 댓글 등록이 완료되었습니다."));
-    }
-
-    @GetMapping
-    @Operation(summary = "해당 뉴지 댓글 조회", description = "해당 뉴지의 모든 댓글을 조회합니다.")
-    public ResponseEntity<Page<NewzyCommentResponseDTO>> getAllNewzyComments(
-            @PathVariable Long newzyId,
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") int size
-    ) {
-        log.info(">> [GET] /newzyCommentController - 요청파라미터: newzyId - {}, page - {}, size - {}", newzyId, page, size);
-
-        Page<NewzyCommentResponseDTO> newzyCommentList = newzyCommentServiceImpl.getNewzyCommentListByNewzyId(newzyId, page, size);
-
-        return ResponseEntity.status(200).body(newzyCommentList);
     }
 
     @PatchMapping(value = "/{newzyCommentId}")

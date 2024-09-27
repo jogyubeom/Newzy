@@ -1,10 +1,12 @@
 package com.newzy.backend.domain.newzy.service;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyCommentRequestDTO;
+import com.newzy.backend.domain.newzy.dto.response.NewzyCommentListGetResponseDto;
 import com.newzy.backend.domain.newzy.dto.response.NewzyCommentResponseDTO;
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.newzy.entity.NewzyComment;
 import com.newzy.backend.domain.newzy.repository.NewzyCommentRepository;
+import com.newzy.backend.domain.newzy.repository.NewzyCommentRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -27,31 +29,20 @@ import java.util.List;
 public class NewzyCommentServiceImpl implements NewzyCommentService {
 
     private final NewzyCommentRepository newzyCommentRepository;
+    private final NewzyCommentRepositorySupport newzyCommentRepositorySupport;
     private final NewzyRepository newzyRepository;
 
     @Override
-    @Transactional(readOnly = true)
-    public Page<NewzyCommentResponseDTO> getNewzyCommentListByNewzyId(Long newzyId, int page, int size) {
-        log.info(">>> newzyCommentServiceImpl getNewzyCommentList - newzyId: {}, page: {}, size: {}", newzyId, page, size);
+    public List<NewzyCommentListGetResponseDto> getNewzyCommentList(Long newzyId, int page) {
+        log.info(">>> newzyCommentServiceImpl getNewzyCommentList - newzyId: {}, page: {}", newzyId, page);
+        int size = 10;
+        List<NewzyCommentListGetResponseDto> commentList = newzyCommentRepositorySupport.findCommentList(page, size, newzyId);
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<NewzyComment> newzyCommentPage = newzyCommentRepository.findAllByNewzy_NewzyIdAndIsDeletedFalse(newzyId, pageable);
-
-        // 새로운 List를 생성하여 isDeleted가 false인 항목들만 필터링
-        List<NewzyCommentResponseDTO> filteredComments = new ArrayList<>();
-
-        for (NewzyComment newzyComment : newzyCommentPage.getContent()) {  // getContent()로 리스트 변환
-            if (!newzyComment.getIsDeleted()) {  // isDeleted 필터링
-                NewzyCommentResponseDTO responseDTO = NewzyCommentResponseDTO.convertToDTO(newzyComment);
-                filteredComments.add(responseDTO);
-            }
+        if (commentList.isEmpty()) {
+            throw new IllegalStateException("일치하는 댓글 데이터를 조회할 수 없습니다.");
         }
-
-        // 필터링한 리스트를 Page로 다시 변환
-        return new PageImpl<>(filteredComments, pageable, newzyCommentPage.getTotalElements());
+        return commentList;
     }
-
-    
 
     @Override
     public void saveComment(Long newzyId, NewzyCommentRequestDTO dto){
@@ -75,5 +66,6 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
     public void deleteComment(Long newzyCommentId) {
         newzyCommentRepository.deleteNewzyCommentById(newzyCommentId);
     }
+
 
 }

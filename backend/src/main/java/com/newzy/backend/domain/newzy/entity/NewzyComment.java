@@ -45,8 +45,7 @@
         private String newzyComment;
 
         @Column(name = "is_updated")
-        private
-        Boolean isUpdated = false;
+        private Boolean isUpdated = false;
 
         @Column(name = "is_deleted")
         private Boolean isDeleted = false;

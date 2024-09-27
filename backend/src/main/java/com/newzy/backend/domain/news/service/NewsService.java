@@ -8,4 +8,11 @@ import java.util.List;
 public interface NewsService {
     List<NewsListGetResponseDto> getNewsList(int page, int category);
     NewsDetailGetResponseDto getNewsDetail(Long NewsId);
+    void bookmark(Long newsId);
+    void deleteBookmark(Long bookmarkId);
+
+    void likeNews(Long newsId);
+    void deleteLike(Long newsLikeId);
+
+
 }
