@@ -30,9 +30,9 @@ def crawl_news(driver,
     while True:
         url = url_template.format(page=page)
         try:
-            driver.set_page_load_timeout(10)
+            driver.set_page_load_timeout(20)
             driver.get(url)
-            WebDriverWait(driver, 5).until(
+            WebDriverWait(driver, 10).until(
                 lambda d: d.execute_script('return document.readyState') == 'complete')
         except TimeoutException:
             logging.error(f"URL {url} 접속 시 타임아웃이 발생했습니다.")
@@ -126,9 +126,9 @@ def crawl_news_by_button(driver,
     start_times[publisher] = time.time()
 
     try:
-        driver.set_page_load_timeout(10)
+        driver.set_page_load_timeout(20)
         driver.get(url_template)
-        WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 10).until(
             lambda d: d.execute_script('return document.readyState') == 'complete')
     except TimeoutException:
         logging.error(f"URL {url_template} 접속 시 타임아웃이 발생했습니다.")
@@ -216,9 +216,9 @@ def crawl_news_detail(driver, url: str,
                       title_type: str, title_selector: str,
                       content_type: str, content_selector: str):
     try:
-        driver.set_page_load_timeout(10)
+        driver.set_page_load_timeout(20)
         driver.get(url)
-        WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 10).until(
             lambda d: d.execute_script('return document.readyState') == 'complete')
     except TimeoutException:
         logging.error(f"URL {url} 접속 시 타임아웃이 발생했습니다.")

@@ -172,7 +172,7 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'crawl.log'),
             'formatter': 'verbose',  # verbose 형식으로 출력
@@ -185,19 +185,20 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,
         },
         'apscheduler': {  # 스케줄러 로그도 처리
-            'handlers': ['file', 'console'],
             'level': 'INFO',
-            'propagate': False,
+            'propagate': True,
         },
         'my_logger': {
-            'handlers': ['file', 'console'],
             'level': 'INFO',
-            'propagate': False,
+            'propagate': True,
         }
     },
+    'root': {
+        'handlers': ['file', 'console'],
+        'level': 'INFO',
+    }
 }
