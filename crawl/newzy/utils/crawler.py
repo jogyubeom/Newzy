@@ -229,12 +229,16 @@ def crawl_news_detail(driver, url: str,
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
+    # 제목 추출
     if publisher == '세계 일보':
         title_tag = soup.find(title_type, id=title_selector)
     else:
         title_tag = soup.find(title_type, class_=title_selector)
+
     if title_tag:
         title = title_tag.get_text(strip=True)
+
+    # 등록 및 수정 시간 추출
     if publisher == '한국 경제':
         register_time, update_time = extract_times(soup, 'datetime')
     elif publisher == '매일 경제':
@@ -256,11 +260,11 @@ def crawl_news_detail(driver, url: str,
     else:
         register_time = update_time = None  # 정의되지 않은 경우 None 처리
 
+    # 본문 추출
     if content_selector:  # selector가 있을 때
         content = soup.find(content_type, class_=content_selector)
     else:  # selector가 없을 때
         content = soup.find(content_type)  # content_type만으로 찾기
-
     if not content:
         logging.error(f">>> {url} : 본문이 없습니다.")
         return False  # 실패 반환

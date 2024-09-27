@@ -101,8 +101,10 @@ def extract_times(soup, structure_type):
             created_at = updated_at = None
 
         # 시간 파싱
-        created_at = parse_relative_time(created_at)
-        updated_at = parse_relative_time(updated_at)
+        if created_at:
+            created_at = parse_relative_time(created_at)
+        if updated_at:
+            updated_at = parse_relative_time(updated_at)
 
         # 하나가 None일 경우, 다른 값을 동일하게 설정
         if created_at and not updated_at:

@@ -81,8 +81,9 @@ def kill_driver_processes():
             if (proc.info['ppid'] == current_pid) and (
                     'chromedriver' in proc.info['name'] or 'chrome' in proc.info['name']):
                 proc.kill()
-                print(f"Killed process {proc.info['name']} with PID {proc.info['pid']}")
+                logging.info(f"Killed process {proc.info['name']} with PID {proc.info['pid']}")
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            logging.info(f"PASS - PID: {proc.info['pid']}, process name: {proc.info['name']}")
             pass
 
 
@@ -100,6 +101,7 @@ def run_crawl(start_date, end_date):
         international(driver, start_times, end_times, difficulty_distribution, start_date, end_date)
     finally:
         # 모든 작업이 끝난 후에 드라이버 종료
+        driver.close()
         driver.quit()
         kill_driver_processes()
 
@@ -122,33 +124,3 @@ def run_crawl(start_date, end_date):
         else:
             logging.warning(f"{process_name} 종료 시간을 기록하지 못했습니다.")
             logging.info("-" * 40)  # 구분선 추가
-
-# TODO [강윤서] Multiprocessing
-# multiprocessing.set_start_method('fork')
-#
-# # Manager 객체를 사용하여 프로세스 간 공유 변수를 생성
-# with multiprocessing.Manager() as manager:
-#     start_times = manager.dict()
-#     end_times = manager.dict()
-#     difficulty_distribution = manager.dict()
-
-#     start_date = datetime(2024, 9, 21, 0, 0)
-#     end_date = datetime.now()
-#
-#     process1 = multiprocessing.Process(target=economy, args=(
-#         start_times, end_times, difficulty_distribution, start_date, end_date))
-#     process2 = multiprocessing.Process(target=society, args=(
-#         start_times, end_times, difficulty_distribution, start_date, end_date))
-#     process3 = multiprocessing.Process(target=international, args=(
-#         start_times, end_times, difficulty_distribution, start_date, end_date))
-#
-#     # 프로세스 시작
-#     process1.start()
-#     process2.start()
-#     process3.start()
-#
-#     # 프로세스 종료 대기
-#     process1.join()
-#     process2.join()
-#     process3.join()
-#
