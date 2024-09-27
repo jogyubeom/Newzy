@@ -4,7 +4,11 @@ export const Footer = () => {
       <div className="container mx-auto flex flex-col md:flex-row justify-between space-y-8 md:space-y-0">
         {/* 회사 정보 */}
         <div>
-          <h3 className="text-lg font-bold">Newzy</h3>
+          <h3 className="text-2xl font-bold">
+            <a href="/" className="hover:text-gray-400">
+              Newzy
+            </a>
+          </h3>
           <p>© 2024 Newzy. All rights reserved.</p>
           <p>삼성 청년 SW 아카데미</p>
           <p>대전광역시 유성구 덕명동 124, 삼성화재 유성연수원</p>
