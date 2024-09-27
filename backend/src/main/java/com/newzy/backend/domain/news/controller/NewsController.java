@@ -42,6 +42,7 @@ public class NewsController {
             @Parameter(description = "카테고리")
             @RequestParam(value = "category", required = false, defaultValue = "3") int category) {
         log.info(">>> [GET] /news - 요청 파라미터: page - {}, category - {}", page, category);
+
         List<NewsListGetResponseDto> newsListGetResponseDtoList = newsServiceImpl.getNewsList(page, category);
         return ResponseEntity.status(200).body(newsListGetResponseDtoList);
     }

@@ -38,25 +38,11 @@ public class NewzyController {
             @Parameter(description = "페이지 번호")
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @Parameter(description = "category (0: 시사, 1: 문화, 2: 자유)")
-            @RequestParam(value = "category", required = false, defaultValue = "자유") String category
+            @RequestParam(value = "category", required = false, defaultValue = "3") int category
     ){
         log.info(">>> [GET] /newzyController getNewzyList - 요청 파라미터: page - {}, category - {}", page, category);
 
-        int categoryInt;
-        switch (category) {
-            case "시사":
-                categoryInt = 0;
-                break;
-            case "문화":
-                categoryInt = 1;
-                break;
-            case "자유":
-                categoryInt = 2;
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid category: " + category);
-        }
-        List<NewzyListGetResponseDTO> newzyList = newzyServiceImpl.getNewzyList(page, categoryInt);
+        List<NewzyListGetResponseDTO> newzyList = newzyServiceImpl.getNewzyList(page, category);
 
         return ResponseEntity.status(200).body(newzyList);
     }
