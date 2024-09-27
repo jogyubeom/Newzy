@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { RiHomeLine as Home, RiHomeFill as HomeChecked } from "react-icons/ri";
 import {
   RiFileCopy2Line as News,
@@ -36,18 +36,15 @@ const menuItems = [
 ];
 
 export const Sidebar = () => {
-  const location = useLocation(); // 현재 위치
-
   return (
     <div className="flex flex-col h-full text-white justify-center items-center">
-      {menuItems.map((item, index) => {
-        const isActive = location.pathname === item.path;
-        return (
-          <Link
-            key={index}
-            to={item.path}
-            className={"flex items-center justify-center mb-4 rounded-full"}
-          >
+      {menuItems.map((item, index) => (
+        <NavLink
+          key={index}
+          to={item.path}
+          className="flex items-center justify-center mb-4 rounded-full"
+        >
+          {({ isActive }) => (
             <div
               className={`flex items-center justify-center w-12 h-12 rounded-full cursor-pointer hover:bg-purple-600 ${
                 isActive ? "bg-purple-600" : "bg-purple-400"
@@ -55,9 +52,9 @@ export const Sidebar = () => {
             >
               {isActive ? item.checkedIcon : item.icon}
             </div>
-          </Link>
-        );
-      })}
+          )}
+        </NavLink>
+      ))}
     </div>
   );
 };

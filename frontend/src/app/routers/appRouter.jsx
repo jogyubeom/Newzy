@@ -19,10 +19,12 @@ export const AppRouter = () => {
     <Route path="/" element={<Layout />}>
       <Route index element={<Home />} />
       <Route path="news" element={<NewsList />} />
-      <Route path="newzy" element={<NewzyList />} />
-      <Route path="edit" element={<NewzyEdit />} />
+      <Route path="newzy">
+        <Route index element={<NewzyList />} />
+        <Route path="edit" element={<NewzyEdit />} />
+        <Route path=":id" element={<NewzyDetail />} />
+      </Route>
       <Route path="profile" element={<Profile />} />
-      <Route path="/newzy/:id" element={<NewzyDetail />} />
     </Route>
   );
 
