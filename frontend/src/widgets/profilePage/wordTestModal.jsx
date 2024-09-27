@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
-import { MdCancel } from "react-icons/md";
+import cross from "shared/images/cross.png";
 import { RiCheckboxMultipleFill } from "react-icons/ri";
 
 const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
@@ -92,23 +92,23 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
               </p>
             </div>
             <button
-              className="w-9 h-9 flex items-center justify-center rounded-full"
+              className="w-[30px] h-[30px] flex items-center justify-center rounded-full"
               onClick={onClose}
             >
-              <MdCancel className="w-10 h-10 text-red-500" />
+              <img src={cross} className="w-full h-full object-cover" />
             </button>
           </header>
           <div className="flex flex-col items-center justify-center h-[508px]">
             {/* 결과 화면 */}
-            <h2 className="text-3xl font-bold mb-10 text-[#5E007E]">
+            <h2 className="text-3xl font-bold mb-8 text-[#5E007E]">
               {userName} 님의 결과는?
             </h2>
-            <p className="text-3xl font-bold text-[#5E007E]">
+            <p className="text-[52px] font-bold text-[#5E007E]">
               <icon className="text-[48px] mr-5">🎊</icon> 
               {calculateScore()}점!! 
               <icon className="text-[48px] ml-5">🎊</icon>
             </p>
-            <p className="text-xl font-semibold mt-10 mb-4">총 문제: {wordList.length}</p>
+            <p className="text-xl font-semibold mt-8 mb-4">총 문제: {wordList.length}</p>
             <p className="text-xl font-semibold text-green-600 mb-2">맞춘 문제: {correctCount}</p>
             <p className="text-xl font-semibold text-red-600 mb-5">틀린 문제: {incorrectCount}</p>
             <label className="flex items-center justify-between w-[55%] font-['Poppins'] text-[15px] font-semibold leading-[28px] tracking-[-0.04em] text-[#4B5563] bg-[#F5F5F5] py-3 px-6 rounded-[20px] shadow-md border border-gray-300">
@@ -141,10 +141,10 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
       </p>
     </div>
     <button
-      className="w-9 h-9 flex items-center justify-center rounded-full"
+      className="w-[30px] h-[30px] flex items-center justify-center rounded-full"
       onClick={onClose}
     >
-      <MdCancel className="w-10 h-10 text-red-500" />
+      <img src={cross} className="w-full h-full object-cover" />
     </button>
   </header>
 

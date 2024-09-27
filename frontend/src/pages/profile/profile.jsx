@@ -6,7 +6,10 @@ import MyNewzy from "widgets/profilePage/myNewzy";
 import BookMark from "widgets/profilePage/bookMark";
 import Words from "widgets/profilePage/words";
 import FollowIndexModal from "widgets/profilePage/followIndexModal";
+import CardListModal from "widgets/profilePage/cardListModal";
+
 import userProfile from "shared/images/user.png";
+import cards from "shared/images/cards.svg";
 
 // 임시 유저 더미데이터
 const user = {
@@ -23,6 +26,7 @@ const user = {
 export const Profile = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
+  const [isCardListModalOpen, setIsCardListModalOpen] = useState(false); // CardListModa
 
   // 편집 모드 관리
   const [isEditing, setIsEditing] = useState(false);
@@ -39,6 +43,10 @@ export const Profile = () => {
   // 모달 열기 및 닫기 함수
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
+
+  // CardListModal 열기 및 닫기 함수
+  const openCardListModal = () => setIsCardListModalOpen(true);
+  const closeCardListModal = () => setIsCardListModalOpen(false);
 
   // 저장 버튼 클릭 시 변경 사항 저장
   const handleSave = () => {
@@ -77,16 +85,16 @@ export const Profile = () => {
     <div className="overflow-x-auto bg-[#FFFFFF]">
       <div className="h-[409px] bg-[#132956] relative flex px-8 mb-12">
         <div className="relative">
-          <div className={`absolute top-[70px] left-[0px] w-[270px] h-[270px] rounded-full border-[24px] border-yellow-500 flex items-center justify-center ${isEditing ? 'opacity-60' : ''}`}>
+          <div className={"absolute top-[70px] left-[0px] w-[270px] h-[270px] rounded-full border-[24px] border-yellow-500 flex items-center justify-center"}>
             <img
               src={profileData.img || userProfile}
-              className="w-full h-full object-cover rounded-full"
+              className={`w-full h-full object-cover rounded-full ${isEditing ? 'opacity-60' : ''}`}
               alt="프로필 이미지"
             />
             {isEditing && (
-              <div className="absolute top-2 right-2 flex gap-2">
+              <div className="absolute top-[105px] right-111 flex gap-12">
                 <label htmlFor="profile-upload" className="cursor-pointer">
-                  <MdAdd className="text-white bg-blue-500 rounded-full w-6 h-6" />
+                  <MdAdd className="text-white bg-blue-500 rounded-full w-7 h-7" />
                   <input
                     id="profile-upload"
                     type="file"
@@ -96,7 +104,7 @@ export const Profile = () => {
                   />
                 </label>
                 <MdDelete
-                  className="text-white bg-red-500 rounded-full w-6 h-6 cursor-pointer"
+                  className="text-white bg-red-500 rounded-full w-7 h-7 cursor-pointer"
                   onClick={handleImageRemove}
                 />
               </div>
@@ -194,10 +202,10 @@ export const Profile = () => {
           {isEditing ? (
             <div className="w-[293px] h-[103px] relative mt-10 mb-7">
               <button
-                className="w-full h-[73px] rounded-[10px] font-[Open Sans] bg-green-600 flex items-center justify-center text-white text-[32px] font-semibold transition-colors duration-300"
+                className="w-full h-[73px] rounded-[10px] font-[Open Sans] bg-[#3578FF] hover:bg-[#2a61cc] flex items-center justify-center text-white text-[32px] font-semibold transition-colors duration-300"
                 onClick={handleSave}
               >
-                SAVE
+                저장하기
               </button>
             </div>
           ) : (
@@ -222,6 +230,17 @@ export const Profile = () => {
       {renderContent()}
 
       <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} />
+
+      {/* 하단에 고정된 버튼 추가 */}
+      <button
+        className="fixed bottom-5 left-0.5 bg-transparent flex items-center justify-center cursor-pointer"
+        style={{ zIndex: 1000 }}
+        onClick={openCardListModal} // 버튼 클릭 시 CardListModal 열기
+      >
+        <img src={cards} alt="카드 버튼" className="w-full h-full object-cover" />
+      </button>
+      {/* CardListModal 렌더링 */}
+      {isCardListModalOpen && <CardListModal onClose={closeCardListModal} cardNum={11}/>}
     </div>
   );
 };
