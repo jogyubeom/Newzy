@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getGrade } from "shared/getGrade";
 import { MdAdd, MdDelete } from "react-icons/md";
 import MenuBar from "pages/profile/ui/menuBar";
@@ -10,6 +11,8 @@ import CardListModal from "pages/profile/ui/cardListModal";
 
 import userProfile from "shared/images/user.png";
 import cards from "shared/images/cards.svg";
+
+import "./profile.css"
 
 // 임시 유저 더미데이터
 const user = {
@@ -23,10 +26,60 @@ const user = {
   birth: "2001-03-05",
 };
 
+const gradeDescriptions = {
+  1: (
+    <>
+      <p className="font-semibold">Level 1 초보 뉴포터</p>
+      시작하는 단계입니다!
+    </>
+  ),
+  2: (
+    <>
+      <p className="font-semibold">Level 2 중급 뉴포터</p>
+      꽤 실력이 있어요!
+    </>
+  ),
+  3: (
+    <>
+      <p className="font-semibold">Level 3 고급 뉴포터</p>
+      실력이 뛰어나요!
+    </>
+  ),
+  4: (
+    <>
+      <p className="font-semibold">Level 4 마스터 뉴포터</p>
+      당신은 프로입니다!
+    </>
+  ),
+};
+
+
 export const Profile = () => {
+  const navigate = useNavigate(); // useNavigate 훅 사용
+  const location = useLocation(); // 현재 경로를 가져오기 위해 useLocation 훅 사용
+
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
   const [isCardListModalOpen, setIsCardListModalOpen] = useState(false); // CardListModa
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
+
+  // 현재 경로에 따라 메뉴를 선택 상태로 설정
+  useEffect(() => {
+    switch (location.pathname) {
+      case "/profile/myNewzy":
+        setSelectedMenu(0);
+        break;
+      case "/profile/bookMark":
+        setSelectedMenu(1);
+        break;
+      case "/profile/words":
+        setSelectedMenu(2);
+        break;
+      default:
+        setSelectedMenu(0);
+        break;
+    }
+  }, [location]);
 
   // 편집 모드 관리
   const [isEditing, setIsEditing] = useState(false);
@@ -65,6 +118,24 @@ export const Profile = () => {
   // 이미지 제거 핸들러
   const handleImageRemove = () => {
     setProfileData({ ...profileData, img: null });
+  };
+
+  // 메뉴 클릭 시 경로를 변경
+  const handleMenuChange = (menuIndex) => {
+    setSelectedMenu(menuIndex);
+    switch (menuIndex) {
+      case 0:
+        navigate("/profile/myNewzy"); // 프로필 페이지의 기본 경로로 이동
+        break;
+      case 1:
+        navigate("/profile/bookMark"); // 북마크 경로로 이동
+        break;
+      case 2:
+        navigate("/profile/words"); // 단어 페이지로 이동
+        break;
+      default:
+        break;
+    }
   };
 
   // 선택된 메뉴에 따라 다른 컴포넌트 렌더링
@@ -112,10 +183,21 @@ export const Profile = () => {
           </div>
 
           <div className="absolute top-[263px] left-[196px] w-[100px] h-[100px] bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-            <img
+          <img
               src={getGrade(user.grade)}
-              className="w-[60px] h-[60px] object-cover"
+              className="w-[60px] h-[60px] object-cover cursor-pointer"
+              onMouseEnter={() => setIsTooltipVisible(true)}
+              onMouseLeave={() => setIsTooltipVisible(false)}
             />
+            {isTooltipVisible && (
+              <div
+                className="absolute top-[110%] transform -translate-x-1/2 bg-gray-700 text-white text-base rounded-lg p-2 opacity-0 animate-tooltip shadow-md"
+                style={{ whiteSpace: "nowrap" }}
+              >
+                {gradeDescriptions[user.grade]}
+                <span className="absolute top-[-5px] left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-gray-700"></span>
+              </div>
+            )}
           </div>
 
           {isEditing && (
@@ -223,7 +305,7 @@ export const Profile = () => {
 
       <MenuBar
         selectedMenu={selectedMenu}
-        setSelectedMenu={setSelectedMenu}
+        setSelectedMenu={handleMenuChange}
         menus={["My Newzy", "BookMark", "Words"]}
       />
 

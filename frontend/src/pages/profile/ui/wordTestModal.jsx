@@ -22,16 +22,16 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
   // 모달이 열릴 때마다 초기화
   useEffect(() => {
     if (isOpen && wordList.length > 0) {
-      const shuffledList = shuffleArray(wordList);
+      const shuffledList = shuffleArray(wordList).slice(0, 15); // 최대 15개의 단어만 추출
       setShuffledWordList(shuffledList);
       setCurrentQuestion(0);
       setUserAnswer("");
       setCorrectCount(0);
       setIncorrectCount(0);
       setShowResult(false);
-
+  
       // 스크롤을 맨 위로 이동
-       window.scrollTo(0, 0);
+      window.scrollTo(0, 0);
     }
   }, [isOpen, wordList]);
 
@@ -103,9 +103,9 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
             <h2 className="text-3xl font-bold mb-8 text-[#5E007E]">
               {userName} 님의 결과는?
             </h2>
-            <p className="text-[52px] font-bold text-[#5E007E]">
+            <p className="text-[48px] font-bold text-blue-800">
               <icon className="text-[48px] mr-5">🎊</icon> 
-              {calculateScore()}점!! 
+              {calculateScore()}점!!
               <icon className="text-[48px] ml-5">🎊</icon>
             </p>
             <p className="text-xl font-semibold mt-8 mb-4">총 문제: {wordList.length}</p>
