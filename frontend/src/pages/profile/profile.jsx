@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { getGrade } from "shared/getGrade";
 import { MdAdd, MdDelete } from "react-icons/md";
-import MenuBar from "widgets/profilePage/menuBar";
-import MyNewzy from "widgets/profilePage/myNewzy";
-import BookMark from "widgets/profilePage/bookMark";
-import Words from "widgets/profilePage/words";
-import FollowIndexModal from "widgets/profilePage/followIndexModal";
-import CardListModal from "widgets/profilePage/cardListModal";
+import MenuBar from "pages/profile/ui/menuBar";
+import MyNewzy from "pages/profile/ui/myNewzy";
+import BookMark from "pages/profile/ui/bookMark";
+import Words from "pages/profile/ui/words";
+import FollowIndexModal from "pages/profile/ui/followIndexModal";
+import CardListModal from "pages/profile/ui/cardListModal";
 
 import userProfile from "shared/images/user.png";
 import cards from "shared/images/cards.svg";
@@ -240,7 +240,7 @@ export const Profile = () => {
         <img src={cards} alt="카드 버튼" className="w-full h-full object-cover" />
       </button>
       {/* CardListModal 렌더링 */}
-      {isCardListModalOpen && <CardListModal onClose={closeCardListModal} cardNum={11}/>}
+      {isCardListModalOpen && <CardListModal onClose={closeCardListModal} cardNum={14}/>}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { FaMinusCircle } from "react-icons/fa";
 import { useState } from "react";
-import WordTestModal from "widgets/profilePage/wordTestModal";
+import WordTestModal from "./wordTestModal";
 
 const Words = () => {
   const wordList = [
