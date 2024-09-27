@@ -85,6 +85,15 @@ def kill_driver_processes():
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             logging.info(f"PASS - PID: {proc.info['pid']}, process name: {proc.info['name']}")
             pass
+    # 자식 프로세스의 종료 상태를 수거 (좀비 프로세스 방지)
+    try:
+        while True:
+            pid, _ = os.waitpid(-1, os.WNOHANG)
+            if pid == 0:
+                break
+    except ChildProcessError:
+        # 자식 프로세스가 없는 경우
+        pass
 
 
 def run_crawl(start_date, end_date):
