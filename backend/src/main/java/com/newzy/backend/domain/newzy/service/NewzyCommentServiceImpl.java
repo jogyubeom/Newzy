@@ -8,6 +8,7 @@ import com.newzy.backend.domain.newzy.entity.NewzyComment;
 import com.newzy.backend.domain.newzy.repository.NewzyCommentRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyCommentRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyRepository;
+import com.newzy.backend.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
         List<NewzyCommentListGetResponseDto> commentList = newzyCommentRepositorySupport.findCommentList(page, size, newzyId);
 
         if (commentList.isEmpty()) {
-            throw new IllegalStateException("일치하는 댓글 데이터를 조회할 수 없습니다.");
+            throw new EntityNotFoundException("일치하는 댓글 데이터를 조회할 수 없습니다.");
         }
         return commentList;
     }

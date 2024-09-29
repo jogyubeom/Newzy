@@ -6,11 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface NewzyRepository extends JpaRepository<Newzy, Long> {
 
 
     Newzy findByNewzyId(Long id);
+    List<Newzy> findTop3ByDeletedFalseOrderByVisitCntDesc();
 
     default Newzy updateNewzyInfo(Newzy nzy) {
         Newzy newzy = findByNewzyId(nzy.getNewzyId());
@@ -31,5 +34,6 @@ public interface NewzyRepository extends JpaRepository<Newzy, Long> {
         newzy.setIsDeleted(true);
         save(newzy);
     }
+
 
 }

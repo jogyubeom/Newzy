@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,14 +46,28 @@ public class NewzyServiceImpl implements NewzyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public NewzyResponseDTO getNewzyDetail(Long newzyId) {  // 조회수 + 1
         log.info(">>> newzyServiceImpl getNewzyDetail - newzyId: {}", newzyId);
         Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new EntityNotFoundException("일치하는 뉴지 데이터를 찾을 수 없습니다."));
-
         newzy.setVisitCnt(newzy.getVisitCnt() + 1);
         newzyRepository.save(newzy);
 
         return NewzyResponseDTO.convertToDTO(newzy);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<NewzyListGetResponseDTO> getHotNewzyList() {
+        List<Newzy> hotNewzies = newzyRepository.findTop3ByDeletedFalseOrderByVisitCntDesc();
+        List<NewzyListGetResponseDTO> hotNewzyList = new ArrayList<>();
+
+        for (Newzy newzy : hotNewzies) {
+            NewzyListGetResponseDTO dto = NewzyListGetResponseDTO.convertToDTO(newzy);
+            hotNewzyList.add(dto);
+        }
+
+        return hotNewzyList;
     }
 
     @Override
@@ -110,6 +125,7 @@ public class NewzyServiceImpl implements NewzyService {
 
         newzyLikeRepository.delete(like);
     }
+
 
 
 }

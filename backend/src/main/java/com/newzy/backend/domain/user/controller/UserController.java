@@ -22,7 +22,7 @@ public class UserController {
     @PostMapping
     @Operation(summary = "", description = "")
     public ResponseEntity<BaseResponseBody> create(@RequestBody @Validated UserInfoRequestDTO dto){
-        log.info(">>> [POST] /UserController create - 요청 파라미터: dto - {}", dto.toString());
+        log.info(">>> [POST] /user - 요청 파라미터: dto - {}", dto.toString());
          userServiceImpl.save(dto);
 
         return ResponseEntity.status(201).body(BaseResponseBody.of(201, "회원 등록이 완료되었습니다."));
@@ -33,7 +33,7 @@ public class UserController {
     public ResponseEntity<BaseResponseBody> update(
             @PathVariable Long userId,
             @RequestBody @Validated UserInfoRequestDTO dto){
-        log.info(">>> [PATCH] /UserController update - 요청 파라미터: userId - {},  dto - {}", userId, dto.toString());
+        log.info(">>> [PATCH] /user/{} - 요청 파라미터: userId - {},  dto - {}", userId, userId, dto.toString());
         userServiceImpl.updateUserInfo(userId, dto);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "회원 정보 수정이 완료되었습니다."));
@@ -42,8 +42,7 @@ public class UserController {
     @DeleteMapping(value = "/{userId}")
     @Operation(summary = "", description = "")
     public ResponseEntity<BaseResponseBody> delete(@PathVariable Long userId){
-        log.info(">>> [DELETE] /newzyController deleteNewzyInfo - 요청 파라미터: newzyId - {}", userId);
-
+        log.info(">>> [DELETE] /user/{} - 요청 파라미터: userId - {}", userId, userId);
         userServiceImpl.deleteUserInfo(userId);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "회원 삭제가 완료되었습니다."));

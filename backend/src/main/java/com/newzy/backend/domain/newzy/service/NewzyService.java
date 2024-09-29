@@ -26,4 +26,5 @@ public interface NewzyService {
 
     void deleteLike(Long newzyLikeId);
 
+    List<NewzyListGetResponseDTO> getHotNewzyList();
 }

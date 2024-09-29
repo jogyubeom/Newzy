@@ -14,7 +14,7 @@ public class NewzyCommentListGetResponseDto {
 
     private Long newzyCommentId;
     private String newzyComment;
-    private String createdAt;
+    private LocalDateTime createdAt;
     private Long newzyId;
     private Long parentCommentId;
 
@@ -26,7 +26,7 @@ public class NewzyCommentListGetResponseDto {
         return NewzyCommentListGetResponseDto.builder()
                 .newzyCommentId(newzyComment.getNewzyCommentId())
                 .newzyComment(newzyComment.getNewzyComment())
-                .createdAt(newzyComment.getCreatedAt().toString())
+                .createdAt(newzyComment.getCreatedAt())
                 .newzyId(newzyComment.getNewzy().getNewzyId())
                 .parentCommentId(newzyComment.getParentComment() != null ? newzyComment.getParentComment().getNewzyCommentId() : null)
                 .build();
