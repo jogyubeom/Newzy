@@ -4,6 +4,11 @@ from django.db import models
 class Cluster(models.Model):
     cluster_id = models.AutoField(primary_key=True)
     cluster_name = models.CharField(max_length=30)
+    # 속성
+    age_group = models.CharField(max_length=20, help_text="연령대 예: 젊은 층, 중장년층, 노년층")
+    interest_category = models.CharField(max_length=50, help_text="관심 있는 카테고리 예: 경제, 사회, 세계")
+    page_stay_time = models.IntegerField(default=0, help_text="페이지 체류 시간 (초 단위)")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
@@ -60,3 +65,28 @@ class News(models.Model):
 
     def __str__(self):
         return self.link
+
+class NewsSummary(models.Model):
+    news_summary_id = models.BigAutoField(primary_key=True)
+    news = models.ForeignKey(News, on_delete=models.SET_NULL, null=True, blank=True)
+    cluster = models.ForeignKey(Cluster, on_delete=models.SET_NULL, null=True, blank=True)
+    summary = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'news_summary'
+    def __str__(self):
+        return self.summary
+
+class RecommendedNews(models.Model):
+    recommended_news_id = models.BigAutoField(primary_key=True)
+    cluster = models.ForeignKey(Cluster, on_delete=models.SET_NULL, null=True, blank=True)
+    news = models.ForeignKey(News, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'recommended_news'
