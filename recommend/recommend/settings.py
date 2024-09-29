@@ -12,19 +12,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
-from decouple import config
-
 # mysqlclient 설치 시 오류 발생 -> pymysql 통해 db 연결
 import pymysql
-pymysql.install_as_MySQLdb()
+from decouple import config
 
-import logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
+pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -37,7 +32,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,8 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_apscheduler',
     'newzy.apps.NewzyConfig',
 ]
+# Scheduler setting
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"  # Default
+SCHEDULER_DEFAULT = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,10 +78,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'recommend.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# >> MySQL 설정
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -93,6 +91,32 @@ DATABASES = {
         'HOST': config('DB_HOST'),
         'PORT': config('DB_PORT'),
     }
+}
+# >> Redis 설정
+REDIS_HOST = config('REDIS_HOST')
+REDIS_PORT = config('REDIS_PORT')
+REDIS_DB = config('REDIS_DB')
+REDIS_PASSWORD = config('REDIS_PASSWORD')
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'decode_responses': True,
+        },
+        'KEY_PREFIX': 'newzy',
+        'TIMEOUT': 864000  # 10 days
+    }
+}
+# >> MongoDB 설정
+# MongoDB 설정 (pymongo)
+MONGO_DB = {
+    'HOST': config('MONGO_HOST'),
+    'PORT': config('MONGO_PORT', cast=int),
+    'NAME': config('MONGO_DB_NAME'),
+    'USER': config('MONGO_USER'),
+    'PASSWORD': config('MONGO_PASSWORD'),
 }
 
 # Password validation
@@ -113,7 +137,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -124,7 +147,6 @@ TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -155,9 +177,9 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'recommend.log'),
+            'filename': os.path.join(LOG_DIR, 'crawl.log'),
             'formatter': 'verbose',  # verbose 형식으로 출력
         },
         'console': {
@@ -168,14 +190,20 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,
         },
         'apscheduler': {  # 스케줄러 로그도 처리
-            'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,
         },
+        'my_logger': {
+            'level': 'INFO',
+            'propagate': True,
+        }
     },
+    'root': {
+        'handlers': ['file', 'console'],
+        'level': 'INFO',
+    }
 }
