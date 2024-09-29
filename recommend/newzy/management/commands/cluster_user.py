@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from newzy.cluster_user import cluster_user
+from newzy.recommend.cluster_user import cluster_user
 
 
 class Command(BaseCommand):
