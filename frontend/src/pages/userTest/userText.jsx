@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Modal from "./ui/Modal";
+import { useNavigate } from "react-router-dom";
 
 const vocabularyData = {
   economy: [
@@ -53,15 +54,18 @@ export const UserTest = () => {
     if (currentCategoryIndex < categories.length - 1) {
       setCurrentCategoryIndex(currentCategoryIndex + 1);
     } else {
-      // 모든 카테고리를 완료했을 때 처리
       alert("테스트가 완료되었습니다!");
-      console.log("선택한 어휘:", selectedWords);
-      // 여기서 API로 결과를 전송하거나, 다음 단계로 이동할 수 있습니다.
+      console.log("아는 경제 단어 개수:", selectedWords.economy.length);
+      console.log("아는 사회 단어 개수:", selectedWords.society.length);
+      console.log("아는 세계 단어 개수:", selectedWords.world.length);
+      nav('/')
     }
   };
 
+  const nav = useNavigate()
+
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="mx-auto py-10 px-28 bg-white rounded-lg shadow-lg">
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <h2 className="text-xl font-bold mb-2">Newzy 어휘 테스트 안내</h2>
         <div className="mt-10">
@@ -73,33 +77,35 @@ export const UserTest = () => {
         </div>
       </Modal>
 
-      <h2 className="text-2xl font-bold mb-4">
+      <h2 className="text-2xl font-bold mb-4 text-center">
         {currentCategory === "economy" && "어휘 테스트 [경제]"}
         {currentCategory === "society" && "어휘 테스트 [사회]"}
         {currentCategory === "world" && "어휘 테스트 [세계]"}
       </h2>
 
-      <div className="grid grid-cols-2 gap-2">
+      {/* 단어 목록 그리드 */}
+      <div className="grid grid-cols-4 gap-7 py-4 px-10 bg-gray-100 rounded-lg shadow-inner">
         {vocabularyData[currentCategory].map((word, index) => (
           <button
             key={index}
             onClick={() => handleWordClick(word)}
-            className={`p-2 border rounded ${
+            className={`p-2 border rounded text-center transition-transform duration-300 transform ${
               selectedWords[currentCategory].includes(word)
                 ? "bg-blue-500 text-white font-semibold"
-                : "bg-white font-semibold"
-            } hover:bg-blue-300`}
+                : "bg-white text-gray-700 font-semibold"
+            } hover:bg-blue-300 hover:text-white hover:scale-105`}
           >
             {word}
           </button>
         ))}
       </div>
 
-      <div className="flex justify-between mt-4">
+      {/* 네비게이션 버튼 */}
+      <div className="flex justify-between mt-6">
         <button
           onClick={() => setCurrentCategoryIndex(currentCategoryIndex - 1)}
           disabled={currentCategoryIndex === 0}
-          className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+          className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           이전
         </button>
@@ -113,4 +119,3 @@ export const UserTest = () => {
     </div>
   );
 };
-

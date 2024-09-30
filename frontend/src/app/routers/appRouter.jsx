@@ -29,7 +29,7 @@ export const AppRouter = () => {
       <Route path="profile">
         <Route index element={<Navigate to="myNewzy" replace />} /> 
         <Route path="myNewzy" element={<Profile />}/>
-        <Route path="bookMark" element={<UserTest />}/>
+        <Route path="bookMark" element={<Profile />}/>
         <Route path="words" element={<Profile />}/>
       </Route>
       <Route path="usertest" element={<UserTest />} />

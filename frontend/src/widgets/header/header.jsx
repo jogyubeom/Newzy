@@ -1,7 +1,10 @@
 import { BiBell } from "react-icons/bi";
 import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export const Header = () => {
+
+  const nav = useNavigate()
 
   return (
     <header className="w-full h-[77px] flex justify-between items-center px-[48px]">
@@ -13,7 +16,7 @@ export const Header = () => {
           <BiBell className="w-6 h-6 text-gray-800" />
         </button>
 
-        <button className="w-[40px] h-[40px] bg-gray-200 rounded-full">
+        <button className="w-[40px] h-[40px] bg-gray-200 rounded-full" onClick={() => {nav('/usertest')}}>
           <FaUserCircle className="w-full h-full object-cover rounded-full text-blue-400" />
         </button>
       </div>

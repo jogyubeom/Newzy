@@ -17,7 +17,7 @@ import "./profile.css"
 // 임시 유저 더미데이터
 const user = {
   name: "정지훈",
-  grade: 1,
+  exp: 7023,
   introduce: `안녕하세요\n잘 부탁드립니다!!`,
   img: null,
   followers: 42,
@@ -53,6 +53,21 @@ const gradeDescriptions = {
   ),
 };
 
+// exp 값을 기준으로 grade를 구하는 함수
+const getGradeByExp = (exp) => {
+  if (exp >= 10000) return 4;
+  if (exp >= 500) return 3;
+  if (exp >= 10) return 2;
+  return 1;
+};
+
+// 각 grade의 최대 경험치값
+const maxExpByGrade = {
+  1: 10,    // 0~9: Level 1
+  2: 500,   // 10~499: Level 2
+  3: 10000, // 500~9999: Level 3
+  4: user.exp, // 10000 이상: Level 4
+};
 
 export const Profile = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
@@ -81,6 +96,11 @@ export const Profile = () => {
     }
   }, [location]);
 
+  // 유저의 grade 및 비중 계산
+  const userGrade = getGradeByExp(user.exp);
+  const maxExp = maxExpByGrade[userGrade];
+  const expRatio = (user.exp / maxExp) * 100; // 현재 경험치 비중 계산 (퍼센트 값)
+
   // 편집 모드 관리
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -89,6 +109,11 @@ export const Profile = () => {
     img: user.img,
     birth: user.birth,
   });
+
+  // SVG에서 사용할 경험치바 계산
+  const radius = 135;
+  const circumference = 2 * Math.PI * radius;
+  const progress = (expRatio / 100) * circumference; // 현재 경험치에 해당하는 원형 길이
 
   // 글자수 제한
   const maxIntroduceLength = 30;
@@ -156,7 +181,40 @@ export const Profile = () => {
     <div className="overflow-x-auto bg-[#FFFFFF]">
       <div className="h-[409px] bg-[#132956] relative flex px-8 mb-12">
         <div className="relative">
-          <div className={"absolute top-[70px] left-[0px] w-[270px] h-[270px] rounded-full border-[24px] border-yellow-500 flex items-center justify-center"}>
+          {/* 경험치량 표시 */}
+          <div
+            className="absolute top-[10px] left-[150px] w-full flex justify-center items-center text-yellow-500 text-base font-extrabold tracking-wide whitespace-nowrap"
+            style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)" }}
+            >
+            {user.exp} / {maxExp}
+          </div>
+          {/* SVG로 경험치 바 추가 */}
+          <svg width="310" height="310" className="absolute top-[35px] left-[0px]" style={{ transform: "rotate(-90deg)" }}>
+            <circle
+              cx="150"
+              cy="150"
+              r={radius}
+              stroke="gray"
+              strokeWidth="24"
+              fill="none"
+              className="opacity-20"
+            />
+            <circle
+              cx="150"
+              cy="150"
+              r={radius}
+              stroke="gold"
+              strokeWidth="24"
+              fill="none"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference - progress}
+              strokeLinecap="round"
+              className="transition-all duration-500"
+            />
+          </svg>
+
+          {/* 프로필 이미지 */}
+          <div className={"absolute top-[70px] left-[25px] w-[250px] h-[250px] rounded-full flex items-center justify-center"}>
             <img
               src={profileData.img || userProfile}
               className={`w-full h-full object-cover rounded-full ${isEditing ? 'opacity-60' : ''}`}
@@ -182,9 +240,9 @@ export const Profile = () => {
             )}
           </div>
 
-          <div className="absolute top-[263px] left-[196px] w-[100px] h-[100px] bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+          <div className="absolute top-[285px] left-[218px] w-[100px] h-[100px] bg-white bg-opacity-20 rounded-full flex items-center justify-center">
           <img
-              src={getGrade(user.grade)}
+              src={getGrade(userGrade)}
               className="w-[60px] h-[60px] object-cover cursor-pointer"
               onMouseEnter={() => setIsTooltipVisible(true)}
               onMouseLeave={() => setIsTooltipVisible(false)}
@@ -194,7 +252,7 @@ export const Profile = () => {
                 className="absolute top-[110%] transform -translate-x-1/2 bg-gray-700 text-white text-base rounded-lg p-2 opacity-0 animate-tooltip shadow-md"
                 style={{ whiteSpace: "nowrap" }}
               >
-                {gradeDescriptions[user.grade]}
+                {gradeDescriptions[userGrade]}
                 <span className="absolute top-[-5px] left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-gray-700"></span>
               </div>
             )}
