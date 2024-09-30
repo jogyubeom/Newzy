@@ -1,20 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getGrade } from "shared/getGrade";
 import { MdAdd, MdDelete } from "react-icons/md";
-import MenuBar from "widgets/profilePage/menuBar";
-import MyNewzy from "widgets/profilePage/myNewzy";
-import BookMark from "widgets/profilePage/bookMark";
-import Words from "widgets/profilePage/words";
-import FollowIndexModal from "widgets/profilePage/followIndexModal";
-import CardListModal from "widgets/profilePage/cardListModal";
+import MenuBar from "pages/profile/ui/menuBar";
+import MyNewzy from "pages/profile/ui/myNewzy";
+import BookMark from "pages/profile/ui/bookMark";
+import Words from "pages/profile/ui/words";
+import FollowIndexModal from "pages/profile/ui/followIndexModal";
+import CardListModal from "pages/profile/ui/cardListModal";
 
 import userProfile from "shared/images/user.png";
 import cards from "shared/images/cards.svg";
 
+import "./profile.css"
+
 // 임시 유저 더미데이터
 const user = {
   name: "정지훈",
-  grade: 1,
+  exp: 7023,
   introduce: `안녕하세요\n잘 부탁드립니다!!`,
   img: null,
   followers: 42,
@@ -23,10 +26,80 @@ const user = {
   birth: "2001-03-05",
 };
 
+const gradeDescriptions = {
+  1: (
+    <>
+      <p className="font-semibold">Level 1 초보 뉴포터</p>
+      시작하는 단계입니다!
+    </>
+  ),
+  2: (
+    <>
+      <p className="font-semibold">Level 2 중급 뉴포터</p>
+      꽤 실력이 있어요!
+    </>
+  ),
+  3: (
+    <>
+      <p className="font-semibold">Level 3 고급 뉴포터</p>
+      실력이 뛰어나요!
+    </>
+  ),
+  4: (
+    <>
+      <p className="font-semibold">Level 4 마스터 뉴포터</p>
+      당신은 프로입니다!
+    </>
+  ),
+};
+
+// exp 값을 기준으로 grade를 구하는 함수
+const getGradeByExp = (exp) => {
+  if (exp >= 10000) return 4;
+  if (exp >= 500) return 3;
+  if (exp >= 10) return 2;
+  return 1;
+};
+
+// 각 grade의 최대 경험치값
+const maxExpByGrade = {
+  1: 10,    // 0~9: Level 1
+  2: 500,   // 10~499: Level 2
+  3: 10000, // 500~9999: Level 3
+  4: user.exp, // 10000 이상: Level 4
+};
+
 export const Profile = () => {
+  const navigate = useNavigate(); // useNavigate 훅 사용
+  const location = useLocation(); // 현재 경로를 가져오기 위해 useLocation 훅 사용
+
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
   const [isCardListModalOpen, setIsCardListModalOpen] = useState(false); // CardListModa
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
+
+  // 현재 경로에 따라 메뉴를 선택 상태로 설정
+  useEffect(() => {
+    switch (location.pathname) {
+      case "/profile/myNewzy":
+        setSelectedMenu(0);
+        break;
+      case "/profile/bookMark":
+        setSelectedMenu(1);
+        break;
+      case "/profile/words":
+        setSelectedMenu(2);
+        break;
+      default:
+        setSelectedMenu(0);
+        break;
+    }
+  }, [location]);
+
+  // 유저의 grade 및 비중 계산
+  const userGrade = getGradeByExp(user.exp);
+  const maxExp = maxExpByGrade[userGrade];
+  const expRatio = (user.exp / maxExp) * 100; // 현재 경험치 비중 계산 (퍼센트 값)
 
   // 편집 모드 관리
   const [isEditing, setIsEditing] = useState(false);
@@ -36,6 +109,11 @@ export const Profile = () => {
     img: user.img,
     birth: user.birth,
   });
+
+  // SVG에서 사용할 경험치바 계산
+  const radius = 135;
+  const circumference = 2 * Math.PI * radius;
+  const progress = (expRatio / 100) * circumference; // 현재 경험치에 해당하는 원형 길이
 
   // 글자수 제한
   const maxIntroduceLength = 30;
@@ -67,6 +145,24 @@ export const Profile = () => {
     setProfileData({ ...profileData, img: null });
   };
 
+  // 메뉴 클릭 시 경로를 변경
+  const handleMenuChange = (menuIndex) => {
+    setSelectedMenu(menuIndex);
+    switch (menuIndex) {
+      case 0:
+        navigate("/profile/myNewzy"); // 프로필 페이지의 기본 경로로 이동
+        break;
+      case 1:
+        navigate("/profile/bookMark"); // 북마크 경로로 이동
+        break;
+      case 2:
+        navigate("/profile/words"); // 단어 페이지로 이동
+        break;
+      default:
+        break;
+    }
+  };
+
   // 선택된 메뉴에 따라 다른 컴포넌트 렌더링
   const renderContent = () => {
     switch (selectedMenu) {
@@ -85,7 +181,40 @@ export const Profile = () => {
     <div className="overflow-x-auto bg-[#FFFFFF]">
       <div className="h-[409px] bg-[#132956] relative flex px-8 mb-12">
         <div className="relative">
-          <div className={"absolute top-[70px] left-[0px] w-[270px] h-[270px] rounded-full border-[24px] border-yellow-500 flex items-center justify-center"}>
+          {/* 경험치량 표시 */}
+          <div
+            className="absolute top-[10px] left-[150px] w-full flex justify-center items-center text-yellow-500 text-base font-extrabold tracking-wide whitespace-nowrap"
+            style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)" }}
+            >
+            {user.exp} / {maxExp}
+          </div>
+          {/* SVG로 경험치 바 추가 */}
+          <svg width="310" height="310" className="absolute top-[35px] left-[0px]" style={{ transform: "rotate(-90deg)" }}>
+            <circle
+              cx="150"
+              cy="150"
+              r={radius}
+              stroke="gray"
+              strokeWidth="24"
+              fill="none"
+              className="opacity-20"
+            />
+            <circle
+              cx="150"
+              cy="150"
+              r={radius}
+              stroke="gold"
+              strokeWidth="24"
+              fill="none"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference - progress}
+              strokeLinecap="round"
+              className="transition-all duration-500"
+            />
+          </svg>
+
+          {/* 프로필 이미지 */}
+          <div className={"absolute top-[70px] left-[25px] w-[250px] h-[250px] rounded-full flex items-center justify-center"}>
             <img
               src={profileData.img || userProfile}
               className={`w-full h-full object-cover rounded-full ${isEditing ? 'opacity-60' : ''}`}
@@ -111,11 +240,22 @@ export const Profile = () => {
             )}
           </div>
 
-          <div className="absolute top-[263px] left-[196px] w-[100px] h-[100px] bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-            <img
-              src={getGrade(user.grade)}
-              className="w-[60px] h-[60px] object-cover"
+          <div className="absolute top-[285px] left-[218px] w-[100px] h-[100px] bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+          <img
+              src={getGrade(userGrade)}
+              className="w-[60px] h-[60px] object-cover cursor-pointer"
+              onMouseEnter={() => setIsTooltipVisible(true)}
+              onMouseLeave={() => setIsTooltipVisible(false)}
             />
+            {isTooltipVisible && (
+              <div
+                className="absolute top-[110%] transform -translate-x-1/2 bg-gray-700 text-white text-base rounded-lg p-2 opacity-0 animate-tooltip shadow-md"
+                style={{ whiteSpace: "nowrap" }}
+              >
+                {gradeDescriptions[userGrade]}
+                <span className="absolute top-[-5px] left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-gray-700"></span>
+              </div>
+            )}
           </div>
 
           {isEditing && (
@@ -223,7 +363,7 @@ export const Profile = () => {
 
       <MenuBar
         selectedMenu={selectedMenu}
-        setSelectedMenu={setSelectedMenu}
+        setSelectedMenu={handleMenuChange}
         menus={["My Newzy", "BookMark", "Words"]}
       />
 
@@ -240,7 +380,7 @@ export const Profile = () => {
         <img src={cards} alt="카드 버튼" className="w-full h-full object-cover" />
       </button>
       {/* CardListModal 렌더링 */}
-      {isCardListModalOpen && <CardListModal onClose={closeCardListModal} cardNum={11}/>}
+      {isCardListModalOpen && <CardListModal onClose={closeCardListModal} cardNum={14}/>}
     </div>
   );
 };

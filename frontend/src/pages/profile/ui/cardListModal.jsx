@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import cross from "shared/images/cross.png";
 import file from "shared/images/file.png";
 import card from "shared/images/card.svg";
@@ -42,6 +43,8 @@ const CardListModal = ({ onClose, cardNum }) => {
     }
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="w-[650px] h-[670px] rounded-[24px] bg-white border-2 border-gray-300 shadow-lg flex flex-col">
@@ -66,7 +69,7 @@ const CardListModal = ({ onClose, cardNum }) => {
             className={`grid grid-cols-4 gap-4 p-4 transition-opacity duration-300 ${animationDirection}`}
           >
             {currentCards.map((_, index) => (
-              <button key={index} className="w-50 h-50 bg-transparent flex items-center justify-center">
+              <button key={index} className="w-50 h-50 bg-transparent flex items-center justify-center" onClick={() => navigate(`/newzy/${ 8 * (currentPage) + (index + 1)}`)}>
                 <img src={card} alt={`Card ${index}`} className="w-full h-full object-cover" />
               </button>
             ))}

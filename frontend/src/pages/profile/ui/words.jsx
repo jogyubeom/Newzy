@@ -1,6 +1,6 @@
 import { FaMinusCircle } from "react-icons/fa";
 import { useState } from "react";
-import WordTestModal from "widgets/profilePage/wordTestModal";
+import WordTestModal from "./wordTestModal";
 
 const Words = () => {
   const wordList = [
@@ -62,9 +62,9 @@ const Words = () => {
             <div key={index} className="mb-6 pb-4 border-b border-gray-300">
               <div className="flex items-center mb-2">
                 <button className="w-[40px] h-[40px] rounded-full flex justify-center items-center mr-3">
-                  <FaMinusCircle className="w-7 h-7 text-red-500" />
+                  <FaMinusCircle className="w-5 h-5 text-red-500" />
                 </button>
-                <h2 className="text-blue-600 font-semibold mb-2 text-[24px]">
+                <h2 className="text-blue-600 font-semibold text-[24px]">
                   {word.name}
                 </h2>
               </div>
