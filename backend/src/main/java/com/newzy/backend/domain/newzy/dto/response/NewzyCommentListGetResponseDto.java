@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.newzy.dto.response;
 
 import com.newzy.backend.domain.newzy.entity.NewzyComment;
+import com.newzy.backend.global.exception.EntityNotFoundException;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public class NewzyCommentListGetResponseDto {
 
     public static NewzyCommentListGetResponseDto convertToDTO(NewzyComment newzyComment) {
         if (newzyComment == null) {
-            throw new IllegalArgumentException("Cannot convert null to NewzyCommentListGetResponseDto");
+            throw new EntityNotFoundException("해당되는 뉴지 댓글 객체가 없습니다.");
         };
 
         return NewzyCommentListGetResponseDto.builder()

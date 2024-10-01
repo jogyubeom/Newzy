@@ -4,6 +4,7 @@ import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.newzy.service.NewzyServiceImpl;
+import com.newzy.backend.global.exception.CustomIllegalStateException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -57,8 +58,8 @@ public class NewzyController {
 
     @GetMapping(value = "/hot")
     @Operation(summary = "많이 본 뉴지 조회", description = "조회수가 많은 뉴지를 조회합니다.")
-    public ResponseEntity<List<NewzyListGetResponseDTO>> getHotNewzy(@PathVariable Long newzyId){
-        log.info(">>> [GET] /newzy/hot - 요청 파라");
+    public ResponseEntity<List<NewzyListGetResponseDTO>> getHotNewzy(){
+        log.info(">>> [GET] /newzy/hot - 요청 파라미터");
         List<NewzyListGetResponseDTO> hotNewzyList = newzyServiceImpl.getHotNewzyList();
 
         return ResponseEntity.status(200).body(hotNewzyList);
@@ -89,6 +90,9 @@ public class NewzyController {
     public ResponseEntity<BaseResponseBody> bookmarkNewzy (
             @PathVariable("newzyId") Long newzyId){
         log.info(">>> [POST] /newzy/{}/bookmark - 요청 파라미터: newzyId - {}", newzyId, newzyId);
+        if (newzyId == null) {
+            throw new CustomIllegalStateException("해당 아이디의 뉴지를 찾을 수 없습니다.: " + newzyId);
+        }
         newzyServiceImpl.bookmark(newzyId);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴지를 북마크했습니다."));
@@ -111,6 +115,9 @@ public class NewzyController {
     public ResponseEntity<BaseResponseBody> likeNewzy (@PathVariable("newzyId") Long newzyId
     ){
         log.info(">>> [POST] /newzy/{}/like - 요청 파라미터: newzyId - {}", newzyId, newzyId);
+        if (newzyId == null) {
+            throw new CustomIllegalStateException("해당 아이디의 뉴지를 찾을 수 없습니다.: " + newzyId);
+        }
         newzyServiceImpl.likeNewzy(newzyId);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴지가 좋습니다."));

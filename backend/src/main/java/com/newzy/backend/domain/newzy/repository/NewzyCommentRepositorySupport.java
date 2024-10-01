@@ -28,7 +28,7 @@ public class NewzyCommentRepositorySupport extends QuerydslRepositorySupport {
                 .select(Projections.constructor(NewzyCommentListGetResponseDto.class,
                         qNewzyComment.newzyCommentId,
                         qNewzyComment.newzyComment,
-                        qNewzyComment.createdAt.stringValue(),
+                        qNewzyComment.createdAt,
                         qNewzyComment.newzy.newzyId,
                         qNewzyComment.parentComment.newzyCommentId
                 ))

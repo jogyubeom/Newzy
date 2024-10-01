@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @ToString
 public class NewsListGetResponseDto {
     private Long newsId;
+    private String link;
     private String title;
     private String content;
     private int category;
@@ -26,6 +27,7 @@ public class NewsListGetResponseDto {
         }
         return NewsListGetResponseDto.builder()
                 .newsId(news.getNewsId())
+                .link(news.getLink())
                 .title(news.getTitle())
                 .content(news.getContent())
                 .category(news.getCategory())

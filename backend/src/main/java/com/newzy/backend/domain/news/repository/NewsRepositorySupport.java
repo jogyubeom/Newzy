@@ -8,12 +8,14 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public class NewsRepositorySupport extends QuerydslRepositorySupport {
     private final JPAQueryFactory queryFactory;
     private final int size = 10;
+
 
     public NewsRepositorySupport(JPAQueryFactory queryFactory) {
         super(News.class);
@@ -27,6 +29,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
         return queryFactory
                 .select(Projections.constructor(NewsListGetResponseDto.class,
                         qNews.newsId,
+                        qNews.link,
                         qNews.title,
                         qNews.content,
                         qNews.category,
@@ -41,4 +44,27 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                 .fetch();
     }
 
+    public List<NewsListGetResponseDto> findTop3NewsByDayWithHighestHits(LocalDateTime startOfDay) {
+        QNews qNews = QNews.news;
+
+        return queryFactory
+                .select(Projections.constructor(NewsListGetResponseDto.class,
+
+                        qNews.newsId,
+                        qNews.link,
+                        qNews.title,
+                        qNews.content,
+                        qNews.category,
+                        qNews.publisher,
+                        qNews.hit,
+                        qNews.createdAt
+                ))
+                .from(qNews)
+                .where(qNews.createdAt.goe(startOfDay)) // 하루 시작 시점부터 현재 시간까지
+                .orderBy(qNews.hit.desc()) // 조회수 내림차순
+                .limit(3) // 상위 3개만
+                .fetch();
+    }
 }
+
+

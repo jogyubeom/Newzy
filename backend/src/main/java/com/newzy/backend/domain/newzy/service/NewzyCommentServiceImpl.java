@@ -8,14 +8,11 @@ import com.newzy.backend.domain.newzy.entity.NewzyComment;
 import com.newzy.backend.domain.newzy.repository.NewzyCommentRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyCommentRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyRepository;
+import com.newzy.backend.global.exception.CustomIllegalStateException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +44,7 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
 
     @Override
     public void saveComment(Long newzyId, NewzyCommentRequestDTO dto){
-        Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new IllegalStateException("Newzy not found with ID: " + newzyId));
+        Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new CustomIllegalStateException("Newzy not found with ID: " + newzyId));
 
         NewzyComment newzyComment = NewzyComment.convertToEntityByNewzyId(dto, newzy);
 
@@ -65,6 +62,8 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
 
     @Override
     public void deleteComment(Long newzyCommentId) {
+        // TODO : 삭제한 코멘트 중복 삭제되지 않게 예외처리!
+        // TODO : 유저 토큰 처리되면, 해당 유저 아이디로 댓글을 조회한뒤 확인되면 삭제하는 로직 추가 필요
         newzyCommentRepository.deleteNewzyCommentById(newzyCommentId);
     }
 

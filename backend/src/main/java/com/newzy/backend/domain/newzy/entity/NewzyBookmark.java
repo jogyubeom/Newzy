@@ -21,10 +21,11 @@ public class NewzyBookmark extends BaseTimeEntity {
     @Column(name = "newzy_bookmark_id", unique = true, nullable = false)
     private Long newzyBookMarkId;
 
-    @Column(name = "newzy_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Long newzyId;
+    @ManyToOne
+    @JoinColumn(name = "newzy_id", nullable = false)
+    private Newzy newzy;
 
+    // TODO: 추후 다시 수정 (newzyBookmark entity)
 //    @ManyToOne
 //    @JoinColumn(name = "user_id")
 //    @OnDelete(action = OnDeleteAction.CASCADE)

@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.news.entity;
 
 
+import com.newzy.backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,8 +23,13 @@ public class NewsLike {
     @Column(name = "news_like_id", unique = true, nullable = false)
     private Long newsLikeId;
 
-    @Column(name = "news_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Long newsId;
+    @ManyToOne
+    @JoinColumn(name = "news_id")
+    private News news;
+
+    // TODO: 추후 다시 수정 (newsLike entity)
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    private User user;
 
 }

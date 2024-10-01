@@ -10,6 +10,7 @@ import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyLikeRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
+import com.newzy.backend.global.exception.CustomIllegalStateException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,6 @@ public class NewzyServiceImpl implements NewzyService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public NewzyResponseDTO getNewzyDetail(Long newzyId) {  // 조회수 + 1
         log.info(">>> newzyServiceImpl getNewzyDetail - newzyId: {}", newzyId);
         Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new EntityNotFoundException("일치하는 뉴지 데이터를 찾을 수 없습니다."));
@@ -59,7 +59,7 @@ public class NewzyServiceImpl implements NewzyService {
     @Override
     @Transactional(readOnly = true)
     public List<NewzyListGetResponseDTO> getHotNewzyList() {
-        List<Newzy> hotNewzies = newzyRepository.findTop3ByDeletedFalseOrderByVisitCntDesc();
+        List<Newzy> hotNewzies = newzyRepository.findTop3ByIsDeletedFalseOrderByVisitCntDesc();
         List<NewzyListGetResponseDTO> hotNewzyList = new ArrayList<>();
 
         for (Newzy newzy : hotNewzies) {
@@ -92,17 +92,21 @@ public class NewzyServiceImpl implements NewzyService {
 
     @Override
     public void bookmark(Long newzyId) {
-        if (newzyId == null) {
-            throw new IllegalStateException("해당 아이디의 뉴지를 찾을 수 없습니다.: " + newzyId);
-        }
+        // TODO: 유저 토큰으로 중복 처리
+
+        Newzy newzy = newzyRepository.findById(newzyId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 뉴스를 찾을 수 없습니다: " + newzyId));
 
         NewzyBookmark newzyBookmark = new NewzyBookmark();
-        newzyBookmark.setNewzyId(newzyId);
+        newzyBookmark.setNewzy(newzy);
         bookmarkRepository.save(newzyBookmark);
     }
 
     @Override
     public void deleteBookmark(Long bookmarkId) {
+
+        // TODO: 유저 토큰으로 중복 처리
+
         NewzyBookmark bookmark = bookmarkRepository.findById(bookmarkId).orElseThrow(() -> new EntityNotFoundException("일치하는 북마크 데이터가 없습니다."));
 
         bookmarkRepository.delete(bookmark);
@@ -110,16 +114,18 @@ public class NewzyServiceImpl implements NewzyService {
 
     @Override
     public void likeNewzy(Long newzyId) {
-        if (newzyId == null) {
-            throw new IllegalStateException("해당 아이디의 뉴지를 찾을 수 없습니다.: " + newzyId);
-        }
+        // TODO: 유저 토큰으로 중복 처리
+        Newzy newzy = newzyRepository.findById(newzyId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 뉴스를 찾을 수 없습니다: " + newzyId));
+
         NewzyLike like = new NewzyLike();
-        like.setNewzyId(newzyId);
+        like.setNewzy(newzy);
         newzyLikeRepository.save(like);
     }
 
     @Override
     public void deleteLike(Long newzyLikeId) {
+        // TODO: 유저 토큰으로 중복 처리
         NewzyLike like = newzyLikeRepository.findById(newzyLikeId)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 좋아요가 없습니다."));
 

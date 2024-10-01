@@ -19,10 +19,12 @@ public class NewzyLike extends BaseTimeEntity {
     @Column(name = "newzy_like_id", unique = true, nullable = false)
     private Long newzyLikeId;
 
-    @Column(name = "newzy_id", nullable = false)
-    private Long newzyId;
+    @ManyToOne
+    @JoinColumn(name = "newzy_id", nullable = false)
+    private Newzy newzy;
 
 
+    // TODO: 추후 다시 수정 (newzyLike entity)
 //    @ManyToOne
 //    @JoinColumn(name = "user_id")
 //    @OnDelete(action = OnDeleteAction.CASCADE)

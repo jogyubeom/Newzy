@@ -4,8 +4,7 @@ import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 import com.newzy.backend.domain.news.service.NewsService;
-import com.newzy.backend.domain.news.service.NewsServiceImpl;
-import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
+import com.newzy.backend.global.exception.CustomIllegalStateException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,7 +24,6 @@ import java.util.List;
 public class NewsController {
 
     private final NewsService newsService;
-    private final NewsServiceImpl newsServiceImpl;
 
     @GetMapping("/{newsId}")
     @Operation(summary = "뉴스 정보 조회", description = "뉴스 ID로 뉴스의 상세 정보를 조회합니다.")
@@ -55,9 +53,9 @@ public class NewsController {
 
     @GetMapping(value = "/hot")
     @Operation(summary = "많이 본 뉴스 조회", description = "조회수가 많은 뉴스를 조회합니다.")
-    public ResponseEntity<List<NewsListGetResponseDto>> getHotNewsList(@PathVariable Long newsId){
+    public ResponseEntity<List<NewsListGetResponseDto>> getHotNewsList(){
         log.info(">>> [GET] /news/hot - 요청 파라미터");
-        List<NewsListGetResponseDto> hotNewsList = newsServiceImpl.getHotNewsList();
+        List<NewsListGetResponseDto> hotNewsList = newsService.getHotNewsList();
 
         return ResponseEntity.status(200).body(hotNewsList);
     }
@@ -70,7 +68,10 @@ public class NewsController {
             @RequestBody NewsCardRequestDTO requestDto
     ){
         log.info(">>> [POST] /news/{}/collect-news-card - 요청 파라미터 : newId : {}", requestDto.getNewsId(), requestDto.getNewsId());
-        newsServiceImpl.collectNewsCard(requestDto);
+        if (requestDto == null) {
+            throw new CustomIllegalStateException("해당 뉴스 카드 요청 dto를 찾을 수 없습니다. " + requestDto);
+        }
+        newsService.collectNewsCard(requestDto);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴스 카드를 수집했습니다."));
     }
@@ -81,7 +82,13 @@ public class NewsController {
     public ResponseEntity<BaseResponseBody> bookmarkNews (
             @PathVariable("newsId") Long newsId){
         log.info(">>> [POST] /news/{}/bookmark - 요청 파라미터: newsId - {}", newsId, newsId);
-        newsServiceImpl.bookmark(newsId);
+
+        if (newsId == null) {
+            throw new CustomIllegalStateException("해당 아이디의 뉴스를 찾을 수 없습니다.: " + newsId);
+        }
+
+        // TODO: requestHeader에 유저 토큰을 넣어서 받은 다음
+        // 토큰에서 유저 아이디를 뽑아내는 로직이 필요
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴스를 북마크했습니다."));
     }
@@ -94,7 +101,8 @@ public class NewsController {
             @PathVariable("bookmarkId") Long bookmarkId
     ){
         log.info(">>> [DELETE] /news/{}/bookmark/{} - 요청 파라미터: newsId - {}, bookmarkId - {}", newsId, bookmarkId, newsId, bookmarkId);
-        newsServiceImpl.deleteBookmark(newsId, bookmarkId);
+        // TODO : 유저 토큰이 추가되면 /{newsId}/bookmark 으로 수정하고 userId + newsId로 만 확인해서 삭제로직 실험
+        newsService.deleteBookmark(newsId, bookmarkId);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴스를 북마크를 삭제했습니다."));
     }
@@ -105,7 +113,14 @@ public class NewsController {
     public ResponseEntity<BaseResponseBody> likeNews (@PathVariable("newsId") Long newsId
     ){
         log.info(">>> [POST] /news/{}/like - 요청 파라미터: newsId - {}", newsId, newsId);
-        newsServiceImpl.likeNews(newsId);
+        if (newsId == null) {
+            throw new CustomIllegalStateException("해당 아이디의 뉴스를 찾을 수 없습니다." + newsId);
+        }
+
+        // TODO: requestHeader에 유저 토큰을 넣어서 받은 다음
+        // 토큰에서 유저 아이디를 뽑아내는 로직이 필요
+
+        newsService.likeNews(newsId);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴스가 좋습니다."));
     }
@@ -118,7 +133,9 @@ public class NewsController {
             @PathVariable("newsLikeId") Long newsLikeId
     ){
         log.info(">>> [DELETE] /news/{}/like/{} - 요청 파라미터: newsId - {}, likeId - {}", newsId, newsLikeId, newsId, newsLikeId);
-        newsServiceImpl.deleteLike(newsId, newsLikeId);
+        // TODO : 유저 토큰이 추가되면 /{newsId}/like 으로 수정하고 userId + newsId로 만 확인해서 삭제로직 실험
+
+        newsService.deleteLike(newsId, newsLikeId);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴스의 좋아요를 삭제했습니다."));
     }

@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.news.entity;
 
+import com.newzy.backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,17 +22,17 @@ public class NewsBookmark {
     @Column(name = "news_bookmark_id", unique = true, nullable = false)
     private Long newsBookmarkId;
 
-    @Column(name = "news_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Long newsId;
+    @ManyToOne
+    @JoinColumn(name = "news_id", nullable = false)
+    private News news;
 
+    // TODO: 추후 다시 수정 (newsBookmark entity)
 //    @ManyToOne
 //    @JoinColumn(name = "user_id")
-//    @OnDelete(action = OnDeleteAction.CASCADE)
+////    @OnDelete(action = OnDeleteAction.CASCADE)
 //    private User user;
 
     // hard delete
-
 
 }
 

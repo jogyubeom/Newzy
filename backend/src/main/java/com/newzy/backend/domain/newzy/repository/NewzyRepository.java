@@ -13,7 +13,7 @@ public interface NewzyRepository extends JpaRepository<Newzy, Long> {
 
 
     Newzy findByNewzyId(Long id);
-    List<Newzy> findTop3ByDeletedFalseOrderByVisitCntDesc();
+    List<Newzy> findTop3ByIsDeletedFalseOrderByVisitCntDesc();
 
     default Newzy updateNewzyInfo(Newzy nzy) {
         Newzy newzy = findByNewzyId(nzy.getNewzyId());

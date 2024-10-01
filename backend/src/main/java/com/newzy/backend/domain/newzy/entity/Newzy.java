@@ -14,12 +14,18 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "newzy")
 @ToString
+@AttributeOverrides({
+        @AttributeOverride(name = "createdAt", column = @Column(name = "created_at")),
+        @AttributeOverride(name = "updatedAt", column = @Column(name = "updated_at"))
+})
+
 public class Newzy extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "newzy_id", unique = true, nullable = false)
     private Long newzyId;
 
+    // // TODO: 추후 다시 수정 (newzy entity)
 //    @ManyToOne(targetEntity = User.class)
 //    @JoinColumn(name = "user_id", updatable = false)
 //    private User user;
