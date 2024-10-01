@@ -98,17 +98,16 @@ class NCFRecommender:
     def _load_model(self):
         num_users = User.objects.count()
         num_news = News.objects.count()
-
-        logging.info(f"모델 로드 시도: cluster_id={self.cluster_id}")
+        model = NCFModel(num_users, num_news)
+        # logging.info(f"모델 로드 시도: cluster_id={self.cluster_id}")
         # MongoDB에서 모델을 로드하려고 시도
-        model = NCFModel(num_users, num_news).load_model_from_mongo(self.cluster_id)
-
-        # MongoDB에 저장된 모델이 없는 경우 새로운 모델 생성
-        if not model:
-            logging.warning(f"MongoDB에 저장된 모델 없음, 새 모델 생성: cluster_id={self.cluster_id}")
-            model = NCFModel(num_users, num_news)
-            model.save_model_to_mongo(self.cluster_id)
-
+        # model = NCFModel(num_users, num_news).load_model_from_mongo(self.cluster_id)
+        #
+        # # MongoDB에 저장된 모델이 없는 경우 새로운 모델 생성
+        # if not model:
+        #     logging.warning(f"MongoDB에 저장된 모델 없음, 새 모델 생성: cluster_id={self.cluster_id}")
+        #     model = NCFModel(num_users, num_news)
+        #     model.save_model_to_mongo(self.cluster_id)
         return model
 
     def train_model(self, user_ids, news_ids, ratings):
