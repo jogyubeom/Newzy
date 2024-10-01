@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.newzy.service;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyCommentRequestDTO;
+import com.newzy.backend.domain.newzy.dto.response.NewzyCommentListGetResponseDto;
 import com.newzy.backend.domain.newzy.dto.response.NewzyCommentResponseDTO;
 import org.springframework.data.domain.Page;
 
@@ -12,8 +13,7 @@ public interface NewzyCommentService {
 
     NewzyCommentResponseDTO updateComment(Long newzyCommentId, NewzyCommentRequestDTO requestDTO);
 
-    Page<NewzyCommentResponseDTO> getNewzyCommentListByNewzyId(Long newzyId, int page, int size);
-
     void deleteComment(Long newzyCommentId);
 
+    List<NewzyCommentListGetResponseDto> getNewzyCommentList(Long newzyId, int page);
 }

@@ -5,16 +5,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.Setter;
 
 @Entity(name = "newzyLike")
-@Getter
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "newzy_like")
-public class Like extends BaseTimeEntity {
+public class NewzyLike extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,16 +20,15 @@ public class Like extends BaseTimeEntity {
     private Long newzyLikeId;
 
     @ManyToOne
-    @JoinColumn(name = "newzy_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "newzy_id", nullable = false)
     private Newzy newzy;
 
+
+    // TODO: 추후 다시 수정 (newzyLike entity)
 //    @ManyToOne
 //    @JoinColumn(name = "user_id")
 //    @OnDelete(action = OnDeleteAction.CASCADE)
 //    private User user;
 
-    @Column
-    private boolean isDeleted = Boolean.FALSE;
 
 }

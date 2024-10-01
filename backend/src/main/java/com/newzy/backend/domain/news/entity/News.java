@@ -1,12 +1,17 @@
 package com.newzy.backend.domain.news.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter @Setter
 @Table(name = "news")
-public class News {
+public class News extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "news_id")
@@ -30,13 +35,8 @@ public class News {
     @Column(name = "publisher", length = 100, nullable = false)
     private String publisher;
 
-    @Column(name = "created_at", nullable = true)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = true)
-    private LocalDateTime updatedAt;
-
     @Column(name = "crawled_at", updatable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime crawledAt = LocalDateTime.now();
 
     @Column(name = "hit", nullable = false)

@@ -1,4 +1,5 @@
 package com.newzy.backend.domain.newzy.repository;
+import com.newzy.backend.domain.newzy.dto.response.NewzyCommentListGetResponseDto;
 import com.newzy.backend.domain.newzy.entity.NewzyComment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,5 +36,4 @@ public interface NewzyCommentRepository extends JpaRepository<NewzyComment, Long
         newzyComment.setIsDeleted(true);
         save(newzyComment);
    }
-
 }

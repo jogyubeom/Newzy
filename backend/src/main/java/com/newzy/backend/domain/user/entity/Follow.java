@@ -1,4 +1,4 @@
-package com.newzy.backend.domain.newzy.entity;
+package com.newzy.backend.domain.user.entity;
 
 import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -19,6 +19,7 @@ public class Follow extends BaseTimeEntity {
     @Column(name = "follow_id", unique = true, nullable = false)
     private Long followId;
 
+    // TODO: 추후 다시 수정 (follow entity)
 //    @ManyToOne
 //    @JoinColumn(name = "to_id")
 //    private User toId;
