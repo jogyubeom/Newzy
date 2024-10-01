@@ -1,7 +1,6 @@
 package com.newzy.backend.global.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -10,13 +9,14 @@ public class BaseResponseBody {
     String message = null;
     Integer statusCode = null;
 
-    private BaseResponseBody() {}
+    private BaseResponseBody() {
+    }
 
-    private BaseResponseBody(Integer statusCode){
+    private BaseResponseBody(Integer statusCode) {
         this.statusCode = statusCode;
     }
 
-    private BaseResponseBody(Integer statusCode, String message){
+    private BaseResponseBody(Integer statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;
     }
