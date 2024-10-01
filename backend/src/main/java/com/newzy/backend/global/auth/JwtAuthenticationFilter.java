@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean { // JWT 토큰�
         put("/api/actuator/health", new HashSet<>(List.of("GET"))); // healthcheck 제외
         put("/api/error", new HashSet<>(List.of("GET", "POST"))); // error 제외
         put("/api/swagger-ui", new HashSet<>(List.of("GET"))); // swagger 제외
-        put("/api/v3/api-docs/swagger-config", new HashSet<>(List.of("GET"))); // swagger 제외
+        put("/api/v3/api-docs", new HashSet<>(List.of("GET"))); // swagger 제외
 
     }};
 
