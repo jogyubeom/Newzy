@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -31,10 +32,10 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
     private final NewzyRepository newzyRepository;
 
     @Override
-    public List<NewzyCommentListGetResponseDto> getNewzyCommentList(Long newzyId, int page) {
+    public Map<String, Object> getNewzyCommentList(Long newzyId, int page) {
         log.info(">>> newzyCommentServiceImpl getNewzyCommentList - newzyId: {}, page: {}", newzyId, page);
         int size = 10;
-        List<NewzyCommentListGetResponseDto> commentList = newzyCommentRepositorySupport.findCommentList(page, size, newzyId);
+        Map<String, Object> commentList = newzyCommentRepositorySupport.findCommentList(page, size, newzyId);
 
         if (commentList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 댓글 데이터를 조회할 수 없습니다.");

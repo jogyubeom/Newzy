@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -34,10 +35,10 @@ public class NewzyServiceImpl implements NewzyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NewzyListGetResponseDTO> getNewzyList(int page, int category) {
+    public Map<String, Object> getNewzyListWithLastPage(int page, int category) {
         log.info(">>> newzyServiceImpl getNewzyList - pages: {}, category: {}", page, category);
         int size = 10;
-        List<NewzyListGetResponseDTO> newzyList = newzyRepositorySupport.findNewzyList(page, size, category);
+        Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, size, category);
 
         if (newzyList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 뉴지 데이터를 조회할 수 없습니다.");
@@ -131,7 +132,5 @@ public class NewzyServiceImpl implements NewzyService {
 
         newzyLikeRepository.delete(like);
     }
-
-
 
 }
