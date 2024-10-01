@@ -102,6 +102,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
                 .email(email)
                 .nickname(nickname)
                 .password(new BCryptPasswordEncoder().encode(RandomStringGenerator.generateRandomString(10)))
+                .type("kakao")
                 .build();
     }
 
@@ -116,6 +117,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
                 .email(email)
                 .nickname(name)
                 .password(new BCryptPasswordEncoder().encode(RandomStringGenerator.generateRandomString(10)))
+                .type("google")
                 .build();
     }
 

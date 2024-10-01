@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "user")
 @DynamicUpdate
 public class User extends BaseTimeEntity {
@@ -25,7 +26,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "nickname", nullable = false, length = 50)
     private String nickname;
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "password", nullable = false)
@@ -54,6 +55,10 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "state", nullable = false)
     private int state;
+
+    @Column(name = "social_login_type", length = 50)
+    private String socialLoginType;
+
 
     @Builder
     public User(String nickname, String password, String email, LocalDate birth, String info) {

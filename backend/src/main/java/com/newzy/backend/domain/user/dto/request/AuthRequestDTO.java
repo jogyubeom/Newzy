@@ -12,5 +12,6 @@ import lombok.*;
 public class AuthRequestDTO {
     String email;
     String nickname;
+    String type;
     String password;
 }

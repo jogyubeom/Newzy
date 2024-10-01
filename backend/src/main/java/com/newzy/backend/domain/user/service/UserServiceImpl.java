@@ -87,7 +87,8 @@ public class UserServiceImpl implements UserService {
     public AuthRequestDTO oauthLogin(AuthRequestDTO authRequestDTO) {
         try {
             // 이메일로 기존 사용자 검색
-            Optional<User> existingUser = userRepository.findUserByEmail(authRequestDTO.getEmail());
+            Optional<User> existingUser = userRepository.findUserByEmailAndSocialLoginType(
+                    authRequestDTO.getEmail(), authRequestDTO.getType());
 
             if (existingUser.isPresent()) {
                 log.info("기존 사용자 로그인: {}", existingUser.get().getEmail());
@@ -103,6 +104,7 @@ public class UserServiceImpl implements UserService {
                         .email(authRequestDTO.getEmail())
                         .nickname(authRequestDTO.getNickname())
                         .password(authRequestDTO.getPassword())
+                        .socialLoginType(authRequestDTO.getType())
                         .build();
                 log.info("새로운 사용자 등록: {}", authRequestDTO.getEmail());
                 userRepository.save(user); // 새 사용자 저장
