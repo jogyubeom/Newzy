@@ -20,7 +20,7 @@ export const SocialLoginModal = ({ isOpen, onClose }) => {
         console.log('구글 로그인 결과:', response.data); // 결과 확인
       } else if (platform === 'Naver') {
         console.log(`${platform} 로그인 시도`);
-        const response = await axios.post('https://j11b305.p.ssafy.io/api/oauth2/authorization/naver');
+        const response = await axios.post('https://j11b305.p.ssafy.io/api/oauth2/authorization/kakao');
         console.log('네이버 로그인 결과:', response.data); // 결과 확인
       }
     } catch (error) {
