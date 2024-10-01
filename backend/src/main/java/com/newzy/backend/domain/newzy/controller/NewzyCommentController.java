@@ -5,6 +5,7 @@ import com.newzy.backend.domain.newzy.dto.response.NewzyCommentListGetResponseDt
 import com.newzy.backend.domain.newzy.dto.response.NewzyCommentResponseDTO;
 import com.newzy.backend.domain.newzy.service.NewzyCommentServiceImpl;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
+import com.newzy.backend.global.exception.EntityNotFoundException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
