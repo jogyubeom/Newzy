@@ -90,3 +90,18 @@ class RecommendedNews(models.Model):
     class Meta:
         managed = False
         db_table = 'recommended_news'
+
+class DailyQuiz(models.Model):
+    daily_quiz_id = models.BigAutoField(primary_key=True)
+    news = models.ForeignKey(News, on_delete=models.SET_NULL, null=True, blank=True)
+    question = models.CharField(max_length=300, null=True, blank=True)
+    option1 = models.CharField(max_length=100, null=True, blank=True)
+    option2 = models.CharField(max_length=100, null=True, blank=True)
+    option3 = models.CharField(max_length=100, null=True, blank=True)
+    option4 = models.CharField(max_length=100, null=True, blank=True)
+    answer = models.IntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    class Meta:
+        managed = False
+        db_table = 'daily_quiz'
