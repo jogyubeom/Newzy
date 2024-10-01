@@ -1,0 +1,1 @@
+export { SocialLoginModal } from "./socialLoginModal";
