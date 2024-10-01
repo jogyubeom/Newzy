@@ -105,8 +105,7 @@ CACHES = {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'decode_responses': True,
         },
-        'KEY_PREFIX': 'newzy',
-        'TIMEOUT': 864000  # 10 days
+        'TIMEOUT': 259200  # 3 days
     }
 }
 # >> MongoDB 설정
