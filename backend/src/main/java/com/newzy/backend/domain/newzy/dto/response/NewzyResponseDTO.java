@@ -1,6 +1,5 @@
 package com.newzy.backend.domain.newzy.dto.response;
 
-import com.newzy.backend.domain.newzy.entity.Category;
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -26,7 +25,7 @@ public class NewzyResponseDTO {
     private String content;
 
     @Schema(description = "뉴지 카테고리", example = "1")
-    private Category category;
+    private int category;
 
     @Schema(description = "뉴지 좋아요 수", example = "0")
     private int likeCnt;

@@ -25,7 +25,7 @@
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long newzyCommentId;
 
-    //    // 유저 아이디
+        // TODO: 추후 다시 수정 (newzyComment entity)
     //    @ManyToOne(fetch = FetchType.LAZY)
     //    @JoinColumn(name = "user_id", updatable = false)
     //    private User user;
@@ -45,8 +45,7 @@
         private String newzyComment;
 
         @Column(name = "is_updated")
-        private
-        Boolean isUpdated = false;
+        private Boolean isUpdated = false;
 
         @Column(name = "is_deleted")
         private Boolean isDeleted = false;
