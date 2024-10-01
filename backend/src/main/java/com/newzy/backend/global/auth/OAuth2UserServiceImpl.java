@@ -55,9 +55,9 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             case "google":
                 authRequestDTO = getGoogleUser(attributes);
                 break;
-            case "naver":
-                authRequestDTO = getNaverUser(attributes);
-                break;
+//            case "naver":
+//                authRequestDTO = getNaverUser(attributes);
+//                break;
             default:
                 throw new IllegalArgumentException("Unsupported social login provider: " + registrationId);
         }
@@ -120,18 +120,18 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
     }
 
     // 네이버 사용자 정보 처리
-    private AuthRequestDTO getNaverUser(Map<String, Object> attributes) {
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-        String email = (String) response.get("email");
-        String nickname = (String) response.get("nickname");
-
-        log.info("Naver user details: email={}, nickname={}", email, nickname);
-
-        return AuthRequestDTO.builder()
-                .email(email)
-                .nickname(nickname)
-                .password(new BCryptPasswordEncoder().encode(RandomStringGenerator.generateRandomString(10)))
-                .build();
-    }
+//    private AuthRequestDTO getNaverUser(Map<String, Object> attributes) {
+//        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+//        String email = (String) response.get("email");
+//        String nickname = (String) response.get("nickname");
+//
+//        log.info("Naver user details: email={}, nickname={}", email, nickname);
+//
+//        return AuthRequestDTO.builder()
+//                .email(email)
+//                .nickname(nickname)
+//                .password(new BCryptPasswordEncoder().encode(RandomStringGenerator.generateRandomString(10)))
+//                .build();
+//    }
 }
 
