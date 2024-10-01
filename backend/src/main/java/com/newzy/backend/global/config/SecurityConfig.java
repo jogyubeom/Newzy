@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,10 +68,16 @@ public class SecurityConfig {
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "OAuth2 authentication failed");
                         })
                 )
+                .headers(httpSecurityHeadersConfigurer ->
+                        httpSecurityHeadersConfigurer.xssProtection(HeadersConfigurer.XXssConfig::disable)) // XSS 보호 설정 추가
+                // 직접 정의한 CorsFilter 추가
+                .addFilterBefore(corsFilter(), JwtAuthenticationFilter.class)
                 // UsernamePasswordAuthenticationFilter(사용자 이름과 비밀번호를 통한 기본 인증 필터) 전에 JWT 인증을 처리하는 JwtAuthenticationFilter((user-defined) 필터 추가
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler((request, response, accessDeniedException) ->  // accessDeniedHandler 추가
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"))
                 );
 
         return http.build();
