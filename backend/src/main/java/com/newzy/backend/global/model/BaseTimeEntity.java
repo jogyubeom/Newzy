@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)  // Auditing 기능 포함
 public abstract class BaseTimeEntity {
     // created_at
-    @Column(name = "create_at", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     // updated_at
-    @Column(name = "update_at")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @PrePersist
