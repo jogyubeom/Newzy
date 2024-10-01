@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -29,13 +30,13 @@ public class NewzyCommentController {
 
      @GetMapping
      @Operation(summary = "뉴지 댓글 목록", description = "뉴지 댓글 목록을 불러옵니다.")
-     public ResponseEntity<List<NewzyCommentListGetResponseDto>> getNewzyCommentList(
+     public ResponseEntity<Map<String, Object>> getNewzyCommentList(
              @PathVariable("newzyId") Long newzyId,
              @Parameter(description = "페이지 번호")
              @RequestParam(value = "page", required = false, defaultValue = "0") int page
      ){
          log.info(">>> [GET] /newzy/{}/comments - 요청 파라미터: newzyId - {}, page - {}", newzyId, newzyId, page);
-         List<NewzyCommentListGetResponseDto> commentList = newzyCommentServiceImpl.getNewzyCommentList(newzyId, page);
+         Map<String, Object> commentList = newzyCommentServiceImpl.getNewzyCommentList(newzyId, page);
 
          return ResponseEntity.status(200).body(commentList);
      }

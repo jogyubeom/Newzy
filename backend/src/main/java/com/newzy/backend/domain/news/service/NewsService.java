@@ -5,9 +5,10 @@ import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface NewsService {
-    List<NewsListGetResponseDto> getNewsList(int page, int category);
+    Map<String, Object> getNewsList(int page, int category);
     NewsDetailGetResponseDto getNewsDetail(Long NewsId);
 
     void bookmark(Long NewsId);

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -31,10 +32,10 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
     private final NewzyRepository newzyRepository;
 
     @Override
-    public List<NewzyCommentListGetResponseDto> getNewzyCommentList(Long newzyId, int page) {
+    public Map<String, Object> getNewzyCommentList(Long newzyId, int page) {
         log.info(">>> newzyCommentServiceImpl getNewzyCommentList - newzyId: {}, page: {}", newzyId, page);
         int size = 10;
-        List<NewzyCommentListGetResponseDto> commentList = newzyCommentRepositorySupport.findCommentList(page, size, newzyId);
+        Map<String, Object> commentList = newzyCommentRepositorySupport.findCommentList(page, size, newzyId);
 
         if (commentList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 댓글 데이터를 조회할 수 없습니다.");
@@ -65,7 +66,7 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
         // TODO : 삭제한 코멘트 중복 삭제되지 않게 예외처리!
         // TODO : 유저 토큰 처리되면, 해당 유저 아이디로 댓글을 조회한뒤 확인되면 삭제하는 로직 추가 필요
         NewzyComment comment = newzyCommentRepository.findById(newzyCommentId).orElseThrow(() -> new EntityNotFoundException("해당하는  댓글 엔티티를 찾을 수 없습니다.: " + newzyCommentId));
-        
+
         newzyCommentRepository.deleteNewzyCommentById(newzyCommentId);
     }
 
