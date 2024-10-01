@@ -59,7 +59,15 @@ public class NewsController {
 
         return ResponseEntity.status(200).body(hotNewsList);
     }
+    @GetMapping(value = "/recommend")
+    @Operation(summary = "추천 뉴스 조회", description = "사용자에 맞는 추천 뉴스를 조회합니다.")
+    public ResponseEntity<List<NewsListGetResponseDto>> getRecommendedNewsList(){
+        log.info(">>> [GET] /news/recommend - 요청 파라미터");
+        // TODO 수정 필요
+        List<NewsListGetResponseDto> hotNewsList = newsService.getHotNewsList();
 
+        return ResponseEntity.status(200).body(hotNewsList);
+    }
 
     // 카테고리 정보를 int로 프론트에서 받아옴
     @PostMapping(value = "/{newsId}/collect-news-card")
