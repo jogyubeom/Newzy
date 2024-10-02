@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 
 from newzy.models import User, Cluster
 
+logging = logging.getLogger('my_logger')
 
 def calculate_distance(point, centroid):
     # 유클리드 거리 계산

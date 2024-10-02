@@ -11,9 +11,9 @@ from newzy.tasks import run_crawl
 
 # Define constants for clarity
 TIME_ZONES = 'Asia/Seoul'
-# BATCH_TIMES = [0, 4, 8, 10, 12, 14, 16, 18, 20]
+BATCH_TIMES = [0, 4, 8, 10, 12, 14, 16, 18, 20]
 
-BATCH_TIMES = [11, 12, 13, 14, 15, 16, 17, 18, 19]
+# BATCH_TIMES = [11, 12, 13, 14, 15, 16, 17, 18, 19]
 
 
 def start_scheduler():
@@ -41,8 +41,8 @@ def schedule_batch_task():
     end_index = BATCH_TIMES.index(end_date.hour)
 
     if end_index == 0:
-        # start_date = (end_date - timedelta(days=1)).replace(hour=20)
-        start_date = end_date.replace(hour=10)
+        start_date = (end_date - timedelta(days=1)).replace(hour=20)
+        # start_date = end_date.replace(hour=10)
     else:
         start_date = end_date.replace(hour=BATCH_TIMES[end_index - 1])
 
