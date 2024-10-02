@@ -44,7 +44,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                         qNews.newsId,
                         qNews.link,
                         qNews.title,
-                        qNews.content,
+                        qNews.contentText,
                         qNews.category,
                         qNews.publisher,
                         qNews.hit,
@@ -70,11 +70,10 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
 
         return queryFactory
                 .select(Projections.constructor(NewsListGetResponseDto.class,
-
                         qNews.newsId,
                         qNews.link,
                         qNews.title,
-                        qNews.content,
+                        qNews.contentText,
                         qNews.category,
                         qNews.publisher,
                         qNews.hit,

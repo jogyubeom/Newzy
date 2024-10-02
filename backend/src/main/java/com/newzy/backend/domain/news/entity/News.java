@@ -26,6 +26,9 @@ public class News extends BaseTimeEntity {
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Column(name = "content_text", columnDefinition = "TEXT", nullable = false)
+    private String contentText;
+
     @Column(name = "difficulty", columnDefinition = "TINYINT", nullable = false)
     private int difficulty;
 
