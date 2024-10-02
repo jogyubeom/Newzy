@@ -51,7 +51,7 @@ public class NewzyCommentRepositorySupport extends QuerydslRepositorySupport {
                 .fetch();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("newsList", commentList); // list
+        result.put("newzyCommentList", commentList); // list
         result.put("totalPage", totalPage); // int
 
         return result;
