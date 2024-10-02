@@ -9,7 +9,8 @@ from newzy.db_operations import save_recommended_news_by_cluster, \
 from newzy.create_quiz.create_quiz import create_quiz_from_news
 from newzy.models import User
 from newzy.recommend.ncf_recommender import NCFRecommender
-from newzy.redis_operation import get_redis_key, save_news_info_to_redis
+from newzy.redis_operation import get_redis_key, save_news_info_to_redis, \
+    save_recommended_news_list_to_redis
 from newzy.summary.summarize_content import summarize_news
 
 logging = logging.getLogger('my_logger')
@@ -59,11 +60,12 @@ def recommend_news_by_cluster(cluster_id: int):
     if cached_data:
         logging.info(f"Redis에서 캐시된 추천 결과 사용: cluster_id={cluster_id}")
         recommended_news_list = json.loads(cached_data)['list']
+        logging.info(recommended_news_list)
         for idx, recommended_news in enumerate(recommended_news_list):
             summary = summarize_news(cluster_id=cluster_id, news_id=recommended_news)
             # 뉴스 정보 레디스에 저장
             save_news_info_to_redis(recommended_news, cluster_id, summary)
-            if idx < 10:  # 상위 10개는 데일리 기사 후보 -> 데일리 퀴즈 생성
+            if idx < 7:  # 상위 10개는 데일리 기사 후보 -> 데일리 퀴즈 생성
                 create_quiz_from_news(recommended_news)
 
         return recommended_news_list
@@ -78,7 +80,7 @@ def recommend_news_by_cluster(cluster_id: int):
         logging.info(f"군집 {cluster_id}의 중앙값 {mid_user.user_id} 에 대한 추천 완료")
         # 추천 결과 cache 에 저장
         if recommended_news_list:
-            cache.set(cache_key, json.dumps({'list': recommended_news_list}))
+            save_recommended_news_list_to_redis(cache_key, recommended_news_list)
 
         for idx, recommended_news in enumerate(recommended_news_list):
             # 추천 결과 table 에 저장 (만약을 대비하여)
@@ -87,7 +89,7 @@ def recommend_news_by_cluster(cluster_id: int):
             summary = summarize_news(cluster_id=cluster_id, news_id=recommended_news)
             # 뉴스 정보 레디스에 저장
             save_news_info_to_redis(recommended_news, cluster_id, summary)
-            if idx < 10:  # 상위 10개는 데일리 기사 후보 -> 데일리 퀴즈 생성
+            if idx < 7:  # 상위 10개는 데일리 기사 후보 -> 데일리 퀴즈 생성
                 create_quiz_from_news(recommended_news)
         return recommended_news_list
     else:

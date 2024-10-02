@@ -1,10 +1,10 @@
 import logging
+import random
 from datetime import datetime
 
 import numpy as np
 import pandas as pd
 from kmodes.kprototypes import KPrototypes
-from matplotlib import pyplot as plt
 
 from newzy.models import User, Cluster
 
@@ -14,29 +14,27 @@ def calculate_distance(point, centroid):
     # 유클리드 거리 계산
     return np.linalg.norm(point - centroid)
 
-
-def visualize_with_age(df):
-    plt.rcParams['font.family'] = 'Malgun Gothic'
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-
-    scatter = ax.scatter(
-        df['economy_score'], df['international_score'], df['society_score'],
-        c=df['cluster'], cmap='Set2', s=df['age'], alpha=0.6, depthshade=True
-    )
-
-    ax.set_xlabel('Economy Score')
-    ax.set_ylabel('International Score')
-    ax.set_zlabel('Society Score')
-    ax.set_title('3D Cluster Visualization: Including Age as Point Size')
-
-    handles, labels = scatter.legend_elements()
-    cluster_labels = [f"{name}" for name in df['cluster_name'].unique()]
-    legend = ax.legend(handles, cluster_labels, title="Clusters")
-    ax.add_artist(legend)
-
-    plt.show()
-
+# def visualize_with_age(df):
+#     plt.rcParams['font.family'] = 'Malgun Gothic'
+#     fig = plt.figure(figsize=(10, 8))
+#     ax = fig.add_subplot(111, projection='3d')
+#
+#     scatter = ax.scatter(
+#         df['economy_score'], df['international_score'], df['society_score'],
+#         c=df['cluster'], cmap='Set2', s=df['age'], alpha=0.6, depthshade=True
+#     )
+#
+#     ax.set_xlabel('Economy Score')
+#     ax.set_ylabel('International Score')
+#     ax.set_zlabel('Society Score')
+#     ax.set_title('3D Cluster Visualization: Including Age as Point Size')
+#
+#     handles, labels = scatter.legend_elements()
+#     cluster_labels = [f"{name}" for name in df['cluster_name'].unique()]
+#     legend = ax.legend(handles, cluster_labels, title="Clusters")
+#     ax.add_artist(legend)
+#
+#     plt.show()
 
 def assign_cluster_names(df):
     cluster_names = {
@@ -53,13 +51,12 @@ def assign_cluster_names(df):
     df['cluster_name'] = df['cluster'].map(cluster_names)
     return df
 
-
 def cluster_user():
-    users = User.objects.values('user_id', 'economy_score', 'society_score', 'international_score',
-                                'birth')
+    users = User.objects.values('user_id', 'economy_score', 'society_score', 'international_score', 'birth')
     df = pd.DataFrame(users)
-    df = df.dropna()
-    df['age'] = df['birth'].apply(lambda x: datetime.now().year - x.year)
+
+    # null 값이 있는 birth의 경우 랜덤 나이(20~60) 설정
+    df['age'] = df['birth'].apply(lambda x: random.randint(20, 60) if pd.isna(x) else datetime.now().year - x.year)
 
     X = df[['economy_score', 'society_score', 'international_score', 'age']].values
     kproto = KPrototypes(n_clusters=9, init='Huang', verbose=2)
@@ -100,4 +97,4 @@ def cluster_user():
         user.save()
 
     logging.info(f">>> 군집화 성공")
-    visualize_with_age(df)
+    # visualize_with_age(df)

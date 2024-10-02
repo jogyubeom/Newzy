@@ -20,6 +20,10 @@ mongo_client = MongoClient(
 mongo_db = mongo_client[settings.MONGO_DB['NAME']]
 collection = mongo_db['models']  # 모델을 저장할 컬렉션
 
+# 더미 사용자 ID 및 더미 뉴스 ID
+DUMMY_USER_ID = 1
+DUMMY_NEWS_ID = 1
+
 
 class NCFModel(torch.nn.Module):
     def __init__(self, num_users, num_news, embedding_size=50):
@@ -35,6 +39,11 @@ class NCFModel(torch.nn.Module):
         self.fc3 = torch.nn.Linear(64, 1)
 
     def forward(self, user_id, news_id):
+        # 삭제된 유저 ID에 접근할 경우 더미 유저 ID 사용
+        user_id = torch.where(user_id >= self.user_embedding.num_embeddings, torch.tensor(DUMMY_USER_ID), user_id)
+        # 삭제된 뉴스 ID에 접근할 경우 더미 뉴스 ID 사용
+        news_id = torch.where(news_id >= self.news_embedding.num_embeddings, torch.tensor(DUMMY_NEWS_ID), news_id)
+
         logging.info(f"Forward 함수 호출: user_id={user_id}, news_id={news_id}")
 
         user_embed = self.user_embedding(user_id)
@@ -99,15 +108,6 @@ class NCFRecommender:
         num_users = User.objects.count()
         num_news = News.objects.count()
         model = NCFModel(num_users, num_news)
-        # logging.info(f"모델 로드 시도: cluster_id={self.cluster_id}")
-        # MongoDB에서 모델을 로드하려고 시도
-        # model = NCFModel(num_users, num_news).load_model_from_mongo(self.cluster_id)
-        #
-        # # MongoDB에 저장된 모델이 없는 경우 새로운 모델 생성
-        # if not model:
-        #     logging.warning(f"MongoDB에 저장된 모델 없음, 새 모델 생성: cluster_id={self.cluster_id}")
-        #     model = NCFModel(num_users, num_news)
-        #     model.save_model_to_mongo(self.cluster_id)
         return model
 
     def train_model(self, user_ids, news_ids, ratings):
@@ -118,13 +118,24 @@ class NCFRecommender:
     def recommend(self, user_id):
         logging.info(f"추천 계산 시작: user_id={user_id}")
 
+        # 유효하지 않은 사용자 ID인 경우 더미 ID로 대체
+        if not User.objects.filter(user_id=user_id).exists():
+            logging.warning(f"삭제된 사용자 ID 접근: user_id={user_id}. 더미 사용자 ID 사용.")
+            user_id = DUMMY_USER_ID
+
         user = torch.tensor([user_id])
         news_ids = [news.news_id for news in News.objects.all()]
-        news_ids_tensor = torch.tensor(news_ids)
+
+        # 유효하지 않은 뉴스 ID는 더미 뉴스 ID로 대체
+        valid_news_ids = [
+            news_id if News.objects.filter(news_id=news_id).exists() else DUMMY_NEWS_ID
+            for news_id in news_ids
+        ]
+        news_ids_tensor = torch.tensor(valid_news_ids)
 
         with torch.no_grad():
             scores = self.model(user, news_ids_tensor).squeeze()
-            recommended_news = torch.topk(scores, 30).indices
+            recommended_news = torch.topk(scores, 15).indices
 
         logging.info(f"추천 완료: user_id={user_id}, 추천된 뉴스: {recommended_news.tolist()}")
         return recommended_news.tolist()

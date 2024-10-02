@@ -96,14 +96,14 @@ DATABASES = {
 REDIS_HOST = config('REDIS_HOST')
 REDIS_PORT = config('REDIS_PORT')
 REDIS_DB = config('REDIS_DB')
-REDIS_PASSWORD = config('REDIS_PASSWORD')
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'decode_responses': True,
+            "SERIALIZER": "django_redis.serializers.json.JSONSerializer",  # JSON 직렬화 강제
         },
         'TIMEOUT': 259200  # 3 days
     }
