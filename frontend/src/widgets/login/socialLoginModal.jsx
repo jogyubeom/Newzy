@@ -1,4 +1,4 @@
-// SocialLoginModal.js
+/* eslint-disable react/prop-types */
 import React from 'react';
 import axios from 'axios';
 import naver from 'shared/images/naver_logo.png';
@@ -12,17 +12,15 @@ export const SocialLoginModal = ({ isOpen, onClose }) => {
     try {
       if (platform === 'Kakao') {
         console.log(`${platform} 로그인 시도`);
-        const response = await axios.get('https://j11b305.p.ssafy.io/api/oauth2/authorization/kakao');
-        console.log('카카오 로그인 결과:', response.data); // 결과 확인
-      } else if (platform === 'Google') {
+        // axios 대신 window.location.href 사용
+        window.location.href = 'https://j11b305.p.ssafy.io/api/oauth2/authorization/kakao';
+    } else if (platform === 'Google') {
         console.log(`${platform} 로그인 시도`);
-        const response = await axios.get('https://j11b305.p.ssafy.io/api/oauth2/authorization/google');
-        console.log('구글 로그인 결과:', response.data); // 결과 확인
-      } else if (platform === 'Naver') {
+        window.location.href = 'https://j11b305.p.ssafy.io/api/oauth2/authorization/google';
+    } else if (platform === 'Naver') {
         console.log(`${platform} 로그인 시도`);
-        const response = await axios.post('https://j11b305.p.ssafy.io/api/oauth2/authorization/kakao');
-        console.log('네이버 로그인 결과:', response.data); // 결과 확인
-      }
+        window.location.href = 'https://j11b305.p.ssafy.io/api/oauth2/authorization/naver';
+    }
     } catch (error) {
       console.error(`${platform} 로그인 오류:`, error);
     }
