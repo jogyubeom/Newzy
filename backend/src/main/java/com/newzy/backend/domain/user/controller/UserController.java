@@ -5,6 +5,8 @@ import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
 import com.newzy.backend.domain.user.service.UserService;
+import com.newzy.backend.global.exception.NoTokenRequestException;
+import com.newzy.backend.global.exception.NotValidRequestException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
