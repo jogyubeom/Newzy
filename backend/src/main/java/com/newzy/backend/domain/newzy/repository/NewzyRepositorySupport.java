@@ -9,7 +9,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class NewzyRepositorySupport extends QuerydslRepositorySupport {
@@ -22,33 +24,47 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
         this.queryFactory = queryFactory;
     }
 
-    public List<NewzyListGetResponseDTO> findNewzyList(int page, int size, int category) {
+    public Map<String, Object> findNewzyList(int page, int size, int category) {
         QNewzy qnewzy = QNewzy.newzy;
 
-        BooleanBuilder whereClause = new BooleanBuilder();
+        BooleanBuilder builder = new BooleanBuilder();
 
         // isDeleted가 false인 경우만 필터링
-        whereClause.and(qnewzy.isDeleted.eq(false));
+        builder.and(qnewzy.isDeleted.eq(false));
 
         // 카테고리 조건 (0~2인 경우에만 적용)
         if (category >= 0 && category <= 2) {
-            whereClause.and(qnewzy.category.eq(category));
+            builder.and(qnewzy.category.eq(category));
         }
 
-        return queryFactory
+        Long totalCount = queryFactory
+                .select(qnewzy.count())
+                .from(qnewzy)
+                .where(builder)  // 동적 조건
+                .fetchOne();
+
+        int totalPage = (int) ((totalCount + size - 1) / size);
+
+        List<NewzyListGetResponseDTO> newzyList = queryFactory
                 .select(Projections.fields(NewzyListGetResponseDTO.class,
-                        qnewzy.newzyId.as("newzyId"),
-                        qnewzy.title.as("title"),
-                        qnewzy.content.as("content"),
-                        qnewzy.category.as("category"),
-                        qnewzy.createdAt.as("createdAt"),
-                        qnewzy.likeCnt.as("likeCnt"),
-                        qnewzy.visitCnt.as("visitCnt")
+                        qnewzy.newzyId,
+                        qnewzy.title,
+                        qnewzy.content,
+                        qnewzy.category,
+                        qnewzy.createdAt,
+                        qnewzy.likeCnt,
+                        qnewzy.visitCnt
                 ))
                 .from(qnewzy)
-                .where(whereClause)  // 동적 조건
+                .where(builder)  // 동적 조건
                 .offset(page * size)
                 .limit(size)
                 .fetch();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("newsList", newzyList); // list
+        result.put("totalPage", totalPage); // int
+
+        return result;
     }
 }

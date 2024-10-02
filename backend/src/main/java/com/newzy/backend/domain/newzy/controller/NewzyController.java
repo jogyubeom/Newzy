@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -35,16 +36,16 @@ public class NewzyController {
 
     @GetMapping
     @Operation(summary = "모든 뉴지 게시글 조회", description = "모든 뉴지 게시글을 조회합니다.")
-    public ResponseEntity<List<NewzyListGetResponseDTO>> getNewzyList(
+    public ResponseEntity<Map<String, Object>> getNewzyList(
             @Parameter(description = "페이지 번호")
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @Parameter(description = "category (0: 시사, 1: 문화, 2: 자유)")
             @RequestParam(value = "category", required = false, defaultValue = "3") int category
     ){
         log.info(">>> [GET] /newzy - 요청 파라미터: page - {}, category - {}", page, category);
-        List<NewzyListGetResponseDTO> newzyList = newzyServiceImpl.getNewzyList(page, category);
+        Map<String, Object> newzyListWithLastPage = newzyServiceImpl.getNewzyListWithLastPage(page, category);
 
-        return ResponseEntity.status(200).body(newzyList);
+        return ResponseEntity.status(200).body(newzyListWithLastPage);
     }
 
     @GetMapping(value = "/{newzyId}")

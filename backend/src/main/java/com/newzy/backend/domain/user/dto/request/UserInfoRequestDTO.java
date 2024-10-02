@@ -2,10 +2,7 @@ package com.newzy.backend.domain.user.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -35,7 +32,6 @@ public class UserInfoRequestDTO {
     @NotNull(message = "유저 정보를 입력해주세요.")
     @Schema(description = "유저 정보", example = "blabla")
     private String info;
-
 
 
 }

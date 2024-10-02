@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -39,15 +40,15 @@ public class NewsController {
 
     @GetMapping
     @Operation(summary = "뉴스 목록 조회", description = "해당 뉴스 목록을 조회합니다.")
-    public ResponseEntity<List<NewsListGetResponseDto>> getNewsList(
+    public ResponseEntity<Map<String, Object>> getNewsList(
             @Parameter(description = "페이지 번호")
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @Parameter(description = "카테고리")
             @RequestParam(value = "category", required = false, defaultValue = "3") int category) {
         log.info(">>> [GET] /news - 요청 파라미터: page - {}, category - {}", page, category);
-        List<NewsListGetResponseDto> newsListGetResponseDtoList = newsService.getNewsList(page, category);
+        Map<String, Object> newsListGetResponseDtoMap = newsService.getNewsList(page, category);
 
-        return ResponseEntity.status(200).body(newsListGetResponseDtoList);
+        return ResponseEntity.status(200).body(newsListGetResponseDtoMap);
     }
 
 

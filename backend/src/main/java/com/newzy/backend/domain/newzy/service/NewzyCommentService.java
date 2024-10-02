@@ -6,6 +6,7 @@ import com.newzy.backend.domain.newzy.dto.response.NewzyCommentResponseDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface NewzyCommentService {
 
@@ -15,5 +16,5 @@ public interface NewzyCommentService {
 
     void deleteComment(Long newzyCommentId);
 
-    List<NewzyCommentListGetResponseDto> getNewzyCommentList(Long newzyId, int page);
+    Map<String, Object> getNewzyCommentList(Long newzyId, int page);
 }
