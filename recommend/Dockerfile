@@ -7,6 +7,9 @@ WORKDIR /app
 # 프로젝트 파일을 컨테이너 내 /app 디렉토리로 복사
 COPY . /app/
 
+# pip 최신 버전으로 업데이트
+RUN python -m pip install --upgrade pip
+
 # 디렉토리 구조 확인
 RUN echo "Displaying /app directory contents:" && ls -al /app
 
