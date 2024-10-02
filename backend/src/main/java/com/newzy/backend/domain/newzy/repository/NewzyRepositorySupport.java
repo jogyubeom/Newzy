@@ -62,7 +62,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
                 .fetch();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("newsList", newzyList); // list
+        result.put("newzyList", newzyList); // list
         result.put("totalPage", totalPage); // int
 
         return result;
