@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DictionaryResponseDto {
+public class DictionaryResponseDTO {
     private String id;
     private String word;
     private String definition;
