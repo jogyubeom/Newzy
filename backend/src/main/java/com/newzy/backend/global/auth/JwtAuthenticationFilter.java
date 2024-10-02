@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean { // JWT 토큰�
         put("/api/error", new HashSet<>(List.of("GET", "POST"))); // error 제외
         put("/api/swagger-ui", new HashSet<>(List.of("GET"))); // swagger 제외
         put("/api/v3/api-docs", new HashSet<>(List.of("GET"))); // swagger 제외
-
+        put("/api/word/.*", new HashSet<>(List.of("GET"))); // 어휘 검색 제외
     }};
 
     @Override
@@ -88,8 +88,13 @@ public class JwtAuthenticationFilter extends GenericFilterBean { // JWT 토큰�
 
     // 검증을 건너뛰어야 하는 URL과 메소드를 확인하는 메소드
     private boolean isExcludedUrl(String requestURI, String method) {
+//        return EXCLUDE_URLS.entrySet().stream()
+//                .anyMatch(entry -> requestURI.startsWith(entry.getKey()) && entry.getValue().contains(method));
         return EXCLUDE_URLS.entrySet().stream()
-                .anyMatch(entry -> requestURI.startsWith(entry.getKey()) && entry.getValue().contains(method));
+                .anyMatch(entry -> {
+                    String urlPattern = entry.getKey().replace("/**", "(/.*)?"); // "**"를 정규식으로 변경
+                    return requestURI.matches(urlPattern) && entry.getValue().contains(method);
+                });
     }
 
 
