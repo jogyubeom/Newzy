@@ -10,17 +10,26 @@ export const SocialLoginModal = ({ isOpen, onClose }) => {
 
   const handleSocialLogin = async (platform) => {
     try {
+      let response;
+      
       if (platform === 'Kakao') {
         console.log(`${platform} 로그인 시도`);
-        // axios 대신 window.location.href 사용
-        window.location.href = 'https://j11b305.p.ssafy.io/api/oauth2/authorization/kakao';
-    } else if (platform === 'Google') {
+        // axios를 사용해 백엔드에서 로그인 URL 요청
+        response = await axios.get('https://j11b305.p.ssafy.io/api/oauth2/kakao/authorize');
+
+      } else if (platform === 'Google') {
         console.log(`${platform} 로그인 시도`);
-        window.location.href = 'https://j11b305.p.ssafy.io/api/oauth2/authorization/google';
-    } else if (platform === 'Naver') {
+        response = await axios.get('https://j11b305.p.ssafy.io/api/oauth2/google/authorize');
+
+      } else if (platform === 'Naver') {
         console.log(`${platform} 로그인 시도`);
-        window.location.href = 'https://j11b305.p.ssafy.io/api/oauth2/authorization/naver';
-    }
+        response = await axios.get('https://j11b305.p.ssafy.io/api/oauth2/naver/authorize');
+      }
+      
+      const url = response.data
+      // 서버에서 받은 로그인 URL로 리다이렉트
+      window.location.href = url
+      
     } catch (error) {
       console.error(`${platform} 로그인 오류:`, error);
     }
