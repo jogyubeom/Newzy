@@ -61,13 +61,12 @@ def recommend_news_by_cluster(cluster_id: int):
         logging.info(f"Redis에서 캐시된 추천 결과 사용: cluster_id={cluster_id}")
         recommended_news_list = json.loads(cached_data)['list']
         logging.info(recommended_news_list)
-        for idx, recommended_news in enumerate(recommended_news_list):
-            summary = summarize_news(cluster_id=cluster_id, news_id=recommended_news)
-            # 뉴스 정보 레디스에 저장
-            save_news_info_to_redis(recommended_news, cluster_id, summary)
-            if idx < 7:  # 상위 10개는 데일리 기사 후보 -> 데일리 퀴즈 생성
-                create_quiz_from_news(recommended_news)
-
+        # for idx, recommended_news in enumerate(recommended_news_list):
+        #     summary = summarize_news(cluster_id=cluster_id, news_id=recommended_news)
+        #     # 뉴스 정보 레디스에 저장
+        #     save_news_info_to_redis(recommended_news, cluster_id, summary)
+        #     if idx < 7:  # 상위 10개는 데일리 기사 후보 -> 데일리 퀴즈 생성
+        #         create_quiz_from_news(recommended_news)
         return recommended_news_list
 
     # 추천 모델
