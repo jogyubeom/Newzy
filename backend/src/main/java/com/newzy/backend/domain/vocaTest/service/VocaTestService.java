@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface VocaTestService {
 
-    void saveUserScore(TestResultRequestDto saveUserScore); // 괄호 수정
+    void saveUserScore(Long userId, TestResultRequestDto saveUserScore); // 괄호 수정
 
     List<TestWordListResponseDto> getWordList();}

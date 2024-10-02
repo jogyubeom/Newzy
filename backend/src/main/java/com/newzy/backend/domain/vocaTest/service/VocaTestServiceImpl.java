@@ -1,5 +1,7 @@
 package com.newzy.backend.domain.vocaTest.service;
 
+import com.newzy.backend.domain.user.entity.User;
+import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.domain.vocaTest.dto.request.TestResultRequestDto;
 import com.newzy.backend.domain.vocaTest.dto.response.TestWordListResponseDto;
 import com.newzy.backend.domain.vocaTest.entity.TestWord;
@@ -23,12 +25,12 @@ import java.util.stream.Collectors;
 public class VocaTestServiceImpl implements VocaTestService {
 
     private final VocaTestRepository vocaTestRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public void saveUserScore(TestResultRequestDto scoreList) {
-        //TODO: requestHeader 로 유저 토큰에서 유저 아이디 뽑아내는 로직 추가
-        // 유저 id 조회 후
-        // User user = userRepository.findOneById(userId);
+    public void saveUserScore(Long userId, TestResultRequestDto scoreList) {
+
+         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당하는 유저 엔티티를 찾지 못했습니다."));
 
         Map<Integer, Integer> categoryScores = scoreList.getCategoryScores();
 
@@ -36,23 +38,24 @@ public class VocaTestServiceImpl implements VocaTestService {
             for (Map.Entry<Integer, Integer> entry : categoryScores.entrySet()) {
                 int category = entry.getKey();
                 int score = entry.getValue();
-                /*
-                if(category == 0)
-                    user.setEconomicScore(score);
-                if else (category == 1)
-                    user.setSocietyScore(score);
-                else
-                    user.setInternationalScore(score);
-                 */
 
+                if(category == 0) {
+                    user.setEconomyScore(score * 5);
+                } else if (category == 1) {
+                    user.setSocietyScore(score * 5);
+                } else {
+                    user.setInternationalScore(score * 5);
+                }
             }
         } catch (Exception e) {
             log.error("점수를 저장하지 못했습니다", e.getMessage());
             throw new RuntimeException("점수 저장 실패", e);
         }
+        userRepository.save(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TestWordListResponseDto> getWordList() {
         List<TestWordListResponseDto> responseList = Collections.synchronizedList(new ArrayList<>());
 
