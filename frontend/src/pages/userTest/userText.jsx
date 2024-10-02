@@ -23,7 +23,7 @@ const vocabularyData = {
   ]
 };
 
-const categories = ["economy", "society", "world"];
+const categories = ["economy", "society", "world", "signup"];
 
 export const UserTest = () => {
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
@@ -32,6 +32,9 @@ export const UserTest = () => {
     society: [],
     world: []
   });
+
+  const [birthDate, setBirthDate] = useState("");
+  const [introduction, setIntroduction] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(true); // 모달 상태 관리
 
   const currentCategory = categories[currentCategoryIndex];
@@ -54,11 +57,44 @@ export const UserTest = () => {
     if (currentCategoryIndex < categories.length - 1) {
       setCurrentCategoryIndex(currentCategoryIndex + 1);
     } else {
+      if (!birthDate) {
+        alert("생년월일을 입력해주세요.");
+        return;
+      }
+
+      // 회원가입 정보와 어휘 테스트 결과 서버로 전송
+      const Data = {
+        economy: selectedWords.economy.length,
+        society: selectedWords.society.length,
+        world: selectedWords.world.length,
+        userInfo: {
+          birthDate,
+          introduction
+        }
+      };
+
+      // 테스트용으로 콘솔에 출력
+      console.log("유저 정보:", Data.userInfo);
+      console.log("아는 경제 단어 개수:", Data.economy);
+      console.log("아는 사회 단어 개수:", Data.society);
+      console.log("아는 세계 단어 개수:", Data.world);
+
+      // 실제 서버 전송 시
+      // fetch("/api/submit", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json"
+      //   },
+      //   body: JSON.stringify(testData)
+      // }).then(response => response.json())
+      //   .then(data => {
+      //     console.log("서버 응답:", data);
+      //     nav('/');
+      //   })
+      //   .catch(error => console.error("서버 전송 오류:", error));
+
       alert("테스트가 완료되었습니다!");
-      console.log("아는 경제 단어 개수:", selectedWords.economy.length);
-      console.log("아는 사회 단어 개수:", selectedWords.society.length);
-      console.log("아는 세계 단어 개수:", selectedWords.world.length);
-      nav('/')
+      nav('/');
     }
   };
 
@@ -77,30 +113,56 @@ export const UserTest = () => {
         </div>
       </Modal>
 
-      <h2 className="text-2xl font-bold mb-4 text-center">
-        {currentCategory === "economy" && "어휘 테스트 [경제]"}
-        {currentCategory === "society" && "어휘 테스트 [사회]"}
-        {currentCategory === "world" && "어휘 테스트 [세계]"}
-      </h2>
+      {currentCategory !== "signup" ? (
+        <>
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            {currentCategory === "economy" && "어휘 테스트 [경제]"}
+            {currentCategory === "society" && "어휘 테스트 [사회]"}
+            {currentCategory === "world" && "어휘 테스트 [세계]"}
+          </h2>
 
-      {/* 단어 목록 그리드 */}
-      <div className="grid grid-cols-4 gap-7 py-4 px-10 bg-gray-100 rounded-lg shadow-inner">
-        {vocabularyData[currentCategory].map((word, index) => (
-          <button
-            key={index}
-            onClick={() => handleWordClick(word)}
-            className={`p-2 border rounded text-center transition-transform duration-300 transform ${
-              selectedWords[currentCategory].includes(word)
-                ? "bg-blue-500 text-white font-semibold"
-                : "bg-white text-gray-700 font-semibold"
-            } hover:bg-blue-300 hover:text-white hover:scale-105`}
-          >
-            {word}
-          </button>
-        ))}
-      </div>
+          <div className="grid grid-cols-4 gap-7 py-4 px-10 bg-gray-100 rounded-lg shadow-inner">
+            {vocabularyData[currentCategory].map((word, index) => (
+              <button
+                key={index}
+                onClick={() => handleWordClick(word)}
+                className={`p-2 border rounded text-center transition-transform duration-300 transform ${
+                  selectedWords[currentCategory].includes(word)
+                    ? "bg-blue-500 text-white font-semibold"
+                    : "bg-white text-gray-700 font-semibold"
+                } hover:bg-blue-300 hover:text-white hover:scale-105`}
+              >
+                {word}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="px-10">
+          <h2 className="text-2xl font-bold mb-14 text-center">회원가입 정보 입력</h2>
+          <div className="mb-10">
+            <label className="block font-semibold mb-2">생년월일 (필수)</label>
+            <input
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              className="w-full px-3 py-2 border rounded"
+              required
+            />
+          </div>
+          <div className="mb-8">
+            <label className="block font-semibold mb-2">자기소개</label>
+            <textarea
+              value={introduction}
+              onChange={(e) => setIntroduction(e.target.value)}
+              className="w-full px-3 py-2 border rounded"
+              rows="4"
+              placeholder="자기소개를 입력해주세요 (선택사항)"
+            />
+          </div>
+        </div>
+      )}
 
-      {/* 네비게이션 버튼 */}
       <div className="flex justify-between mt-6">
         <button
           onClick={() => setCurrentCategoryIndex(currentCategoryIndex - 1)}
