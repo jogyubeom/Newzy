@@ -68,7 +68,7 @@ public class NewsController {
     @GetMapping(value = "/recommend")
     @Operation(summary = "추천 뉴스 조회", description = "사용자에 맞는 추천 뉴스를 조회합니다.")
     public ResponseEntity<List<NewsRecommendGetResponseDTO>> getRecommendedNewsList(
-            @Parameter(description = "JWT", required = false)
+            @Parameter(description = "JWT")
             @RequestHeader(value = "Authorization") String token) {
         log.info(">>> [GET] /news/recommend - 요청 파라미터");
         if (token == null || token.isEmpty())

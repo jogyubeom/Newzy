@@ -71,19 +71,17 @@ public class NewsServiceImpl implements NewsService {
         try {
             // 1. 오늘 날짜 계산
 //            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            String today = LocalDateTime.now().minusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             // 2. Redis 키 생성 (cluster_id는 1로 가정)
             String clusterId = "1";
             String redisKey = String.format(":1:recommended_news:%s:cluster_%s", today, clusterId);
 
             // 3. Redis에서 키 조회
             String value = redisTemplate.opsForValue().get(redisKey);
-
             if (value != null) {
                 // 4. JSON 파싱하여 뉴스 ID 리스트 추출
                 JsonNode jsonNode = objectMapper.readTree(value);
                 JsonNode newsIdList = jsonNode.get("list");
-
                 if (newsIdList != null && newsIdList.isArray()) {
                     int count = 0;
 
