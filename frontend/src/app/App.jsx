@@ -2,9 +2,9 @@ import { AppRouter } from "app/routers/appRouter";
 
 function App() {
   return (
-    <header className="App-header">
+    <div>
       <AppRouter />
-    </header>
+    </div>
   );
 }
 

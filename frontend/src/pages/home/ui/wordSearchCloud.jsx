@@ -1,5 +1,6 @@
 import { useState } from "react";
 import WordCloud from "react-wordcloud";
+import baseAxios from "shared/utils/baseAxios";
 
 const words = [
   { text: "감언이설", value: 50, category: 0 },
@@ -19,6 +20,7 @@ const options = {
   rotationAngles: [0],
   fontSizes: [10, 60],
   padding: 1,
+  fontFamily: "title",
 };
 
 const categories = [
@@ -27,6 +29,18 @@ const categories = [
   { id: 2, label: "사회" },
   { id: 3, label: "세계" },
 ];
+
+const fetchWordSerachCloud = async () => {
+  try {
+    const response = await baseAxios().get("/newzy");
+    return response.data; // 데이터 반환
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error; // 오류 처리
+  }
+};
+
+fetchWordSerachCloud();
 
 export function WordSearchCloud() {
   const [category, setCategory] = useState(0);

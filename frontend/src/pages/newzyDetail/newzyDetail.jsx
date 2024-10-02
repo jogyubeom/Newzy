@@ -1,9 +1,10 @@
-import React, { useEffect,useState } from 'react';
-import { useParams } from 'react-router-dom';
-import NewzyInfo from './ui/newzyInfo';
-import Content from './ui/content';
-import UtilityButtons from './ui/utilityButtons';
-import Sidebar from './ui/sidebar';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import NewzyInfo from "./ui/newzyInfo";
+import Content from "./ui/content";
+import UtilityButtons from "./ui/utilityButtons";
+import Sidebar from "./ui/sidebar";
+import { CardGauge } from "entities/card/cardGauge";
 
 export const NewzyDetail = () => {
   const [activeSidebar, setActiveSidebar] = useState(null);
@@ -22,24 +23,30 @@ export const NewzyDetail = () => {
 
   return (
     <div className="relative flex h-screen bg-white">
+      <CardGauge />
       <div className="w-[17%]"></div>
 
       <div className="flex-1 p-6">
-        <NewzyInfo 
-          category="시사" 
-          title="제목이 들어갑니다" 
-          date="2024.09.19. 오후 3:58" 
-          author="김싸피 뉴포터" 
+        <NewzyInfo
+          category="시사"
+          title="제목이 들어갑니다"
+          date="2024.09.19. 오후 3:58"
+          author="김싸피 뉴포터"
         />
         <Content htmlContent={htmlContent} />
       </div>
 
       <div className="w-[17%]"></div>
 
-      <UtilityButtons onActiveSidebar={handleSidebarToggle} activeSidebar={activeSidebar} />
+      <UtilityButtons
+        onActiveSidebar={handleSidebarToggle}
+        activeSidebar={activeSidebar}
+      />
 
-      <Sidebar activeSidebar={activeSidebar} onActiveSidebar={handleSidebarToggle} />
-
+      <Sidebar
+        activeSidebar={activeSidebar}
+        onActiveSidebar={handleSidebarToggle}
+      />
     </div>
   );
 };
