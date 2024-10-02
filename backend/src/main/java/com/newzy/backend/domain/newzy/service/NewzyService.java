@@ -6,13 +6,14 @@ import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface NewzyService {
     void save(NewzyRequestDTO dto);
 
     NewzyResponseDTO update(Long newzyId, NewzyRequestDTO dto);
 
-    List<NewzyListGetResponseDTO> getNewzyList(int page, int category);
+    Map<String, Object> getNewzyListWithLastPage(int page, int category);
 
     NewzyResponseDTO getNewzyDetail(Long newzyId);
 

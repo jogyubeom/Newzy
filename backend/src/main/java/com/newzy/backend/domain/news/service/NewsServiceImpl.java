@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -37,11 +38,10 @@ public class NewsServiceImpl implements NewsService {
 
     @Override  // branch : feature/get-news의 NewsServiceImpl 참고
     @Transactional(readOnly = true)
-    public List<NewsListGetResponseDto> getNewsList(int page, int category) {
+    public Map<String, Object> getNewsList(int page, int category) {
         log.info(">>> getNewsList - page: {}. category: {}", page, category);
-        List<NewsListGetResponseDto> newsListGetResponseDtoList = newsRepositorySupport.findNewsList(page, category);
 
-        return newsListGetResponseDtoList;
+        return newsRepositorySupport.findNewsList(page, category);
     }
 
 

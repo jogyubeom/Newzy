@@ -9,9 +9,11 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.time.LocalDate;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "user")
 @DynamicUpdate
 public class User extends BaseTimeEntity {
@@ -24,7 +26,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "nickname", nullable = false, length = 50)
     private String nickname;
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "password", nullable = false)
@@ -54,8 +56,12 @@ public class User extends BaseTimeEntity {
     @Column(name = "state", nullable = false)
     private int state;
 
+    @Column(name = "social_login_type", length = 50)
+    private String socialLoginType;
+
+
     @Builder
-    public User(String nickname, String password, String email, LocalDate birth, String info){
+    public User(String nickname, String password, String email, LocalDate birth, String info) {
         this.nickname = nickname;
         this.password = password;
         this.email = email;
@@ -63,7 +69,7 @@ public class User extends BaseTimeEntity {
         this.info = info;
     }
 
-    public static User convertToEntity(UserInfoRequestDTO dto){
+    public static User convertToEntity(UserInfoRequestDTO dto) {
         User user = new User();
         user.setNickname(dto.getNickname());
         user.setEmail(dto.getEmail());
@@ -74,7 +80,7 @@ public class User extends BaseTimeEntity {
         return user;
     }
 
-    public static User convertToEntity(Long userId, UserInfoRequestDTO dto){
+    public static User convertToEntity(Long userId, UserInfoRequestDTO dto) {
         User user = new User();
         user.setUserId(userId);
         user.setNickname(dto.getNickname());

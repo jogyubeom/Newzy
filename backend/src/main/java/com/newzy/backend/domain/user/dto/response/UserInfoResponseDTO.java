@@ -30,7 +30,7 @@ public class UserInfoResponseDTO {
     private LocalDate birth;
 
     @Schema(description = "회원 정보", example = "blabla")
-    private String info;;
+    private String info;
 
     @Schema(description = "회원 삭제 여부", example = "false")
     private boolean isDeleted;
