@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user/vocabulary-test")
+@RequestMapping("/vocabulary-test")
 public class VocaTestController {
 
     final private VocaTestService vocaTestService;
