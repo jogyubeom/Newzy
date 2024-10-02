@@ -89,7 +89,7 @@ public class DictionaryController {
             @Parameter(description = "JWT")
             @RequestHeader(value = "Authorization") String token,
             @Parameter(description = "사용자가 검색한 어휘")
-            @RequestParam(value = "word", defaultValue = "0") String word
+            @RequestParam(value = "word", defaultValue = "나무") String word
     ) {
         log.info(">>> [DELETE] /word/{} - 요청 파라미터: wordId={}", word, word);
         if (word == null || word.isEmpty())
