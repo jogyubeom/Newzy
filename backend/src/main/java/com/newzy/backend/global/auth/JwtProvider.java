@@ -109,15 +109,15 @@ public class JwtProvider {
 
     // Redis에 JWT 토큰을 저장하는 메소드
     public void storeTokenInRedis(Long userId, String accessToken, long expirationTime) {
-        // Redis에 저장할 키를 ":user:userId" 형식으로 설정
-        String redisKey = ":user:" + userId;
+        // Redis에 저장할 키를 "user:userId" 형식으로 설정
+        String redisKey = "user:" + userId;
         redisTemplate.opsForValue().set(redisKey, accessToken, expirationTime, TimeUnit.SECONDS);
         log.info("Access Token 저장됨: userId = {}, token = {}", userId, accessToken);
     }
 
     // Redis에서 토큰을 조회하는 메소드
     public String getTokenFromRedis(Long userId) {
-        String redisKey = ":user:" + userId;
+        String redisKey = "user:" + userId;
         String token = redisTemplate.opsForValue().get(redisKey);
         log.info("Redis에서 가져온 Access Token: userId = {}, token = {}", userId, token);
         return token;
