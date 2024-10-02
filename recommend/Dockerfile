@@ -31,7 +31,7 @@ RUN python -m pip install --upgrade pip
 RUN echo "Displaying /app directory contents:" && ls -al /app
 
 # Python 패키지 설치
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --use-deprecated=legacy-resolver -r requirements.txt
 
 # 또 다시 디렉토리 구조 확인
 RUN echo "After installing packages, displaying /app directory contents again:" && ls -al /app
