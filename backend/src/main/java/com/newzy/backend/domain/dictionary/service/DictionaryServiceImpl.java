@@ -35,7 +35,9 @@ public class DictionaryServiceImpl implements DictionaryService {
         List<Dictionary> dictionaryList = dictionaryRepository.findByWordinfoWordContaining(word);
         for (Dictionary dictionary : dictionaryList) {
             dictionaryResponseDtoList.add(new DictionaryResponseDto(
-                    dictionary.getWordinfo().getWord(), dictionary.getSenseinfo().getDefinition()
+                    dictionary.getId(),
+                    dictionary.getWordinfo().getWord(),
+                    dictionary.getSenseinfo().getDefinition()
             ));
         }
 

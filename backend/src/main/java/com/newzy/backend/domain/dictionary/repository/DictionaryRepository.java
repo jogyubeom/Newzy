@@ -7,6 +7,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import java.util.List;
 
 public interface DictionaryRepository extends ElasticsearchRepository<Dictionary, String> {
-    @Query("{\"match\": {\"wordinfo.word\": \"?0\"}}")
+    @Query("{ \"match\": { \"wordinfo.word\": { \"query\": \"?0\", \"fuzziness\": \"AUTO\" } } }")
     List<Dictionary> findByWordinfoWordContaining(String word);
 }

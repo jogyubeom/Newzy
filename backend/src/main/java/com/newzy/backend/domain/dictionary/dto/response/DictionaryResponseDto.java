@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DictionaryResponseDto {
+    private String id;
     private String word;
     private String definition;
 }
