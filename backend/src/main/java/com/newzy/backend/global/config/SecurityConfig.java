@@ -56,18 +56,6 @@ public class SecurityConfig {
 //                            .requestMatchers(HttpMethod.GET, "/api/review").permitAll()
                             .anyRequest().authenticated(); // 나머지 모든 요청에 대해 인증을 요구
                 })
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(oAuth2UserService)) // OAuth2 사용자 정보 처리 서비스
-                        .successHandler((request, response, authentication) -> {
-                            // 로그인 성공 처리, 여기서 JWT 토큰이 OAuth2UserServiceImpl에서 발급됨
-                            response.setStatus(HttpServletResponse.SC_OK);
-                        })
-                        .failureHandler((request, response, exception) -> {
-                            // 로그인 실패 처리
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "OAuth2 authentication failed");
-                        })
-                )
                 .headers(httpSecurityHeadersConfigurer ->
                         httpSecurityHeadersConfigurer.xssProtection(HeadersConfigurer.XXssConfig::disable)) // XSS 보호 설정 추가
                 // UsernamePasswordAuthenticationFilter(사용자 이름과 비밀번호를 통한 기본 인증 필터) 전에 JWT 인증을 처리하는 JwtAuthenticationFilter((user-defined) 필터 추가
@@ -104,6 +92,7 @@ public class SecurityConfig {
         config.addAllowedOrigin("https://plogbucket.s3.ap-northeast-2.amazonaws.com/**");
         config.addAllowedOriginPattern("https://plogbucket.s3.ap-northeast-2.amazonaws.com/**");
         config.addAllowedOriginPattern("http://localhost:3000");
+        config.addAllowedOriginPattern("https://j11b305.p.ssafy.io");
         config.addAllowedOriginPattern("*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");

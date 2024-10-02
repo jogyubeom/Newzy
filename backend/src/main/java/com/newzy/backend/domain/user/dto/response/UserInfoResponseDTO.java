@@ -8,7 +8,8 @@ import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 @Builder
 @ToString
 @Schema(title = "USER_INFO_RES : 회원 등록 응답 DTO")
@@ -50,6 +51,9 @@ public class UserInfoResponseDTO {
     @Schema(description = "상태", example = "0")
     private int state;
 
+    @Schema(description = "소셜로그인 타입", example = "0")
+    private String socialLoginType;
+
     public static UserInfoResponseDTO convertToDTO(User user) {
         if (user == null) {
             throw new IllegalArgumentException("User 엔티티 값이 없습니다.");
@@ -67,6 +71,7 @@ public class UserInfoResponseDTO {
                 .societyScore(user.getSocietyScore())
                 .internationalScore(user.getInternationalScore())
                 .state(user.getState())
+                .socialLoginType(user.getSocialLoginType())
                 .build();
     }
 

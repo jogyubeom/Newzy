@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean { // JWT 토큰�
         put("/api/swagger-ui", new HashSet<>(List.of("GET"))); // swagger 제외
         put("/api/v3/api-docs", new HashSet<>(List.of("GET"))); // swagger 제외
         put("/api/word", new HashSet<>(List.of("GET"))); // 어휘 검색 제외
+        put("/api/oauth2", new HashSet<>(List.of("GET", "POST"))); // oauth 제외
     }};
 
     @Override
@@ -71,6 +73,21 @@ public class JwtAuthenticationFilter extends GenericFilterBean { // JWT 토큰�
                 Authentication authentication = jwtProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.info("Authenticated user with token");
+
+                // JWT가 유효하다면 Authorization 헤더에서 Bearer 없이 변경한 값을 설정
+                HttpServletRequestWrapper modifiedRequest = new HttpServletRequestWrapper(httpRequest) {
+                    @Override
+                    public String getHeader(String name) {
+                        if ("Authorization".equals(name)) {
+                            // Bearer 접두어 없이 토큰을 반환
+                            return token;
+                        }
+                        return super.getHeader(name);
+                    }
+                };
+
+                chain.doFilter(request, response); // 필터 체인의 다음 필터를 호출하여 요청을 처리한다.
+                return;
             } else {
                 log.error("Token is either missing or not valid in Redis");
                 ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token in Redis");
@@ -83,7 +100,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean { // JWT 토큰�
             return;
         }
 
-        chain.doFilter(request, response); // 필터 체인의 다음 필터를 호출하여 요청을 처리한다.
     }
 
     // 검증을 건너뛰어야 하는 URL과 메소드를 확인하는 메소드

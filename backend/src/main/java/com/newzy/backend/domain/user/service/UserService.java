@@ -20,6 +20,7 @@ public interface UserService {
 
     UserInfoResponseDTO getUser(String token);
 
-    AuthRequestDTO oauthLogin(AuthRequestDTO authRequestDTO);
+    UserInfoResponseDTO oauthLogin(AuthRequestDTO authRequestDTO);
 
+    UserInfoResponseDTO oauthSignup(AuthRequestDTO authRequestDTO);
 }

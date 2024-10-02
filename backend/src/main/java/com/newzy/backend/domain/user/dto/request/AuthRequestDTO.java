@@ -14,4 +14,5 @@ public class AuthRequestDTO {
     String nickname;
     String type;
     String password;
+    Long id;
 }
