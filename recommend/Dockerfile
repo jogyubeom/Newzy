@@ -1,5 +1,5 @@
-# Python 3.8 이미지 사용 (slim 버전은 경량화된 이미지)
-FROM python:3.8-slim
+# Python 3.9 이미지 사용 (slim 버전은 경량화된 이미지)
+FROM python:3.9-slim
 
 # 시스템 패키지 업데이트 및 OpenJDK 17 설치
 RUN apt-get update && apt-get install -y \
