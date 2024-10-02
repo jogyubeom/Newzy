@@ -109,6 +109,8 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isPresent() && !optionalUser.get().isDeleted()) {
+            // redis에서도 지우기
+            redisUtil.deleteData("user:" + userId);
             User user = optionalUser.get();
             user.setIsDeleted(true);
             userRepository.save(user);
