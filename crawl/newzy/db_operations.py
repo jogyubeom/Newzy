@@ -11,6 +11,7 @@ def insert_news_to_db(article: dict):
         link=article['link'],
         title=article['title'],
         content=article['content'],
+        content_text=article['content_text'],
         difficulty=article['difficulty'],
         created_at=article['created_at'],
         updated_at=article['updated_at'],

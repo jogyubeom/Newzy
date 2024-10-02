@@ -22,6 +22,7 @@ class News(models.Model):
     link = models.URLField(max_length=255, unique=True)  # VARCHAR(255), 링크는 URLField로 변경 가능
     title = models.CharField(max_length=255)  # VARCHAR(255)
     content = models.TextField()  # TEXT
+    content_text = models.TextField()
     difficulty = models.PositiveSmallIntegerField()  # TINYINT
     category = models.PositiveSmallIntegerField()  # TINYINT
     publisher = models.CharField(max_length=100)  # VARCHAR(100)

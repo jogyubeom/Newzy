@@ -8,7 +8,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from newzy.db_operations import insert_news_to_db
 from newzy.utils.analyzer import analyze_difficulty_of_news
-from newzy.utils.parser import parse_relative_time, extract_times
+from newzy.utils.parser import parse_relative_time, extract_times, extract_text_from_html
 
 
 def crawl_news(driver,
@@ -283,6 +283,7 @@ def crawl_news_detail(driver, url: str,
         'created_at': register_time,
         'updated_at': update_time,
         'content': str(content),
+        'content_text': extract_text_from_html(str(content)),
         'thumbnail': thumbnail,
         'category': category,
         'publisher': publisher
