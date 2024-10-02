@@ -1,14 +1,25 @@
 package com.newzy.backend.domain.dictionary.service;
 
-import com.newzy.backend.domain.dictionary.dto.response.DictionaryResponseDto;
-import com.newzy.backend.domain.dictionary.dto.response.WordCloudResponseDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.newzy.backend.domain.dictionary.dto.request.SearchWordRequestDTO;
+import com.newzy.backend.domain.dictionary.dto.response.DictionaryResponseDTO;
+import com.newzy.backend.domain.dictionary.dto.response.VocaListResponseDTO;
+import com.newzy.backend.domain.dictionary.dto.response.WordCloudResponseDTO;
 import com.newzy.backend.domain.dictionary.entity.Dictionary;
+import com.newzy.backend.domain.dictionary.entity.SearchWord;
 import com.newzy.backend.domain.dictionary.repository.DictionaryRepository;
+import com.newzy.backend.domain.dictionary.repository.SearchWordRepository;
 import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.repository.NewsRepository;
+import com.newzy.backend.domain.user.entity.User;
+import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -24,40 +35,93 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class DictionaryServiceImpl implements DictionaryService {
 
-    private final DictionaryRepository dictionaryRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
-    private final long SEARCH_HISTORY_EXPIRATION_TIME = 432000; // 5 days
+    private final DictionaryRepository dictionaryRepository;
+    private final SearchWordRepository searchWordRepository;
     private final NewsRepository newsRepository;
+    private final UserRepository userRepository;
 
-    public List<DictionaryResponseDto> searchByWord(String word) {
-        List<DictionaryResponseDto> dictionaryResponseDtoList = new ArrayList<>();
+    private final long SEARCH_HISTORY_EXPIRATION_TIME = 432000; // 5 days
+
+    private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 변환용 ObjectMapper
+
+    @Override
+    public List<DictionaryResponseDTO> searchByWord(String word) {
+        List<DictionaryResponseDTO> dictionaryResponseDTOList = new ArrayList<>();
         List<Dictionary> dictionaryList = dictionaryRepository.findByWordinfoWordContaining(word);
         for (Dictionary dictionary : dictionaryList) {
-            dictionaryResponseDtoList.add(new DictionaryResponseDto(
+            dictionaryResponseDTOList.add(new DictionaryResponseDTO(
                     dictionary.getId(),
                     dictionary.getWordinfo().getWord(),
                     dictionary.getSenseinfo().getDefinition()
             ));
         }
 
-        // 검색한 어휘 Redis 에 저장
-        saveSearchWordHistoryToRedis(word);
-
-        return dictionaryResponseDtoList;
+        return dictionaryResponseDTOList;
     }
 
     @Override
     public void addSearchWordHistory(Long userId, Long newsId, String word) {
+        // User와 News의 유효성 체크
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException(userId + " 와 일치하는 사용자 엔티티를 찾을 수 없습니다.")
+        );
         News news = newsRepository.findById(newsId).orElseThrow(
                 () -> new EntityNotFoundException(newsId + " 와 일치하는 뉴스 엔티티를 찾을 수 없습니다.")
         );
 
+        // SearchWord 엔티티 생성 및 저장
+        SearchWord searchWord = new SearchWord(user.getUserId(), news.getNewsId(), word);
+        searchWordRepository.save(searchWord);
+        log.info("SearchWord 엔티티가 MongoDB에 저장되었습니다: {}", searchWord);
     }
 
     @Override
-    public List<WordCloudResponseDto> getWordCloudHistory() {
-        List<WordCloudResponseDto> wordCloudList = new ArrayList<>();
+    public List<VocaListResponseDTO> getSearchWordHistory(SearchWordRequestDTO searchWordRequestDTO) {
+        // PageRequest와 정렬 조건 설정
+        Sort sorting = (searchWordRequestDTO.getSort() == 0) ? Sort.by(Sort.Direction.DESC, "createdAt") : Sort.by(Sort.Direction.ASC, "createdAt");
+        PageRequest pageRequest = PageRequest.of(searchWordRequestDTO.getPage(), 10, sorting);
+
+        // MongoDB에서 검색 기록 조회
+        Page<SearchWord> searchWordsPage = searchWordRepository.findByUserId(searchWordRequestDTO.getUserId(), pageRequest);
+        List<SearchWord> searchWords = searchWordsPage.getContent();
+
+        List<VocaListResponseDTO> vocaListResponseDTOList = new ArrayList<>();
+        for (SearchWord searchWord : searchWords) {
+            VocaListResponseDTO vocaListResponseDTO = getWordMeanings(searchWord.getWord());
+            vocaListResponseDTOList.add(vocaListResponseDTO);
+        }
+
+        return vocaListResponseDTOList;
+    }
+
+    @Override
+    public void deleteSearchWordHistory(Long userId, String word) {
+        // MongoDB에서 userId와 word가 일치하는 검색어 기록을 삭제
+        searchWordRepository.deleteByUserIdAndWord(userId, word);
+        log.info("userId {}와 word '{}'에 해당하는 검색 기록이 삭제되었습니다.", userId, word);
+    }
+
+    private VocaListResponseDTO getWordMeanings(String word) {
+        // ElasticsearchRepository를 사용하여 검색 쿼리를 수행
+        List<Dictionary> dictionaries = dictionaryRepository.findByWordinfoWordContaining(word);
+
+        // 단어와 일치하는 결과만 선택하여 최대 5개의 뜻을 리스트에 추가
+        List<String> meanings = dictionaries.stream()
+                .filter(dictionary -> dictionary.getWordinfo().getWord().equals(word))
+                .map(dictionary -> dictionary.getSenseinfo().getDefinition())
+                .limit(5)
+                .toList();
+
+        VocaListResponseDTO vocaListResponseDTO = new VocaListResponseDTO(word, meanings);
+
+        return vocaListResponseDTO;
+    }
+
+    @Override
+    public List<WordCloudResponseDTO> getWordCloudHistory() {
+        List<WordCloudResponseDTO> wordCloudList = new ArrayList<>();
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 
         // 오늘 날짜로부터 3일 이내의 키를 확인하기 위해 3일 전 날짜 계산
@@ -69,7 +133,6 @@ public class DictionaryServiceImpl implements DictionaryService {
 
         if (keys != null) {
             for (String key : keys) {
-                // 키에서 날짜 부분 추출 (형식이 "word:yyyy-MM-dd:word" 이므로 ":"을 기준으로 나눠 날짜를 가져옴)
                 String[] keyParts = key.split(":");
                 if (keyParts.length >= 3) {
                     String dateStr = keyParts[1]; // yyyy-MM-dd 형식의 날짜 부분
@@ -78,11 +141,14 @@ public class DictionaryServiceImpl implements DictionaryService {
                     LocalDate keyDate = LocalDate.parse(dateStr);
                     if (!keyDate.isBefore(threeDaysAgo) && !keyDate.isAfter(today)) {
                         // 키의 값을 조회하여 WordCloudResponseDto 리스트에 추가
-                        String word = keyParts[2];
-                        String countStr = valueOperations.get(key);
-                        if (countStr != null) {
-                            int count = Integer.parseInt(countStr);
-                            wordCloudList.add(new WordCloudResponseDto(word, count));
+                        String jsonStr = valueOperations.get(key);
+                        if (jsonStr != null) {
+                            try {
+                                WordCloudResponseDTO dto = objectMapper.readValue(jsonStr, WordCloudResponseDTO.class);
+                                wordCloudList.add(dto);
+                            } catch (JsonProcessingException e) {
+                                log.error("Error parsing JSON for key {}: {}", key, e.getMessage());
+                            }
                         }
                     }
                 }
@@ -92,30 +158,41 @@ public class DictionaryServiceImpl implements DictionaryService {
         return wordCloudList;
     }
 
-
     @Override
-    public void saveSearchWordHistoryToRedis(String word) {
-        // 오늘 날짜를 yyyy-MM-dd 형식으로 가져옵니다.
+    public void saveSearchWordHistoryToRedis(Long newsId, String word) {
         String today = LocalDate.now().toString();
-        // Redis 키를 날짜와 단어로 구성합니다.
         String wordKey = "word:" + today + ":" + word;
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 
+        // 뉴스에서 카테고리 추출
+        News news = newsRepository.findById(newsId).orElseThrow(
+                () -> new EntityNotFoundException(newsId + " 와 일치하는 뉴스 엔티티를 찾을 수 없습니다.")
+        );
+        int category = news.getCategory(); // 뉴스 엔티티에서 카테고리 정보를 추출
+
         try {
-            // 해당 키가 이미 존재하는 경우, 검색 횟수를 증가시킵니다.
             if (Boolean.TRUE.equals(redisTemplate.hasKey(wordKey))) {
-                String cnt = valueOperations.get(wordKey);
-                if (cnt != null) {
-                    int newCount = Integer.parseInt(cnt) + 1;
-                    valueOperations.set(wordKey, String.valueOf(newCount), SEARCH_HISTORY_EXPIRATION_TIME, TimeUnit.SECONDS);
+                String jsonStr = valueOperations.get(wordKey);
+                if (jsonStr != null) {
+                    WordCloudResponseDTO dto = objectMapper.readValue(jsonStr, WordCloudResponseDTO.class);
+                    int newCount = dto.getValue() + 1;
+
+                    // 업데이트된 검색 횟수를 포함한 JSON 생성
+                    dto.setValue(newCount);
+                    String updatedJsonStr = objectMapper.writeValueAsString(dto);
+
+                    valueOperations.set(wordKey, updatedJsonStr, SEARCH_HISTORY_EXPIRATION_TIME, TimeUnit.SECONDS);
                 }
             } else {
-                // 해당 키가 존재하지 않는 경우, 값을 1로 설정하고 만료 시간 지정
-                valueOperations.set(wordKey, "1", SEARCH_HISTORY_EXPIRATION_TIME, TimeUnit.SECONDS);
+                // 새로운 JSON 객체 생성 및 저장
+                WordCloudResponseDTO newDto = new WordCloudResponseDTO(word, 1, category);
+                String newJsonStr = objectMapper.writeValueAsString(newDto);
+
+                valueOperations.set(wordKey, newJsonStr, SEARCH_HISTORY_EXPIRATION_TIME, TimeUnit.SECONDS);
             }
-        } catch (NumberFormatException e) {
-            log.error("Error parsing count value for key {}: {}", wordKey, e.getMessage());
+        } catch (JsonProcessingException e) {
+            log.error("Error creating JSON for word {}: {}", word, e.getMessage());
         }
     }
 }
