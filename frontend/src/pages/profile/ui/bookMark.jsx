@@ -1,7 +1,7 @@
-const bookMark = () => {
+const BookMark = () => {
   return (
     <div className="mx-20">Bookmark Page</div>
   )
 }
 
-export default bookMark
+export default BookMark
