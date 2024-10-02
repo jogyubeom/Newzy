@@ -1,9 +1,6 @@
 # Python 3.9 이미지 사용 (slim 버전은 경량화된 이미지)
 FROM python:3.8-slim
 
-# 필요한 패키지 설치 (gcc, libffi-dev 등)
-RUN apt-get update && apt-get install -y gcc libffi-dev
-
 # 작업 디렉토리 설정
 WORKDIR /app
 
