@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @Builder
 @Table(name = "user")
 @DynamicUpdate
+@ToString
 public class User extends BaseTimeEntity {
 
     @Id
