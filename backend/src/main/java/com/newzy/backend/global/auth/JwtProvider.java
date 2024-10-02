@@ -101,6 +101,7 @@ public class JwtProvider {
     private Claims parseClaims(String accessToken) {
         try {
             // JWT를 파싱하여 클레임(Claims) 정보를 추출한다.
+            log.info(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().toString());
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) { // 토큰이 만료된 경우
             return e.getClaims();
@@ -125,7 +126,21 @@ public class JwtProvider {
 
     // JWT 토큰에서 userId를 추출하는 메소드
     public Long getUserIdFromToken(String token) {
-        Claims claims = parseClaims(token); // JWT의 클레임을 파싱
+        // Bearer 접두어가 있는지 확인하고, 있으면 제거하여 순수한 토큰을 추출
+        String resolvedToken = resolveToken(token);
+
+        Claims claims = parseClaims(resolvedToken); // JWT의 클레임을 파싱
+        log.info(claims.getSubject());
         return Long.parseLong(claims.getSubject()); // 토큰의 주체(Subject)인 userId를 반환
+    }
+
+    // Bearer 접두어를 확인하고 제거하는 메소드
+    private String resolveToken(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            // Bearer 접두어가 있는 경우 접두어 제거 후 반환
+            return token.substring(7); // "Bearer "를 제거
+        }
+        // Bearer 접두어가 없는 경우, 그대로 반환
+        return token;
     }
 }

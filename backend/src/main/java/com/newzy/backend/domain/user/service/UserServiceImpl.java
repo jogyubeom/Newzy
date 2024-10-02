@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthRequestDTO oauthLogin(AuthRequestDTO authRequestDTO) {
+    public UserInfoResponseDTO oauthLogin(AuthRequestDTO authRequestDTO) {
         try {
             // 이메일로 기존 사용자 검색
             Optional<User> existingUser = userRepository.findUserByEmailAndSocialLoginType(
@@ -93,11 +93,7 @@ public class UserServiceImpl implements UserService {
             if (existingUser.isPresent()) {
                 log.info("기존 사용자 로그인: {}", existingUser.get().getEmail());
                 // 기존 사용자 처리만 하고 반환값 없음
-                return AuthRequestDTO.builder()
-                        .email(existingUser.get().getEmail())
-                        .nickname(existingUser.get().getNickname())
-                        .password(existingUser.get().getPassword())
-                        .build();
+                return UserInfoResponseDTO.convertToDTO(existingUser.get());
             } else {
                 // 새로운 사용자 등록
                 User user = User.builder()
@@ -108,13 +104,27 @@ public class UserServiceImpl implements UserService {
                         .build();
                 log.info("새로운 사용자 등록: {}", authRequestDTO.getEmail());
                 userRepository.save(user); // 새 사용자 저장
-                return null;
+                return UserInfoResponseDTO.convertToDTO(user);
             }
         } catch (Exception e) {
             // 예외 발생 시 로그를 남기고, 예외 처리
             log.error("사용자 처리 중 예외 발생: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 처리 중 문제가 발생했습니다.");
         }
+    }
+
+    @Override
+    public UserInfoResponseDTO oauthSignup(AuthRequestDTO authRequestDTO) {
+        // 새로운 사용자 등록
+        User user = User.builder()
+                .email(authRequestDTO.getEmail())
+                .nickname(authRequestDTO.getNickname())
+                .password(authRequestDTO.getPassword())
+                .socialLoginType(authRequestDTO.getType())
+                .build();
+        log.info("새로운 사용자 등록: {}", authRequestDTO.getEmail());
+        userRepository.save(user); // 새 사용자 저장
+        return UserInfoResponseDTO.convertToDTO(user);
     }
 
 
