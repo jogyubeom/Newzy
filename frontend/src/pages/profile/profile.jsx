@@ -268,7 +268,7 @@ export const Profile = () => {
           )}
         </div>
 
-        <div className="ml-[320px]">
+        <div className="ml-[380px]">
           <div className="h-[100px] mt-[80px] text-white font-[Open Sans] text-[46px] leading-[24px] font-semibold flex items-center">
             {isEditing ? (
               <input
@@ -311,7 +311,7 @@ export const Profile = () => {
 
         {/* Followers, Followings, Newzy 요소 */}
         <div className="flex flex-col items-center ml-auto mt-auto">
-          <div className="flex gap-16">
+          <div className="flex gap-9">
             <div className="flex flex-col items-center">
               <div className="w-[123px] h-[103px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center">
                 Newzy
