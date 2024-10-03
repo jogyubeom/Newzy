@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
         log.info(">>> updateUser - 추출된 사용자 ID: {}", userId);
 
         Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent() && !optionalUser.get().isDeleted()) {
+        if (optionalUser.isPresent() && !optionalUser.get().getIsDeleted()) {
             User user = optionalUser.get();
             log.info(">>> updateUser - 사용자 찾음: {}", user);
             user.setNickname(request.getNickname());
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
         // 사용자 조회
         Optional<User> optionalUser = userRepository.findById(userId);
 
-        if (optionalUser.isPresent() && !optionalUser.get().isDeleted()) {
+        if (optionalUser.isPresent() && !optionalUser.get().getIsDeleted()) {
             // redis에서도 지우기
             redisUtil.deleteData("user:" + userId);
             User user = optionalUser.get();
