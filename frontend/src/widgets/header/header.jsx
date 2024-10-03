@@ -70,7 +70,7 @@ export const Header = () => {
               {/* hover 시 로그아웃 버튼 표시 */}
               {isHovering && (
                 <button
-                className="absolute top-[45px] left-0 w-[120px] bg-gradient-to-r font-semibold from-red-400 to-red-600 text-white text-sm py-2 rounded-full shadow-md hover:shadow-lg hover:from-red-500 hover:to-red-700 transition-all duration-300 ease-in-out"
+                className="absolute top-[45px] left-[-40px] w-[120px] bg-gradient-to-r font-semibold from-red-400 to-red-600 text-white text-sm py-2 rounded-full shadow-md hover:shadow-lg hover:from-red-500 hover:to-red-700 transition-all duration-300 ease-in-out"
                 onClick={handleLogout}
               >
                 로그아웃
