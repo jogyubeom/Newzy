@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { SocialLoginModal } from "widgets/login/socialLoginModal";
 import useAuthStore from "shared/store/userStore";
-import logout from "shared/api/logout";
+import baseAxios from "shared/utils/baseAxios";
 
 export const Header = () => {
   const nav = useNavigate();
@@ -22,12 +22,19 @@ export const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await logout(); // 로그아웃 함수 호출
-      nav("/"); // 로그아웃 후 메인 화면으로 리다이렉트
+      // 서버에 로그아웃 요청 (GET 요청)
+      await baseAxios().get("/user/logout");
+
+      // 로그아웃 성공 시 토큰 삭제
+      useAuthStore.getState().clearToken();
+
+      // 로그아웃 후 메인 화면으로 리다이렉트
+      nav("/"); // useNavigate를 컴포넌트 내에서 사용
     } catch (error) {
       console.error("로그아웃 오류:", error);
     }
   };
+
 
   return (
     <>
@@ -56,11 +63,11 @@ export const Header = () => {
               {/* hover 시 로그아웃 버튼 표시 */}
               {isHovering && (
                 <button
-                  className="absolute top-[45px] left-0 w-[100px] bg-red-500 text-white text-sm py-1 rounded-md"
-                  onClick={handleLogout}
-                >
-                  로그아웃
-                </button>
+                className="absolute top-[45px] left-0 w-[120px] bg-gradient-to-r from-red-400 to-red-600 text-white text-sm py-2 rounded-full shadow-md hover:shadow-lg hover:from-red-500 hover:to-red-700 transition-all duration-300 ease-in-out"
+                onClick={handleLogout}
+              >
+                로그아웃
+              </button>
               )}
             </div>
           ) : (
