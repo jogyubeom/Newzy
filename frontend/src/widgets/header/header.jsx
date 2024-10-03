@@ -22,12 +22,20 @@ export const Header = () => {
 
   const handleLogout = async () => {
     try {
+      const token = useAuthStore.getState().token; // Zustand 스토어에서 토큰 가져오기
+      console.log("현재 토큰:", token);
+  
+      if (!token) {
+        console.error("토큰이 없습니다. 로그아웃을 처리할 수 없습니다.");
+        return;
+      }
+  
       // 서버에 로그아웃 요청 (GET 요청)
       await baseAxios().get("/user/logout");
-
+  
       // 로그아웃 성공 시 토큰 삭제
       useAuthStore.getState().clearToken();
-
+  
       // 로그아웃 후 메인 화면으로 리다이렉트
       nav("/"); // useNavigate를 컴포넌트 내에서 사용
     } catch (error) {
@@ -35,11 +43,17 @@ export const Header = () => {
     }
   };
 
-  // 종 모양 아이콘 클릭 시 토큰 삭제 함수(임시)
+  // 종 모양 아이콘 클릭 시 토큰 삭제 함수(디버그용 임시)
   const handleBellClick = () => {
-    useAuthStore.getState().clearToken(); // 토큰 삭제
-    console.log("토큰이 삭제되었습니다.");
+    const confirmed = window.confirm("임시로 만들어둔 강제 로그아웃 버튼,\n확인 시 프론트의 토큰이 삭제됨!\n(토큰이 만료되어 로그아웃이 안될 때만 사용할 것)");
+    if (confirmed) {
+      useAuthStore.getState().clearToken(); // 토큰 삭제
+      console.log("토큰이 삭제되었습니다.");
+    } else {
+      console.log("토큰 삭제가 취소되었습니다.");
+    }
   };
+  
 
 
   return (

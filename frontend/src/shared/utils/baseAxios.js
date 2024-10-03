@@ -1,5 +1,6 @@
 // src/shared/utils/baseAxios.js
 import axios from "axios";
+import useAuthStore from "shared/store/userStore"; // zustand 스토어 가져오기
 
 const BASE_SERVER_URL = "https://j11b305.p.ssafy.io/api";
 
@@ -15,7 +16,7 @@ function baseAxios() {
   // 요청 인터셉터 설정
   instance.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+      const token = useAuthStore.getState().token; // zustand 스토어에서 토큰 가져오기
       if (token) {
         config.headers.Authorization = `Bearer ${token}`; // 토큰이 있으면 Authorization 헤더에 추가
       }
