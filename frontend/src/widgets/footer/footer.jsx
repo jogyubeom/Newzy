@@ -1,6 +1,23 @@
+// widgets/footer/footer/jsx
+
+import { useEffect, useRef } from "react";
+import { useFooterStore } from "shared/store/useFooterStore";
+
 export const Footer = () => {
+  const setFooterHeight = useFooterStore((state) => state.setFooterHeight);
+  const footerRef = useRef(null);
+
+  useEffect(() => {
+    if (footerRef.current) {
+      setFooterHeight(footerRef.current.offsetHeight);
+    }
+  }, [footerRef, setFooterHeight]);
+
   return (
-    <footer className="flex m-4 border-solid border-2 border-gray-500 p-4">
+    <footer
+      ref={footerRef}
+      className="flex m-4 border-solid border-2 border-gray-500 p-4"
+    >
       <div className="container mx-auto flex flex-col md:flex-row justify-between space-y-8 md:space-y-0">
         {/* 회사 정보 */}
         <div>

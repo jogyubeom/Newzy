@@ -1,4 +1,4 @@
-import { KoreanWeek } from "shared/utils/dateFomatter";
+import { KoreanWeek } from "shared/utils/dateUtils";
 
 export const WeekCardWinner = () => {
   return (

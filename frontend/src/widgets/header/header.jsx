@@ -5,7 +5,6 @@ import { useState } from "react";
 import { SocialLoginModal } from "widgets/login/socialLoginModal";
 
 export const Header = () => {
-
   const nav = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -24,10 +23,18 @@ export const Header = () => {
           Newzy
         </div>
         <div className="flex items-center space-x-4">
-          <button className="flex-shrink-0 w-[76px] h-[37px] flex items-center justify-center rounded-full hover:bg-gray-100" onClick={openModal}>
+          <button
+            className="flex-shrink-0 w-[76px] h-[37px] flex items-center justify-center rounded-full hover:bg-gray-100"
+            onClick={openModal}
+          >
             <BiBell className="w-6 h-6 text-gray-800" />
           </button>
-          <button className="w-[40px] h-[40px] bg-gray-200 rounded-full" onClick={() => {nav('/usertest')}}>
+          <button
+            className="w-[40px] h-[40px] bg-gray-200 rounded-full"
+            onClick={() => {
+              nav("/usertest");
+            }}
+          >
             <FaUserCircle className="w-full h-full object-cover rounded-full text-blue-400" />
           </button>
         </div>
@@ -36,4 +43,3 @@ export const Header = () => {
     </>
   );
 };
-

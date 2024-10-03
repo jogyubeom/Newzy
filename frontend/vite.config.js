@@ -25,4 +25,7 @@ export default defineConfig({
       widgets: "/src/widgets",
     },
   },
+  build: {
+    sourcemap: false, // sourcemap 비활성화
+  },
 });

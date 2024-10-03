@@ -1,8 +1,9 @@
 export const CardFront = () => {
   return (
     <div>
-      마이페이지 카드 앞면
-      <div> 카드 획득 후 기사 옆에 앞면</div>
+      <img src="https://picsum.photos?random=1" alt="카드 앞면">
+        <p></p>
+      </img>
     </div>
   );
 };
