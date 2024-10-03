@@ -1,7 +1,7 @@
 // src/shared/utils/baseAxios.js
 import axios from "axios";
 
-const BASE_SERVER_URL = "https://j11b305.p.ssafy.io/api"; // 실제 서버 URL로 변경
+const BASE_SERVER_URL = "https://j11b305.p.ssafy.io/api";
 
 function baseAxios() {
   const instance = axios.create({

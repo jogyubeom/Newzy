@@ -1,6 +1,6 @@
 // store/useHomeStore.js
 import { create } from "zustand";
-import { devtools } from "zustand/middleware"; // devtools 미들웨어 추가
+import { devtools } from "zustand/middleware";
 import baseAxios from "shared/utils/baseAxios";
 
 const useHomeStore = create(
@@ -19,9 +19,9 @@ const useHomeStore = create(
         const top3NewsResponse = await baseAxios().get("/news/hot");
         const wordSearchResponse = await baseAxios().get("/word/wordcloud");
         // const weekCardWinnerResponse = await baseAxios().get(
-        //   "/api/weekly-card-winner"
+        //   ""
         // );
-        // const weekNewporterResponse = await baseAxios().get("/api/weekly-newporter");
+        // const weekNewporterResponse = await baseAxios().get("");
         const hotNewzyResponse = await baseAxios().get("/newzy/hot");
 
         set({
