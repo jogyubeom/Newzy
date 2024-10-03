@@ -74,7 +74,7 @@ export const CardSummary = ({ onAcquire, onClose }) => {
         <div className="flex flex-col w-full border border-[#F9E7FF] rounded-md p-2 mt-2">
           <textarea
             placeholder="기사의 핵심 정보를 요약해 보세요. 요약 내용은 마이페이지에서 카드의 뒷면에서 확인할 수 있습니다."
-            className="text-white w-full h-36 text-sm mt-2 text-center bg-transparent"
+            className="text-white w-full h-36 text-sm mt-2 bg-transparent resize-none focus:outline-none placeholder-[#F9E7FF]"
             value={inputText}
             onChange={handleInputChange}
           ></textarea>

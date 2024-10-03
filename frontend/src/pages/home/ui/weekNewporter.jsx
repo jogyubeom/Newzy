@@ -24,7 +24,6 @@ const dummyData = [
 export const WeekNewpoter = () => {
   return (
     <div>
-      {" "}
       <div className="panel flex flex-col justify-start items-start gap-4 px-4 pb-5 bg-gray-200">
         <div className="group-36 flex flex-row justify-start items-center gap-1 ">
           <div className="text-[20px] font-semibold text-gray-800">

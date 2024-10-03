@@ -1,7 +1,7 @@
 // pages/home/home.jsx
 
 import { useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import { Header } from "./ui/header";
 import { RecommendNews } from "./ui/recommendNews";
@@ -11,7 +11,7 @@ import { WeekCardWinner } from "./ui/weekCardWinner";
 import { WeekNewpoter } from "./ui/weekNewporter";
 import { HotNewzy } from "./ui/hotNewzy";
 import useHomeStore from "./store/useHomeStore";
-import useAuthStore from 'shared/store/userStore';
+import useAuthStore from "shared/store/userStore";
 
 export const Home = () => {
   const {
@@ -32,9 +32,6 @@ export const Home = () => {
   //   return <div>Loading...</div>;
   // }
 
-
-
-
   const setToken = useAuthStore((state) => state.setToken);
   const token = useAuthStore((state) => state.token); // 이미 저장된 토큰 확인
   const navigate = useNavigate();
@@ -45,17 +42,16 @@ export const Home = () => {
 
     // URL에서 쿼리 파라미터 추출
     const queryParams = new URLSearchParams(window.location.search);
-    const queryToken = queryParams.get('token');
+    const queryToken = queryParams.get("token");
 
     // 쿼리 파라미터에 토큰이 있으면 상태에 저장
     if (queryToken) {
       setToken(queryToken);
 
       // 쿼리 파라미터에서 토큰을 제거하고 홈 화면으로 리다이렉트
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     }
   }, [token, setToken, navigate]);
-
 
   return (
     <div className="relative">
@@ -72,7 +68,7 @@ export const Home = () => {
           <Top3News />
         </div>
 
-        <div className="flex col-span-12 lg:col-span-12">
+        <div className="flex flex-col lg:flex-row col-span-12 lg:col-span-12 gap-4">
           <div className="flex flex-col">
             <div className="mb-4">
               <WordSearchCloud />
