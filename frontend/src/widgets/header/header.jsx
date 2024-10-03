@@ -24,18 +24,18 @@ export const Header = () => {
     try {
       const token = useAuthStore.getState().token; // Zustand 스토어에서 토큰 가져오기
       console.log("현재 토큰:", token);
-  
+
       if (!token) {
         console.error("토큰이 없습니다. 로그아웃을 처리할 수 없습니다.");
         return;
       }
-  
+
       // 서버에 로그아웃 요청 (GET 요청)
       await baseAxios().get("/user/logout");
-  
+
       // 로그아웃 성공 시 토큰 삭제
       useAuthStore.getState().clearToken();
-  
+
       // 로그아웃 후 메인 화면으로 리다이렉트
       nav("/"); // useNavigate를 컴포넌트 내에서 사용
     } catch (error) {
@@ -45,7 +45,9 @@ export const Header = () => {
 
   // 종 모양 아이콘 클릭 시 토큰 삭제 함수(디버그용 임시)
   const handleBellClick = () => {
-    const confirmed = window.confirm("임시로 만들어둔 강제 로그아웃 버튼,\n확인 시 프론트의 토큰이 삭제됨!\n(토큰이 만료되어 로그아웃이 안될 때만 사용할 것)");
+    const confirmed = window.confirm(
+      "임시로 만들어둔 강제 로그아웃 버튼,\n확인 시 프론트의 토큰이 삭제됨!\n(토큰이 만료되어 로그아웃이 안될 때만 사용할 것)"
+    );
     if (confirmed) {
       useAuthStore.getState().clearToken(); // 토큰 삭제
       console.log("토큰이 삭제되었습니다.");
@@ -53,13 +55,11 @@ export const Header = () => {
       console.log("토큰 삭제가 취소되었습니다.");
     }
   };
-  
-
 
   return (
     <>
-      <header className="w-full h-[77px] flex justify-between items-center px-[48px]">
-        <div className="flex-shrink-0 h-[72px] text-[#26262C] whitespace-nowrap text-ellipsis font-[Open Sans] text-[36px] leading-[24px] font-semibold flex items-center justify-between text-justify">
+      <header className="w-full h-14 flex justify-between items-center px-7">
+        <div className="flex-shrink-0 h-[72px] text-[#26262C] whitespace-nowrap text-ellipsis font-[Open Sans] text-2xl font-semibold font-header tracking-[-0.04em] flex items-center justify-between text-justify">
           Newzy
         </div>
         <div className="flex items-center space-x-4">
@@ -84,17 +84,17 @@ export const Header = () => {
               {/* hover 시 로그아웃 버튼 표시 */}
               {isHovering && (
                 <button
-                className="absolute top-[45px] left-[-40px] w-[120px] bg-gradient-to-r font-semibold from-red-400 to-red-600 text-white text-sm py-2 rounded-full shadow-md hover:shadow-lg hover:from-red-500 hover:to-red-700 transition-all duration-300 ease-in-out"
-                onClick={handleLogout}
-              >
-                로그아웃
-              </button>
+                  className="absolute top-[45px] left-[-40px] w-[120px] bg-gradient-to-r font-semibold from-red-400 to-red-600 text-white text-sm py-2 rounded-full shadow-md hover:shadow-lg hover:from-red-500 hover:to-red-700 transition-all duration-300 ease-in-out"
+                  onClick={handleLogout}
+                >
+                  로그아웃
+                </button>
               )}
             </div>
           ) : (
             <button
-            className="px-6 py-2 bg-gradient-to-r font-semibold from-blue-400 to-blue-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out"
-            onClick={openModal} // 로그인 모달 열기
+              className="px-6 py-2 bg-gradient-to-r font-semibold from-blue-400 to-blue-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out"
+              onClick={openModal} // 로그인 모달 열기
             >
               로그인
             </button>

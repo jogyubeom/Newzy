@@ -1,6 +1,7 @@
 import { useState } from "react";
 import WordCloud from "react-wordcloud";
 import baseAxios from "shared/utils/baseAxios";
+import useHomeStore from "../store/useHomeStore";
 
 const words = [
   { text: "감언이설", value: 50, category: 0 },
@@ -44,6 +45,7 @@ const fetchWordSerachCloud = async () => {
 fetchWordSerachCloud();
 
 export function WordSearchCloud() {
+  const { wordSearchCloud } = useHomeStore();
   const [category, setCategory] = useState(0);
 
   const searchWords = words.filter(
