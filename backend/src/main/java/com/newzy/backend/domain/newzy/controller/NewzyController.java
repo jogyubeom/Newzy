@@ -6,6 +6,7 @@ import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.newzy.service.NewzyServiceImpl;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
+import com.newzy.backend.global.exception.NoTokenRequestException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,7 +39,7 @@ public class NewzyController {
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저토큰이 없습니다.");
         }
 
         log.info(">>> [POST] /newzy - 요청 파라미터: dto - {}, userId - {}", dto.toString(), userId);
@@ -94,7 +95,7 @@ public class NewzyController {
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
 
         log.info(">>> [PATCH] /newzy/{} - 요청 파라미터: newzyId - {}, userId - {}", newzyId, newzyId, userId);
@@ -115,7 +116,7 @@ public class NewzyController {
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
 
         log.info(">>> [DELETE] /newzy/{} - 요청 파라미터: newzyId - {}, userId - {}", newzyId, newzyId, userId);
@@ -130,7 +131,7 @@ public class NewzyController {
     public ResponseEntity<BaseResponseBody> bookmarkNewzy (
             @PathVariable("newzyId") Long newzyId,
             @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestHeader(value = "Authorization", required = true) String token
     ){
         if (newzyId == null) {
             throw new CustomIllegalStateException("해당 아이디의 뉴지를 찾을 수 없습니다.: " + newzyId);
@@ -140,7 +141,7 @@ public class NewzyController {
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
 
         log.info(">>> [POST] /newzy/{}/bookmark - 요청 파라미터: newzyId - {}, userId - {}", newzyId, newzyId, userId);
@@ -155,13 +156,13 @@ public class NewzyController {
     public ResponseEntity<BaseResponseBody> deleteBookmark (
             @PathVariable("newzyId") Long newzyId,
             @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestHeader(value = "Authorization", required = true) String token
     ){
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
         log.info(">>> [DELETE] /newzy/{}/bookmark - 요청 파라미터: newzyId - {}, userId - {}", newzyId, newzyId, userId);        newzyServiceImpl.deleteBookmark(userId, newzyId);
 
@@ -174,7 +175,7 @@ public class NewzyController {
     public ResponseEntity<BaseResponseBody> likeNewzy (
             @PathVariable("newzyId") Long newzyId,
             @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestHeader(value = "Authorization", required = true) String token
     ){
         if (newzyId == null) {
             throw new CustomIllegalStateException("해당 아이디의 뉴지를 찾을 수 없습니다.: " + newzyId);
@@ -184,7 +185,7 @@ public class NewzyController {
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
 
         log.info(">>> [POST] /newzy/{}/like - 요청 파라미터: newzyId - {}, userId - {}", newzyId, newzyId, userId);
@@ -200,13 +201,13 @@ public class NewzyController {
     public ResponseEntity<BaseResponseBody> deleteNewzyLike (
             @PathVariable("newzyId") Long newzyId,
             @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestHeader(value = "Authorization", required = true) String token
     ){
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
 
         log.info(">>> [DELETE] /newzy/{}/like - 요청 파라미터: newzyId - {}, userId - {}", newzyId, newzyId, userId);

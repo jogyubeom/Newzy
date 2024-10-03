@@ -8,6 +8,7 @@ import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.domain.user.service.UserServiceImpl;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
+import com.newzy.backend.global.exception.NoTokenRequestException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -56,6 +57,8 @@ public class NewzyCommentController {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
         log.info(">> [POST] /newzy/{}/comments - 요청파라미터: newzyId - {}, dto - {}, userId - {}", newzyId, newzyId, dto.toString(), userId);
 
@@ -80,6 +83,8 @@ public class NewzyCommentController {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
          log.info(">> [PATCH] /newzy/{}/comments/{} - 요청 파라미터: newzyId - {}, commentId - {}, userId - {}", newzyId, commentId, newzyId, commentId, userId);
          newzyCommentServiceImpl.updateComment(userId, commentId, dto);
@@ -99,6 +104,8 @@ public class NewzyCommentController {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
         log.info(">> [DELETE] /newzy/{}/comments/{} - 요청파라미터: newzyId - {}, commentId - {}, userId - {}", newzyId, newzyCommentId, newzyId, newzyCommentId, userId);
          newzyCommentServiceImpl.deleteComment(userId, newzyCommentId);

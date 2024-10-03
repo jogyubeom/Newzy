@@ -6,6 +6,7 @@ import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 import com.newzy.backend.domain.news.service.NewsService;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
+import com.newzy.backend.global.exception.NoTokenRequestException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -70,7 +71,7 @@ public class NewsController {
     public ResponseEntity<BaseResponseBody> collectNewsCard(
             @RequestBody NewsCardRequestDTO requestDto,
             @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestHeader(value = "Authorization", required = true) String token
     ){
         Long userId = 0L;
         if (token != null) {
@@ -95,7 +96,7 @@ public class NewsController {
     public ResponseEntity<BaseResponseBody> bookmarkNews (
             @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestHeader(value = "Authorization", required = true) String token
     ){
         if (newsId == null) {
             throw new CustomIllegalStateException("해당 아이디의 뉴스를 찾을 수 없습니다.: " + newsId);
@@ -105,7 +106,7 @@ public class NewsController {
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
 
         log.info(">>> [POST] /news/{}/bookmark - 요청 파라미터: newsId - {}, userId - {}", newsId, newsId, userId);
@@ -120,7 +121,7 @@ public class NewsController {
     public ResponseEntity<BaseResponseBody> deleteBookmark (
             @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestHeader(value = "Authorization", required = true) String token
     ){
         if (newsId == null) {
             throw new CustomIllegalStateException("해당 아이디의 뉴스를 찾을 수 없습니다.: " + newsId);
@@ -130,7 +131,7 @@ public class NewsController {
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
         log.info(">>> [DELETE] /news/{}/bookmark - 요청 파라미터: newsId - {}, userId - {}", newsId, newsId, userId);
 
@@ -145,7 +146,7 @@ public class NewsController {
     public ResponseEntity<BaseResponseBody> likeNews (
             @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestHeader(value = "Authorization", required = true) String token
     ){
         if (newsId == null) {
             throw new CustomIllegalStateException("해당 아이디의 뉴스를 찾을 수 없습니다." + newsId);
@@ -155,7 +156,7 @@ public class NewsController {
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
         log.info(">>> [POST] /news/{}/like - 요청 파라미터: newsId - {}, userId - {}", newsId, newsId, userId);
 
@@ -170,7 +171,7 @@ public class NewsController {
     public ResponseEntity<BaseResponseBody> deleteNewsLike (
             @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestHeader(value = "Authorization", required = true) String token
     ){
         if (newsId == null) {
             throw new CustomIllegalStateException("해당 아이디의 뉴스를 찾을 수 없습니다." + newsId);
@@ -180,7 +181,7 @@ public class NewsController {
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new CustomIllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
         log.info(">>> [DELETE] /news/{}/like - 요청 파라미터: newsId - {}, userId - {}", newsId, newsId, userId );
 
