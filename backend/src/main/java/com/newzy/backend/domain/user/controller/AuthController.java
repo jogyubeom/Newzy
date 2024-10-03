@@ -4,6 +4,7 @@ import com.newzy.backend.domain.user.service.GoogleAuthService;
 import com.newzy.backend.domain.user.service.KakaoAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,17 +35,20 @@ public class AuthController {
     public ResponseEntity<?> kakaoCallback(@RequestParam String code) {
         try {
             log.info("Received Kakao authorization code: {}", code);
-            // Kakao 로그인/회원가입 처리
             String result = kakaoAuthService.handleLoginOrSignup(code);
 
             if (result.equals("signup")) {
-                // 회원가입 성공
                 log.info("Kakao signup successful");
-                return ResponseEntity.ok().body("Signup success");
+                // 회원가입 성공 시에도 프론트엔드로 리다이렉트
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .header("Location", "/?signup=true")
+                        .build();
             } else {
-                // 로그인 성공 (JWT 토큰 반환)
                 log.info("Kakao login successful, token issued: {}", result);
-                return ResponseEntity.ok().header("Authorization", "Bearer " + result).body("Login success");
+                // 로그인 성공 시 JWT 토큰을 URL 쿼리 파라미터로 전달
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .header("Location", "/?token=" + result)
+                        .build();
             }
         } catch (Exception e) {
             log.error("Kakao OAuth2 authentication failed", e);
@@ -66,20 +70,23 @@ public class AuthController {
     public ResponseEntity<?> googleCallback(@RequestParam String code) {
         try {
             log.info("Received Google authorization code: {}", code);
-            // Kakao 로그인/회원가입 처리
             String result = googleAuthService.handleLoginOrSignup(code);
 
             if (result.equals("signup")) {
-                // 회원가입 성공
                 log.info("Google signup successful");
-                return ResponseEntity.ok().body("Signup success");
+                // 회원가입 성공 시에도 프론트엔드로 리다이렉트
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .header("Location", "/?signup=true")
+                        .build();
             } else {
-                // 로그인 성공 (JWT 토큰 반환)
                 log.info("Google login successful, token issued: {}", result);
-                return ResponseEntity.ok().header("Authorization", "Bearer " + result).body("Login success");
+                // 로그인 성공 시 JWT 토큰을 URL 쿼리 파라미터로 전달
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .header("Location", "/?token=" + result)
+                        .build();
             }
         } catch (Exception e) {
-            log.error("Kakao OAuth2 authentication failed", e);
+            log.error("Google OAuth2 authentication failed", e);
             return ResponseEntity.status(401).body("OAuth2 authentication failed");
         }
     }
