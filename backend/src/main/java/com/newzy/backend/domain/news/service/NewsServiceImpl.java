@@ -17,6 +17,7 @@ import com.newzy.backend.domain.news.repository.NewsRepositorySupport;
 import com.newzy.backend.domain.news.repository.NewsCardRepository;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
+import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,76 +135,102 @@ public class NewsServiceImpl implements NewsService {
 
 
     @Override
-    public void bookmark(Long newsId) {
-        // TODO: 유저 토큰, userId 받아오는 로직 추후 추가
-        // TODO: 유저 ID , 뉴스 ID로 조회해서 중북 북마크 예외처리 로직 추후 추가
-        NewsBookmark newsBookmark = new NewsBookmark();
+    public void bookmark(Long userId, Long newsId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
         News news = newsRepository.findById(newsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
+        boolean isBookmark = newsBookmarkRepository.existsByUserAndNews(user, news);
+
+        if (isBookmark) {
+            throw new EntityIsFoundException("이미 북마크가 존재합니다.");
+        }
+
+        NewsBookmark newsBookmark = new NewsBookmark();
         newsBookmark.setNews(news);
-        // newsBookmark.setUser(user);
+        newsBookmark.setUser(user);
 
         newsBookmarkRepository.save(newsBookmark);
     }
 
 
     @Override
-    public void deleteBookmark(Long NewsId, Long bookmarkId) {
+    public void deleteBookmark(Long NewsId, Long userId) {
 
-        // TODO: 중복 삭제 로직 추후 추가
-        News news = newsRepository.findById(NewsId).orElseThrow(() -> new EntityNotFoundException("일치하는 뉴스 데이터가 없습니다."));
-        NewsBookmark newsBookmark = newsBookmarkRepository.findById(bookmarkId).orElseThrow(() -> new EntityNotFoundException("일치하는 북마크 데이터가 없습니다."));;
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
+        News news = newsRepository.findById(NewsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
+        boolean isBookmark = newsBookmarkRepository.existsByUserAndNews(user, news);
 
-        newsBookmarkRepository.deleteById(bookmarkId);
+        if (! isBookmark) {
+            throw new EntityNotFoundException("해당하는 북마크를 찾을 수 없습니다.");
+        }
+
+        newsBookmarkRepository.deleteByUserAndNews(user, news);
     }
 
 
     @Override
-    public void likeNews(Long newsId) {
-        // TODO: 유저 토큰, userId 받아오는 로직 추후 추가
-        // TODO: 유저 ID , 뉴스 ID로 조회해서 중북 북마크 예외처리 로직 추후 추가
+    public void likeNews(Long userId, Long newsId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
         News news = newsRepository.findById(newsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
+
+        Boolean isLike = newsLikeRepository.existsByUserAndNews(user, news);
+
+        if (isLike) {
+            throw new EntityIsFoundException("해당하는 좋아요가 이미 존재합니다.");
+        }
+
         NewsLike newsLike = new NewsLike();
         newsLike.setNews(news);
+        newsLike.setUser(user);
         newsLikeRepository.save(newsLike);
     }
 
 
     @Override
-    public void deleteLike(Long NewsId, Long newsLikeId) {
-        // TODO: 중복 삭제 로직 추후 추가
-        News news = newsRepository.findById(NewsId).orElseThrow(() -> new EntityNotFoundException("일치하는 뉴스 데이터가 없습니다."));
-        NewsLike newsLike = newsLikeRepository.findById(newsLikeId).orElseThrow(() -> new EntityNotFoundException("해당하는 좋아요가 없습니다."));
+    public void deleteLike(Long userId, Long newsId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
+        News news = newsRepository.findById(newsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
 
-        newsLikeRepository.delete(newsLike);
+        Boolean isLike = newsLikeRepository.existsByUserAndNews(user, news);
+
+        if (! isLike) {
+            throw new EntityNotFoundException("해당하는 북마크를 찾을 수 없습니다.");
+        }
+
+        newsLikeRepository.deleteByUserAndNews(user, news);
     }
 
+
     @Override
-    public void collectNewsCard(NewsCardRequestDTO requestDTO) {
-//        User user = userRepository.findById(requestDTO.getUserId()).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티가 없습니다."));
+    public void collectNewsCard(Long userId, NewsCardRequestDTO requestDTO) {
+        User user = userRepository.findById(requestDTO.getUserId()).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티가 없습니다."));
         News news = newsRepository.findById(requestDTO.getNewsId()).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 뉴스가 없습니다."));
 
-        int category = news.getCategory();
-        // TODO : 획득한 뉴스카드를 중복 획득하지 않는 로직 추가
+        Boolean isNewsCard = newsCardRepository.existsByUserAndNews(user, news);
 
-        // TODO : 추후 로그인 기능 추가되면 다시 수정
-//        // logic 1. 회원 경제, 사회, 세계 점수 변경
-//        switch (category) {
-//            case 0:
-//                user.setEconomyScore(user.getEconomyScore() + requestDTO.getScore());
-//                break;
-//            case 1:
-//                user.setSocietyScore(user.getSocietyScore() + requestDTO.getScore());
-//                break;
-//            case 2:
-//                user.setInternationalScore(user.getInternationalScore() + requestDTO.getScore());
-//                break;
-//            default:
-//                throw new EntityNotFoundException("잘못된 카테고리 값: " + category);
-//        }
-//        userRepository.save(user);
+        if (isNewsCard) {
+            throw new EntityIsFoundException("이미 획득한 뉴스 카드입니다.");
+        }
+
+        int category = news.getCategory();
+
+        // logic 1. 회원 경제, 사회, 세계 점수 변경
+        switch (category) {
+            case 0:
+                user.setEconomyScore(user.getEconomyScore() + requestDTO.getScore());
+                break;
+            case 1:
+                user.setSocietyScore(user.getSocietyScore() + requestDTO.getScore());
+                break;
+            case 2:
+                user.setInternationalScore(user.getInternationalScore() + requestDTO.getScore());
+                break;
+            default:
+                throw new EntityNotFoundException("잘못된 카테고리 값: " + category);
+        }
+        userRepository.save(user);
 
         // logic 2. 뉴스 카드 생성, 저장
-        NewsCard newsCard = NewsCard.convertToEntity(news, requestDTO);
+        NewsCard newsCard = NewsCard.convertToEntity(user, news, requestDTO);
         newsCardRepository.save(newsCard);
     }
 

@@ -26,11 +26,9 @@ public class NewsBookmark {
     @JoinColumn(name = "news_id", nullable = false)
     private News news;
 
-    // TODO: 추후 다시 수정 (newsBookmark entity)
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-////    @OnDelete(action = OnDeleteAction.CASCADE)
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // hard delete
 

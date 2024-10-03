@@ -40,7 +40,7 @@ public class User extends BaseTimeEntity {
     private String info;
 
     @Column(name = "is_deleted")
-    private boolean isDeleted = Boolean.FALSE;
+    private Boolean isDeleted = Boolean.FALSE;
 
     @Column(name = "exp")
     private int exp = 0;

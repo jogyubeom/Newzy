@@ -27,9 +27,8 @@ public class NewsLike {
     @JoinColumn(name = "news_id")
     private News news;
 
-    // TODO: 추후 다시 수정 (newsLike entity)
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

@@ -47,7 +47,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !user.isDeleted(); // 삭제된 사용자 확인
+        return !user.getIsDeleted(); // 삭제된 사용자 확인
     }
 
     // 추가적인 사용자 정보 접근자 메서드
