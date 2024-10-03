@@ -57,6 +57,8 @@ public class GoogleAuthService implements AuthService {
             // 기존 사용자가 있으면 JWT 토큰 발급 (로그인)
             String jwtToken = jwtProvider.generateToken(existingUser.get()).getAccessToken();
             log.info("Existing user found. JWT token issued: {}", jwtToken);
+            // redis에 저장
+            jwtProvider.storeTokenInRedis(existingUser.get().getUserId(), jwtToken, EXPIRATION_TIME);
             return jwtToken;
         } else {
             // 기존 사용자가 없으면 회원가입 처리

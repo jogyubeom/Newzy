@@ -3,14 +3,20 @@ package com.newzy.backend.domain.user.service;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
+import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
+import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
+import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.auth.JwtProvider;
+import com.newzy.backend.global.exception.EntityNotFoundException;
 import com.newzy.backend.global.exception.NotValidRequestException;
+import com.newzy.backend.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,6 +32,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final RedisUtil redisUtil;
 
     @Override
     public void save(UserInfoRequestDTO requestDTO) {
@@ -33,18 +40,85 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     @Override
-    public NewzyResponseDTO updateUserInfo(Long id, UserInfoRequestDTO requestDTO) {
-        User updatedUserInfo = User.convertToEntity(id, requestDTO);
-        User user = userRepository.updateUserInfo(updatedUserInfo);
-        UserInfoResponseDTO responseDTO = UserInfoResponseDTO.convertToDTO(user);
+    public UserUpdateResponseDTO updateUser(String token, UserUpdateRequestDTO request) {
+        log.info(">>> updateUser - 토큰: {}, 요청 데이터: {}", token, request);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        log.info(">>> updateUser - 추출된 사용자 ID: {}", userId);
 
-        return null;
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent() && !optionalUser.get().isDeleted()) {
+            User user = optionalUser.get();
+            log.info(">>> updateUser - 사용자 찾음: {}", user);
+            user.setNickname(request.getNickname());
+            user.setEmail(request.getEmail());
+            user.setBirth(request.getBirth());
+            user.setInfo(request.getInfo());
+            User updatedUser = userRepository.save(user);
+            log.info(">>> updateUser - 사용자 업데이트됨: {}", updatedUser);
+            return UserUpdateResponseDTO.builder()
+                    .birth(updatedUser.getBirth())
+                    .nickname(updatedUser.getNickname())
+                    .email(updatedUser.getEmail())
+                    .info(updatedUser.getInfo())
+                    .socialLoginType(updatedUser.getSocialLoginType())
+                    .userId(userId)
+                    .build();
+        } else {
+            log.error(">>> updateUser - 사용자를 찾을 수 없음: {}", userId);
+            throw new EntityNotFoundException("사용자를 찾을 수 없습니다.");
+        }
     }
 
     @Override
-    public void deleteUserInfo(Long userId) {
-        userRepository.deleteById(userId);
+    public void userSignOut(String token) {
+        log.info(">>> [USER SIGN OUT] - 사용자 로그아웃 요청: 토큰 = {}", token);
+
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        redisUtil.deleteData("user:" + userId);
+
+        log.info(">>> [USER SIGN OUT] - Redis에서 토큰 삭제 완료: 유저 ID = {}", userId);
+
+        SecurityContextHolder.clearContext();
+
+        log.info(">>> [USER SIGN OUT] - SecurityContextHolder 초기화 완료");
+    }
+
+    @Override
+    public UserFirstLoginResponseDTO isFirstLogin(String token) {
+        log.info(">>> [IS FIRST LOGIN] - 사용자 첫 로그인 확인: 토큰 = {}", token);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return UserFirstLoginResponseDTO.builder()
+                .isFirstLogin(user.getBirth() == null)
+                .build();  // birth가 null이면 첫 로그인
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(String token) {
+        log.info(">>> deleteUser - 토큰: {}", token);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        log.info(">>> deleteUser - 추출된 사용자 ID: {}", userId);
+
+        // 사용자 조회
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isPresent() && !optionalUser.get().isDeleted()) {
+            // redis에서도 지우기
+            redisUtil.deleteData("user:" + userId);
+            User user = optionalUser.get();
+            user.setIsDeleted(true);
+            userRepository.save(user);
+            log.info(">>> deleteUser - 사용자 삭제 완료: {}", user);
+        } else {
+            log.error(">>> deleteUser - 사용자를 찾을 수 없음: {}", userId);
+            throw new NotValidRequestException("사용자를 찾을 수 없습니다.");
+        }
     }
 
     @Override
@@ -78,6 +152,21 @@ public class UserServiceImpl implements UserService {
         });
 
         log.info(">>> getUser - 사용자 정보: {}", user);
+
+        // 3. 사용자 정보 DTO 반환
+        return UserInfoResponseDTO.convertToDTO(user);
+    }
+
+    @Override
+    public UserInfoResponseDTO getUserByEmail(String email) {
+
+        // 2. 사용자 조회
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> {
+            log.error(">>> getUserByEmail - 사용자를 찾을 수 없음: {}", email);
+            throw new NotValidRequestException("사용자를 찾을 수 없습니다.");
+        });
+
+        log.info(">>> getUserByEmail - 사용자 정보: {}", user);
 
         // 3. 사용자 정보 DTO 반환
         return UserInfoResponseDTO.convertToDTO(user);

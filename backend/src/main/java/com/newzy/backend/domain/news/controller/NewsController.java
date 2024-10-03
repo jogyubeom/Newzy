@@ -3,6 +3,7 @@ package com.newzy.backend.domain.news.controller;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
+import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
 import com.newzy.backend.domain.news.service.NewsService;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
@@ -57,13 +58,26 @@ public class NewsController {
 
     @GetMapping(value = "/hot")
     @Operation(summary = "많이 본 뉴스 조회", description = "조회수가 많은 뉴스를 조회합니다.")
-    public ResponseEntity<List<NewsListGetResponseDto>> getHotNewsList(){
+    public ResponseEntity<List<NewsListGetResponseDto>> getHotNewsList() {
         log.info(">>> [GET] /news/hot - 요청 파라미터");
         List<NewsListGetResponseDto> hotNewsList = newsService.getHotNewsList();
 
         return ResponseEntity.status(200).body(hotNewsList);
     }
 
+    @GetMapping(value = "/recommend")
+    @Operation(summary = "추천 뉴스 조회", description = "사용자에 맞는 추천 뉴스를 조회합니다.")
+    public ResponseEntity<List<NewsRecommendGetResponseDTO>> getRecommendedNewsList(
+            @Parameter(description = "JWT")
+            @RequestHeader(value = "Authorization") String token) {
+        log.info(">>> [GET] /news/recommend - 요청 파라미터");
+        if (token == null || token.isEmpty())
+            throw new NotValidRequestException("token이 비어있습니다");
+        Long userId = userService.getUser(token).getUserId();
+        List<NewsRecommendGetResponseDTO> newsRecommendGetResponseDTOList = newsService.getRecommendedNewsList(userId);
+
+        return ResponseEntity.status(200).body(newsRecommendGetResponseDTOList);
+    }
 
     // 카테고리 정보를 int로 프론트에서 받아옴
     @PostMapping(value = "/{newsId}/collect-news-card")
@@ -118,7 +132,7 @@ public class NewsController {
 
     @DeleteMapping(value = "/{newsId}/bookmark")
     @Operation(summary = "뉴스 북마크 삭제", description = "해당 뉴스 북마크를 삭제합니다.")
-    public ResponseEntity<BaseResponseBody> deleteBookmark (
+    public ResponseEntity<BaseResponseBody> deleteBookmark(
             @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
@@ -168,7 +182,7 @@ public class NewsController {
 
     @DeleteMapping(value = "/{newsId}/like")
     @Operation(summary = "뉴스 좋아요 취소", description = "해당 뉴스 좋아요를 취소합니다.")
-    public ResponseEntity<BaseResponseBody> deleteNewsLike (
+    public ResponseEntity<BaseResponseBody> deleteNewsLike(
             @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token

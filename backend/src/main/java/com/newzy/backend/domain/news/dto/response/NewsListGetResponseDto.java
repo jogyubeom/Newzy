@@ -15,7 +15,7 @@ public class NewsListGetResponseDto {
     private Long newsId;
     private String link;
     private String title;
-    private String content;
+    private String contentText;
     private int category;
     private String publisher;
     private int hit;
@@ -29,7 +29,7 @@ public class NewsListGetResponseDto {
                 .newsId(news.getNewsId())
                 .link(news.getLink())
                 .title(news.getTitle())
-                .content(news.getContent())
+                .contentText(news.getContentText())
                 .category(news.getCategory())
                 .publisher(news.getPublisher())
                 .hit(news.getHit())
