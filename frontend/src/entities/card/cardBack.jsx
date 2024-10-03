@@ -2,7 +2,7 @@
 
 export const CardBack = ({ summary, category }) => {
   return (
-    <div className="w-[360px] h-[480px] rounded-2xl flex flex-col items-center gap-y-4 py-4 bg-red-600">
+    <div className="relative w-[360px] h-[480px] rounded-2xl flex flex-col items-center py-4 bg-red-600">
       <div className="flex flex-col items-center gap-y-[3px] px-5 w-full">
         <div className="flex flex-col items-center gap-y-[8px] w-full">
           <div className="text-white text-4xl font-card flex justify-center items-center h-16">
@@ -35,15 +35,15 @@ export const CardBack = ({ summary, category }) => {
         </div>
       </div>
 
-      <div className="px-8 h-auto flex justify-center items-center">
+      <div className="px-9 pb-16 flex flex-grow justify-center items-center">
         <p className="text-white text-[16px] font-[ChosunilboNM] leading-[25px] tracking-wider">
           {summary}
         </p>
       </div>
 
       <div className="absolute px-8 w-full bottom-6 flex items-center">
-        <button className="w-full h-12 bg-red-700 rounded-md">
-          <p className="text-white text-4 font-semibold">기사 다시 보기</p>
+        <button className="w-full h-12 bg-red-700 rounded-md  text-white text-lg font-semibold">
+          기사 다시 보기
         </button>
       </div>
     </div>

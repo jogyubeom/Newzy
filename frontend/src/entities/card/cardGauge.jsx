@@ -93,8 +93,11 @@ export const CardGauge = () => {
 
       {/* 모달 */}
       {modalStep > 0 && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="relative z-50">
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={closeModal}
+        >
+          <div className="relative z-50" onClick={(e) => e.stopPropagation()}>
             {modalStep === 1 ? (
               <CardSummary onAcquire={handleCardBack} onClose={closeModal} />
             ) : (

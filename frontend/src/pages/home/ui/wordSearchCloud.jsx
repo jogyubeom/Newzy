@@ -32,7 +32,8 @@ const categories = [
 
 const fetchWordSerachCloud = async () => {
   try {
-    const response = await baseAxios().get("/newzy");
+    const response = await baseAxios().get("/word/wordcloud");
+    console.log(response.data);
     return response.data; // 데이터 반환
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -50,22 +51,8 @@ export function WordSearchCloud() {
   );
 
   return (
-    <div
-      style={{
-        width: "100%",
-        minHeight: "400px",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <div
-        style={{
-          marginBottom: "20px",
-          display: "flex",
-          justifyContent: "center",
-          gap: "10px",
-        }}
-      >
+    <div className="w-full min-h-[400px] flex flex-col">
+      <div className="mb-5 flex justify-center gap-2.5">
         {categories.map((cat) => (
           <button
             key={cat.id}

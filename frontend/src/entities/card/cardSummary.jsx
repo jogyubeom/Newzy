@@ -2,25 +2,35 @@
 
 import { useState } from "react";
 import { getByteLengthUTF8, checkByteLength } from "shared/utils/stringUtils";
+import {
+  BsEmojiDizzyFill as Hard,
+  BsEmojiSmileFill as Normal,
+  BsEmojiSunglassesFill as Easy,
+} from "react-icons/bs";
+
+const difficultyItems = [
+  { label: "쉬워요", icon: <Easy />, value: "easy" },
+  { label: "보통이예요", icon: <Normal />, value: "normal" },
+  { label: "어려워요", icon: <Hard />, value: "hard" },
+];
 
 export const CardSummary = ({ onAcquire, onClose }) => {
   const [inputText, setInputText] = useState("");
   const [byteLength, setByteLength] = useState(0);
-  const [summaryText, setSummaryText] = useState("");
   const [modalMessage, setModalMessage] = useState(""); // 모달 메시지
   const [isModalVisible, setIsModalVisible] = useState(false); // 모달 상태
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const minBytes = 10;
-  const maxBytes = 300;
+  const maxBytes = 450;
 
   const handleInputChange = (e) => {
     const value = e.target.value;
     const { byteLength, isExceeded } = checkByteLength(value, maxBytes);
 
     if (isExceeded) {
-      setModalMessage("200자 이하로 입력해주세요.");
+      setModalMessage(`${maxBytes}자 이하로 입력해주세요.`);
       setIsModalVisible(true);
       setTimeout(() => setIsModalVisible(false), 2000);
       return;
@@ -40,14 +50,10 @@ export const CardSummary = ({ onAcquire, onClose }) => {
       setIsModalVisible(true);
       setTimeout(() => setIsModalVisible(false), 1500);
     } else {
-      const finalSummaryText = inputText; // textarea의 현재 값을 사용
-
       // 애니메이션 발동
       setIsAnimating(true);
       setTimeout(() => {
-        setSummaryText(finalSummaryText);
-        onAcquire(finalSummaryText); // 업데이트된 값을 전달
-
+        onAcquire(inputText); // 업데이트된 값을 전달
         // console.log(finalSummaryText, "카드 요약");
         setIsAnimating(false);
       }, 1500); // 애니메이션 효과가 끝난 후 상태 리셋
@@ -56,7 +62,7 @@ export const CardSummary = ({ onAcquire, onClose }) => {
 
   return (
     <div
-      className={`w-[360px] h-[480px] rounded-2xl flex flex-col items-center justify-start gap-6 p-6 bg-[#9E79BC] ${
+      className={`w-[360px] h-[480px] rounded-2xl flex flex-col items-center justify-start gap-3 p-6 bg-[#9E79BC] ${
         isAnimating ? "animate-spin-y" : ""
       }`}
     >
@@ -65,11 +71,10 @@ export const CardSummary = ({ onAcquire, onClose }) => {
         <div className="text-white text-lg font-semibold">
           기사를 요약하고 카드를 획득하세요.
         </div>
-
         <div className="flex flex-col w-full border border-[#F9E7FF] rounded-md p-2 mt-2">
           <textarea
             placeholder="기사의 핵심 정보를 요약해 보세요. 요약 내용은 마이페이지에서 카드의 뒷면에서 확인할 수 있습니다."
-            className="text-white w-full h-40 text-sm mt-2 text-center bg-transparent"
+            className="text-white w-full h-36 text-sm mt-2 text-center bg-transparent"
             value={inputText}
             onChange={handleInputChange}
           ></textarea>
@@ -77,51 +82,39 @@ export const CardSummary = ({ onAcquire, onClose }) => {
             {byteLength}/{maxBytes}
           </div>
         </div>
-        <div className="flex justify-between w-full mt-4">
-          <div className="text-white text-lg font-semibold">이 기사는</div>
+
+        <div className="flex flex-col w-full mt-4 gap-2 justify-center ">
+          <div className="text-white text-sm font-semibold text-center">
+            이 기사는 읽기에 어땠나요?
+          </div>
           <div className="flex items-center justify-center gap-3">
-            {/* 쉬워요 버튼 */}
-            <button
-              className={`px-4 py-2 rounded-md text-xs ${
-                selectedDifficulty === "easy"
-                  ? "bg-[#3578FF] text-white"
-                  : "border border-[#3578FF] text-[#3578FF]"
-              }`}
-              onClick={() => handleDifficultySelect("easy")}
-            >
-              쉬워요
-            </button>
-
-            {/* 보통이예요 버튼 */}
-            <button
-              className={`px-4 py-2 rounded-md text-xs ${
-                selectedDifficulty === "normal"
-                  ? "bg-[#2BDB65] text-white"
-                  : "border border-[#2BDB65] text-[#2BDB65]"
-              }`}
-              onClick={() => handleDifficultySelect("normal")}
-            >
-              보통이예요
-            </button>
-
-            {/* 어려워요 버튼 */}
-            <button
-              className={`px-4 py-2 rounded-md text-xs ${
-                selectedDifficulty === "hard"
-                  ? "bg-[#FF3535] text-white"
-                  : "border border-[#FF3535] text-[#FF3535]"
-              }`}
-              onClick={() => handleDifficultySelect("hard")}
-            >
-              어려워요
-            </button>
+            {difficultyItems.map((item, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center gap-1 w-full"
+              >
+                <button
+                  className={`rounded-full ${
+                    selectedDifficulty === item.value
+                      ? "bg-gray-700 text-yellow-400"
+                      : "bg-white text-gray-300"
+                  } hover:text-yellow-300 text-3xl`}
+                  onClick={() => handleDifficultySelect(item.value)}
+                >
+                  {item.icon}
+                </button>
+                <span className="mt-1 text-[10px] text-white">
+                  {item.label}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="flex justify-center w-full mt-4">
+        <div className="absolute px-8 w-full bottom-6 flex items-center">
           <button
             className={
-              "w-full h-11 rounded-md flex items-center justify-center bg-[#5E007E] text-white text-lg font-semibold "
+              "w-full h-12 rounded-md bg-[#5E007E] text-white text-lg font-semibold "
             }
             onClick={handleSubmit}
           >

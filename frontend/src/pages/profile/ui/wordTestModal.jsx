@@ -30,7 +30,7 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
       setCorrectCount(0);
       setIncorrectCount(0);
       setShowResult(false);
-  
+
       // 스크롤을 맨 위로 이동
       window.scrollTo(0, 0);
     }
@@ -108,12 +108,32 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
             <h2 className="text-3xl font-bold mb-8 text-[#5E007E]">
               {userName} 님의 결과는?
             </h2>
-<<<<<<< HEAD:frontend/src/widgets/profilePage/wordTestModal.jsx
-            <p className="text-[52px] font-bold text-[#5E007E]">
-              <icon className="text-[48px] mr-5">🎊</icon>
-              {calculateScore()}점!!
-              <icon className="text-[48px] ml-5">🎊</icon>
-            </p>
+
+            {/* 점수에 따른 아이콘 및 점수 표시 */}
+            <div className="flex items-center text-[48px] font-bold text-blue-800">
+              {calculateScore() <= 50 ? (
+                <>
+                  <FaFrown className="mr-4 text-yellow-500" />{" "}
+                  {/* 50점 이하 😔 */}
+                  {calculateScore()}점...
+                </>
+              ) : calculateScore() < 80 ? (
+                <>
+                  <FaSmile className="mr-4 text-green-500" />{" "}
+                  {/* 50점 초과 80점 미만 🙂 */}
+                  {calculateScore()}점!
+                </>
+              ) : (
+                <>
+                  <p>
+                    <icon className="mr-5">🎊</icon>
+                    {calculateScore()}점!!
+                    <icon className="ml-5">🎊</icon>
+                  </p>
+                </>
+              )}
+            </div>
+
             <p className="text-xl font-semibold mt-8 mb-4">
               총 문제: {wordList.length}
             </p>
@@ -123,35 +143,6 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
             <p className="text-xl font-semibold text-red-600 mb-5">
               틀린 문제: {incorrectCount}
             </p>
-=======
-            
-              {/* 점수에 따른 아이콘 및 점수 표시 */}
-              <div className="flex items-center text-[48px] font-bold text-blue-800">
-              {calculateScore() <= 50 ? (
-                <>
-                  <FaFrown className="mr-4 text-yellow-500" /> {/* 50점 이하 😔 */}
-                  {calculateScore()}점...
-                </>
-              ) : calculateScore() < 80 ? (
-                <>
-                  <FaSmile className="mr-4 text-green-500" /> {/* 50점 초과 80점 미만 🙂 */}
-                  {calculateScore()}점!
-                </>
-              ) : (
-                <>
-                  <p>
-                    <icon className="mr-5">🎊</icon> 
-                    {calculateScore()}점!!
-                    <icon className="ml-5">🎊</icon>
-                  </p>
-                </>
-              )}
-            </div>
-
-            <p className="text-xl font-semibold mt-8 mb-4">총 문제: {wordList.length}</p>
-            <p className="text-xl font-semibold text-green-600 mb-2">맞춘 문제: {correctCount}</p>
-            <p className="text-xl font-semibold text-red-600 mb-5">틀린 문제: {incorrectCount}</p>
->>>>>>> e85240d4b7c78317da3eaca7e18c3b97b9e49728:frontend/src/pages/profile/ui/wordTestModal.jsx
             <label className="flex items-center justify-between w-[55%] font-['Poppins'] text-[15px] font-semibold leading-[28px] tracking-[-0.04em] text-[#4B5563] bg-[#F5F5F5] py-3 px-6 rounded-[20px] shadow-md border border-gray-300">
               <span className="flex flex-col text-left">
                 맞힌 단어들을 단어장에서
