@@ -65,7 +65,7 @@ public class UserInfoResponseDTO {
                 .password(user.getPassword())
                 .birth(user.getBirth())
                 .info(user.getInfo())
-                .isDeleted(user.isDeleted())
+                .isDeleted(user.getIsDeleted())
                 .exp(user.getExp())
                 .economyScore(user.getEconomyScore())
                 .societyScore(user.getSocietyScore())

@@ -4,6 +4,7 @@
     import com.newzy.backend.domain.newzy.dto.request.NewzyCommentRequestDTO;
     import com.newzy.backend.domain.newzy.repository.NewzyCommentRepository;
     import com.newzy.backend.domain.newzy.repository.NewzyRepository;
+    import com.newzy.backend.domain.user.entity.User;
     import com.newzy.backend.global.model.BaseTimeEntity;
     import jakarta.persistence.*;
     import lombok.*;
@@ -25,10 +26,9 @@
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long newzyCommentId;
 
-        // TODO: 추후 다시 수정 (newzyComment entity)
-    //    @ManyToOne(fetch = FetchType.LAZY)
-    //    @JoinColumn(name = "user_id", updatable = false)
-    //    private User user;
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "user_id", updatable = false)
+        private User user;
 
         // 뉴지 아이디
         @ManyToOne(fetch = FetchType.LAZY)
@@ -50,18 +50,20 @@
         @Column(name = "is_deleted")
         private Boolean isDeleted = false;
 
-        public static NewzyComment convertToEntityByNewzyCommentId(Long newzyCommentId, NewzyCommentRequestDTO requestDTO){
+        public static NewzyComment convertToEntityByNewzyCommentId(User user, Long newzyCommentId, NewzyCommentRequestDTO requestDTO){
             NewzyComment newzyComment = new NewzyComment();
+            newzyComment.setUser(user);
             newzyComment.setNewzyCommentId(newzyCommentId);
             newzyComment.setNewzyComment(requestDTO.getNewzyComment());
 
             return newzyComment;
         }
 
-        public static NewzyComment convertToEntityByNewzyId(NewzyCommentRequestDTO dto, Newzy newzy) {
+        public static NewzyComment convertToEntityByNewzyId(NewzyCommentRequestDTO dto, User user, Newzy newzy) {
 
             NewzyComment newzyComment = new NewzyComment();
             newzyComment.setNewzyComment(dto.getNewzyComment());
+            newzyComment.setUser(user);
             newzyComment.setNewzy(newzy);
             newzyComment.setNewzyCommentId(dto.getNewzyCommentId());
 

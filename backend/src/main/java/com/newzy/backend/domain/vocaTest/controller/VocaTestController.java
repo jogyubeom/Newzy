@@ -35,6 +35,7 @@ public class VocaTestController {
         return ResponseEntity.status(200).body(testWordList);
     }
 
+
     @PostMapping
     @Operation(summary = "어휘 테스트 결과" , description = "어휘 테스트 결과를 반환합니다.")
     public ResponseEntity<BaseResponseBody> gradeUserScore(
@@ -47,7 +48,7 @@ public class VocaTestController {
             userId = userService.getUser(token).getUserId();
         }
 
-        log.info(">>> [POST] /user/vocabulary-test");
+        log.info(">>> [POST] /user/vocabulary-test - 요청 파라미터 userId : {}", userId);
 
         if (scoreList == null) {
             throw new NotValidRequestException("점수 리스트가 없습니다.");

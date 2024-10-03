@@ -26,12 +26,13 @@ public class NewzyCommentRequestDTO {
     @Schema(description = "뉴지 게시글 Id")
     private Long newzyId;
 
-    // TODO : 유저 토큰 추가 후 추수 다시 수정
-//    @Schema(description = "유저", example = "User")
-//    private User user;
+    @Schema(description = "유저", example = "User")
+    private Long userId;
 
-    public NewzyCommentRequestDTO(String newzyComment) {
+    public NewzyCommentRequestDTO(String newzyComment, User user) {
         this.newzyComment = newzyComment;
+        this.userId = user.getUserId();
+
     }
 
 

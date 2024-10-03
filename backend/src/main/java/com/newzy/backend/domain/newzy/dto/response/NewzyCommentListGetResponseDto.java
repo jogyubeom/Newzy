@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @ToString
 public class NewzyCommentListGetResponseDto {
 
+    private Long userId;
     private Long newzyCommentId;
     private String newzyComment;
     private LocalDateTime createdAt;
@@ -25,6 +26,7 @@ public class NewzyCommentListGetResponseDto {
         };
 
         return NewzyCommentListGetResponseDto.builder()
+                .userId(newzyComment.getUser().getUserId())
                 .newzyCommentId(newzyComment.getNewzyCommentId())
                 .newzyComment(newzyComment.getNewzyComment())
                 .createdAt(newzyComment.getCreatedAt())

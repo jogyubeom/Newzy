@@ -10,11 +10,11 @@ import java.util.Map;
 
 public interface NewzyCommentService {
 
-    void saveComment(Long newzyId, NewzyCommentRequestDTO requestDTO);
+    void saveComment(Long userId, Long newzyId, NewzyCommentRequestDTO requestDTO);
 
-    NewzyCommentResponseDTO updateComment(Long newzyCommentId, NewzyCommentRequestDTO requestDTO);
+    NewzyCommentResponseDTO updateComment(Long userId, Long newzyCommentId, NewzyCommentRequestDTO requestDTO);
 
-    void deleteComment(Long newzyCommentId);
+    void deleteComment(Long userId, Long newzyCommentId);
 
     Map<String, Object> getNewzyCommentList(Long newzyId, int page);
 }

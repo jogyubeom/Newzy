@@ -11,13 +11,13 @@ public interface NewsService {
     Map<String, Object> getNewsList(int page, int category);
     NewsDetailGetResponseDto getNewsDetail(Long NewsId);
 
-    void bookmark(Long NewsId);
-    void deleteBookmark(Long NewsId, Long BookmarkId);
+    void bookmark(Long userId, Long NewsId);
+    void deleteBookmark(Long userId, Long newsId);
 
-    void likeNews(Long NewsId);
-    void deleteLike(Long NewsId, Long NewsLikeId);
+    void likeNews(Long userId, Long NewsId);
+    void deleteLike(Long userId, Long NewsId);
 
     List<NewsListGetResponseDto> getHotNewsList();
 
-    void collectNewsCard(NewsCardRequestDTO newsCardRequestDTO);
+    void collectNewsCard(Long userId, NewsCardRequestDTO newsCardRequestDTO);
 }
