@@ -1,8 +1,11 @@
 package com.newzy.backend.domain.news.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
+import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
 import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.entity.NewsBookmark;
 import com.newzy.backend.domain.news.entity.NewsCard;
@@ -15,12 +18,16 @@ import com.newzy.backend.domain.news.repository.NewsCardRepository;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.exception.EntityNotFoundException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +42,9 @@ public class NewsServiceImpl implements NewsService {
     private final NewsLikeRepository newsLikeRepository;
     private final UserRepository userRepository;
     private final NewsCardRepository newsCardRepository;
+
+    private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 파싱을 위해 사용
 
     @Override  // branch : feature/get-news의 NewsServiceImpl 참고
     @Transactional(readOnly = true)
@@ -52,6 +62,60 @@ public class NewsServiceImpl implements NewsService {
         LocalDateTime startOfDay = now.withHour(0).withMinute(0).withSecond(0).withNano(0);
 
         return newsRepositorySupport.findTop3NewsByDayWithHighestHits(startOfDay);
+    }
+
+    @Override
+    public List<NewsRecommendGetResponseDTO> getRecommendedNewsList(Long userId) {
+        List<NewsRecommendGetResponseDTO> recommendedNewsList = new ArrayList<>();
+
+        try {
+            // 1. 오늘 날짜 계산
+//            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            // 2. Redis 키 생성 (cluster_id는 1로 가정)
+            String clusterId = "1";
+            String redisKey = String.format(":1:recommended_news:%s:cluster_%s", today, clusterId);
+
+            // 3. Redis에서 키 조회
+            String value = redisTemplate.opsForValue().get(redisKey);
+            if (value != null) {
+                // 4. JSON 파싱하여 뉴스 ID 리스트 추출
+                JsonNode jsonNode = objectMapper.readTree(value);
+                JsonNode newsIdList = jsonNode.get("list");
+                if (newsIdList != null && newsIdList.isArray()) {
+                    int count = 0;
+
+                    for (JsonNode newsIdNode : newsIdList) {
+                        if (count >= 8) break; // 8개까지만 추출
+
+                        Long newsId = newsIdNode.asLong();
+
+                        // 5. 각 뉴스 ID로 Redis에서 뉴스 정보를 조회
+                        String newsKey = String.format(":1:news_info:%s:cluster_%s", newsId, clusterId);
+                        String newsValue = redisTemplate.opsForValue().get(newsKey);
+
+                        if (newsValue != null) {
+                            // 6. JSON 파싱하여 NewsRecommendGetResponseDTO 생성
+                            JsonNode newsJsonNode = objectMapper.readTree(newsValue);
+                            NewsRecommendGetResponseDTO dto = NewsRecommendGetResponseDTO.builder()
+                                    .newsId(newsJsonNode.get("news_id").asLong())
+                                    .link(newsJsonNode.get("link").asText())
+                                    .summary(newsJsonNode.get("summary").asText())
+                                    .thumbnail(newsJsonNode.get("thumbnail").asText())
+                                    .build();
+
+                            // 7. DTO 리스트에 추가
+                            recommendedNewsList.add(dto);
+                            count++;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 처리
+        }
+
+        return recommendedNewsList;
     }
 
 

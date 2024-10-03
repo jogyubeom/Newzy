@@ -3,6 +3,7 @@ package com.newzy.backend.domain.news.service;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
+import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,6 @@ public interface NewsService {
     void deleteLike(Long NewsId, Long NewsLikeId);
 
     List<NewsListGetResponseDto> getHotNewsList();
-
+    List<NewsRecommendGetResponseDTO> getRecommendedNewsList(Long userId);
     void collectNewsCard(NewsCardRequestDTO newsCardRequestDTO);
 }
