@@ -19,6 +19,7 @@ public interface NewsService {
     void deleteLike(Long userId, Long NewsId);
 
     List<NewsListGetResponseDto> getHotNewsList();
+    List<NewsRecommendGetResponseDTO> getRecommendedNewsList(Long userId);
 
     void collectNewsCard(Long userId, NewsCardRequestDTO newsCardRequestDTO);
 }

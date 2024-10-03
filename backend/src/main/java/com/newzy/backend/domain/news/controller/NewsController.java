@@ -72,7 +72,7 @@ public class NewsController {
             @RequestHeader(value = "Authorization") String token) {
         log.info(">>> [GET] /news/recommend - 요청 파라미터");
         if (token == null || token.isEmpty())
-            throw new NotValidRequestException("token이 비어있습니다");
+            throw new NoTokenRequestException("token이 비어있습니다");
         Long userId = userService.getUser(token).getUserId();
         List<NewsRecommendGetResponseDTO> newsRecommendGetResponseDTOList = newsService.getRecommendedNewsList(userId);
 
