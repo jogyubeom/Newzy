@@ -14,6 +14,10 @@ import cards from "shared/images/cards.svg";
 
 import "./profile.css"
 
+const getZoomLevel = () => {
+  return window.devicePixelRatio * 100;
+};
+
 // 임시 유저 더미데이터
 const user = {
   name: "정지훈",
@@ -177,9 +181,39 @@ export const Profile = () => {
     }
   };
 
+  const [paddingX, setPaddingX] = useState(32); // 기본 패딩
+
+  // 패딩 업데이트 로직을 추가합니다.
+  useEffect(() => {
+    const updatePaddingBasedOnZoom = () => {
+      const zoomLevel = getZoomLevel();
+  
+      if (zoomLevel <= 90) {
+        setPaddingX(300); // 줌 레벨이 80% 이하일 때 80px
+      } else if (zoomLevel <= 100) {
+        setPaddingX(150); // 줌 레벨이 80% ~ 90%일 때 56px
+      } else if (zoomLevel <= 120) {
+        setPaddingX(100); // 줌 레벨이 90% ~ 100%일 때 32px
+      } else {
+        setPaddingX(32); // 줌 레벨이 100% 이상일 때 16px
+      }
+    };
+
+    // 초기 실행
+    updatePaddingBasedOnZoom();
+
+    // 매 500ms마다 줌 레벨을 확인하여 패딩을 업데이트
+    const intervalId = setInterval(updatePaddingBasedOnZoom, 500);
+
+    // cleanup 함수로 interval 제거
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
   return (
     <div className="overflow-x-auto bg-[#FFFFFF]">
-      <div className="h-[409px] bg-[#132956] relative flex px-8 mb-12">
+      <div id="target" className="h-[409px] bg-[#132956] relative flex mb-12" style={{ paddingLeft: `${paddingX}px`, paddingRight: `${paddingX}px` }}>
         <div className="relative">
           {/* 경험치량 표시 */}
           <div
