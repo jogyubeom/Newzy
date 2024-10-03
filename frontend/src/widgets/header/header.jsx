@@ -22,12 +22,20 @@ export const Header = () => {
 
   const handleLogout = async () => {
     try {
+      const token = useAuthStore.getState().token; // Zustand 스토어에서 토큰 가져오기
+      console.log("현재 토큰:", token);
+  
+      if (!token) {
+        console.error("토큰이 없습니다. 로그아웃을 처리할 수 없습니다.");
+        return;
+      }
+  
       // 서버에 로그아웃 요청 (GET 요청)
       await baseAxios().get("/user/logout");
-
+  
       // 로그아웃 성공 시 토큰 삭제
       useAuthStore.getState().clearToken();
-
+  
       // 로그아웃 후 메인 화면으로 리다이렉트
       nav("/"); // useNavigate를 컴포넌트 내에서 사용
     } catch (error) {
