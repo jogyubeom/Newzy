@@ -53,6 +53,8 @@ export const UserTest = () => {
     });
   };
 
+  const nav = useNavigate()
+
   const handleNext = () => {
     if (currentCategoryIndex < categories.length - 1) {
       setCurrentCategoryIndex(currentCategoryIndex + 1);
@@ -97,8 +99,6 @@ export const UserTest = () => {
       nav('/');
     }
   };
-
-  const nav = useNavigate()
 
   return (
     <div className="mx-auto py-10 px-28 bg-white rounded-lg shadow-lg">
