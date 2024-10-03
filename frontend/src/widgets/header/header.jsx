@@ -45,9 +45,15 @@ export const Header = () => {
 
   // 종 모양 아이콘 클릭 시 토큰 삭제 함수(디버그용 임시)
   const handleBellClick = () => {
-    useAuthStore.getState().clearToken(); // 토큰 삭제
-    console.log("토큰이 삭제되었습니다.");
+    const confirmed = window.confirm("임시로 만들어둔 강제 로그아웃 버튼,\n확인 시 프론트의 토큰이 삭제됨!\n(토큰이 만료되어 로그아웃이 안될 때만 사용할 것)");
+    if (confirmed) {
+      useAuthStore.getState().clearToken(); // 토큰 삭제
+      console.log("토큰이 삭제되었습니다.");
+    } else {
+      console.log("토큰 삭제가 취소되었습니다.");
+    }
   };
+  
 
 
   return (
