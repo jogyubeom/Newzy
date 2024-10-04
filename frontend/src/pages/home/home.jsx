@@ -1,6 +1,6 @@
 // pages/home/home.jsx
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Header } from "./ui/header";
@@ -35,17 +35,38 @@ export const Home = () => {
 
   const setToken = useAuthStore((state) => state.setToken);
   const token = useAuthStore((state) => state.token); // 이미 저장된 토큰 확인
+  const setUserInfo = useAuthStore((state) => state.setUserInfo); // 유저 정보 저장 함수
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // 토큰이 이미 저장되어 있는 경우에는 쿼리 파라미터 확인을 건너뜀
-    if (token) return;
+  // 유저 정보를 요청하는 함수
+  const fetchUserInfo = useCallback(async () => {
+    try {
+      const response = await baseAxios().get("/user"); // 유저 정보 API 호출
+      setUserInfo(response.data); // 받은 유저 정보를 zustand 스토어에 저장
+    } catch (error) {
+      console.error("유저 정보 요청 중 오류 발생:", error);
+      // 필요한 경우 추가적인 오류 처리
+    }
+  }, [setUserInfo]);
 
+  useEffect(() => {
+    const fetchUserInfoIfTokenExists = async () => {
+      if (token) {
+        try {
+          await fetchUserInfo(); // 토큰이 있을 때만 유저 정보 요청
+        } catch (error) {
+          console.error("유저 정보 요청 중 오류 발생:", error);
+        }
+      }
+    };
+  
+    fetchUserInfoIfTokenExists();
+  
     const checkAndNavigate = async () => {
       // URL에서 쿼리 파라미터 추출
       const queryParams = new URLSearchParams(window.location.search);
       const queryToken = queryParams.get("token");
-
+  
       if (queryToken) {
         // 쿼리 파라미터에 토큰이 있으면 상태에 저장
         setToken(queryToken);
@@ -70,8 +91,17 @@ export const Home = () => {
       }
     };
   
-    checkAndNavigate();
-  }, [token, setToken, navigate]);
+    if (!token) {
+      checkAndNavigate();
+    }
+  }, [token, setToken, navigate, fetchUserInfo]);
+  
+  useEffect(() => {
+    // 토큰이 설정된 후 유저 정보 요청
+    if (token) {
+      fetchUserInfo();
+    }
+  }, [token, fetchUserInfo]);
 
   return (
     <div className="relative">
