@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -121,6 +122,22 @@ public class UserController {
         log.info(">>> [GET] /user/is-first-login - 첫 로그인 여부: {}", userFirstLoginResponseDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(userFirstLoginResponseDTO);
+    }
+
+
+    @PostMapping("/uploadProfileImage")
+    public ResponseEntity<BaseResponseBody> uploadProfileImage(@RequestPart(value = "profile", required = false) MultipartFile[] profile,
+                                                               @RequestHeader(value = "Authorization", required = false) String token) {
+        log.info(">>> [POST] /api/users/uploadProfileImage - 프로필 사진 업로드 요청");
+
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            log.info(">>> [GET] /user/first/login - Bearer 제거 후 토큰: {}", token);
+        }
+
+        UserInfoResponseDTO user = userService.updateProfileImage(token, profile);
+        log.info(">>> [PATCH] /user - 회원 수정 완료: {}", user);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(BaseResponseBody.of(204, "프로필 사진 업데이트가 완료되었습니다."));
     }
 
 

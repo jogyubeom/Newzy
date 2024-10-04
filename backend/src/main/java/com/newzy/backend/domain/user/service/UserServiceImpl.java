@@ -3,6 +3,9 @@ package com.newzy.backend.domain.user.service;
 import com.newzy.backend.domain.news.repository.NewsBookmarkRepository;
 import com.newzy.backend.domain.news.repository.NewsBookmarkRepositorySupport;
 import com.newzy.backend.domain.news.repository.NewsLikeRepositorySupport;
+import com.newzy.backend.domain.image.entity.Image;
+import com.newzy.backend.domain.image.repository.ImageRepository;
+import com.newzy.backend.domain.image.service.ImageService;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepositorySupport;
@@ -28,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -43,6 +47,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final RedisUtil redisUtil;
+    private final ImageService imageService;
+    private final ImageRepository imageRepository;
     private final FollowRepository followRepository;
     private final FollowRepositorySupport followRepositorySupport;
     private final NewsBookmarkRepositorySupport newsBookmarkRepositorySupport;
@@ -64,7 +70,7 @@ public class UserServiceImpl implements UserService {
         Long userId = jwtProvider.getUserIdFromToken(token);
         log.info(">>> updateUser - 추출된 사용자 ID: {}", userId);
 
-        Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<User> optionalUser = userRepository.findByUserIdAndIsDeletedFalse(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             log.info(">>> updateUser - 사용자 찾음: {}", user);
@@ -115,6 +121,34 @@ public class UserServiceImpl implements UserService {
                 .build();  // birth가 null이면 첫 로그인
     }
 
+    @Transactional
+    @Override
+    public UserInfoResponseDTO updateProfileImage(String token, MultipartFile[] profile) {
+        log.info(">>> updateProfileImage - 토큰: {}, 요청 데이터: {}", token, profile);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        log.info(">>> updateProfileImage - 추출된 사용자 ID: {}", userId);
+
+        Optional<User> optionalUser = userRepository.findByUserIdAndIsDeletedFalse(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            // 회원 대표 사진 변경
+            if (profile != null) {
+                if (profile.length > 1)
+                    throw new NotValidRequestException("회원 프로필 사진은 한 장만 등록할 수 있습니다.");
+                String[] imageUrl = imageService.uploadImages(profile);
+                Image userImage = imageRepository.findByImageUrl(imageUrl[0])
+                        .orElseThrow(() -> new EntityNotFoundException("회원의 수정한 대표 사진을 불러오는 데 실패하였습니다."));
+                user.setImage(userImage);
+                User updatedUser = userRepository.save(user);
+                log.info(">>> updateUser - 사용자 업데이트됨: {}", updatedUser);
+                return UserInfoResponseDTO.convertToDTO(updatedUser);
+            }
+        } else {
+            log.error(">>> updateUser - 사용자를 찾을 수 없음: {}", userId);
+            throw new EntityNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+        return null;
+    }
 
     @Override
     @Transactional
@@ -124,7 +158,7 @@ public class UserServiceImpl implements UserService {
         log.info(">>> deleteUser - 추출된 사용자 ID: {}", userId);
 
         // 사용자 조회
-        Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<User> optionalUser = userRepository.findByUserIdAndIsDeletedFalse(userId);
 
         if (optionalUser.isPresent()) {
             // redis에서도 지우기
@@ -164,7 +198,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 2. 사용자 조회
-        User user = userRepository.findById(userId).orElseThrow(() -> {
+        User user = userRepository.findByUserIdAndIsDeletedFalse(userId).orElseThrow(() -> {
             log.error(">>> getUser - 사용자를 찾을 수 없음: {}", userId);
             throw new NotValidRequestException("사용자를 찾을 수 없습니다.");
         });
@@ -220,14 +254,18 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 처리 중 문제가 발생했습니다.");
         }
     }
+
     @Override
     public UserInfoResponseDTO oauthSignup(AuthRequestDTO authRequestDTO) {
         // 새로운 사용자 등록
+        Optional<Image> image = imageRepository.findByImageUrl("https://plogbucket.s3.ap-northeast-2.amazonaws.com/e63129aa-4855-43a4-a75b-840668687252_user.png");
+
         User user = User.builder()
                 .email(authRequestDTO.getEmail())
                 .nickname(authRequestDTO.getNickname())
                 .password(authRequestDTO.getPassword())
                 .socialLoginType(authRequestDTO.getType())
+                .image(image.get())
                 .build();
         log.info("새로운 사용자 등록: {}", authRequestDTO.getEmail());
         userRepository.save(user); // 새 사용자 저장

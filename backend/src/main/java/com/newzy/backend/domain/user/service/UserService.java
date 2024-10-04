@@ -7,6 +7,7 @@ import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ public interface UserService {
     void save(UserInfoRequestDTO requestDTO);
 
     UserUpdateResponseDTO updateUser(String token, UserUpdateRequestDTO request);
+
 
     void deleteUser(String token);
 
@@ -33,6 +35,8 @@ public interface UserService {
     void userSignOut(String token);
 
     UserFirstLoginResponseDTO isFirstLogin(String token);
+
+    UserInfoResponseDTO updateProfileImage(String token, MultipartFile[] profile);
 
     void followUser(Long userId, String nickname);
 
