@@ -94,10 +94,6 @@ pipeline {
     }
 
     post {
-        always {
-            junit '**/scheduling/build/test-results/test/*.xml'
-            archiveArtifacts artifacts: '**/scheduling/build/libs/*.jar', fingerprint: true
-        }
         success {
             echo 'Deployment successful!'
         }
