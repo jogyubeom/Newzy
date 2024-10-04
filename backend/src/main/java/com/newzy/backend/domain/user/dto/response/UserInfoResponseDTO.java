@@ -33,9 +33,6 @@ public class UserInfoResponseDTO {
     @Schema(description = "회원 정보", example = "blabla")
     private String info;
 
-    @Schema(description = "회원 삭제 여부", example = "false")
-    private boolean isDeleted;
-
     @Schema(description = "회원 경험치", example = "0")
     private int exp;
 
@@ -65,7 +62,6 @@ public class UserInfoResponseDTO {
                 .password(user.getPassword())
                 .birth(user.getBirth())
                 .info(user.getInfo())
-                .isDeleted(user.getIsDeleted())
                 .exp(user.getExp())
                 .economyScore(user.getEconomyScore())
                 .societyScore(user.getSocietyScore())
