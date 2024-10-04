@@ -1,7 +1,10 @@
 package com.newzy.backend.domain.user.dto.response;
 
+import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -20,6 +23,9 @@ public class UserInfoResponseDTO {
 
     @Schema(description = "회원 닉네임", example = "nickname")
     private String nickname;
+
+    @Schema(description = "이미지 url", example = "https://s3fweflf")
+    private String profile;
 
     @Schema(description = "회원 이메일", example = "aaa@gmail.com")
     private String email;
@@ -58,6 +64,7 @@ public class UserInfoResponseDTO {
         return UserInfoResponseDTO.builder()
                 .userId(user.getUserId())
                 .nickname(user.getNickname())
+                .profile(user.getImage().getImageUrl())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .birth(user.getBirth())

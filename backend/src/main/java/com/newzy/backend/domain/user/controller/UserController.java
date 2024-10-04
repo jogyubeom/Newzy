@@ -1,9 +1,12 @@
 package com.newzy.backend.domain.user.controller;
 
+import com.newzy.backend.domain.image.exception.InvalidImageFileException;
+import com.newzy.backend.domain.image.exception.S3FileUploadException;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
+import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.NoTokenRequestException;
 import com.newzy.backend.global.exception.NotValidRequestException;
@@ -14,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -119,4 +123,18 @@ public class UserController {
     }
 
 
+    @PostMapping("/uploadProfileImage")
+    public ResponseEntity<BaseResponseBody> uploadProfileImage(@RequestPart(value = "profile", required = false) MultipartFile[] profile,
+                                                @RequestHeader(value = "Authorization", required = false) String token) {
+        log.info(">>> [POST] /api/users/uploadProfileImage - 프로필 사진 업로드 요청");
+
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            log.info(">>> [GET] /user/first/login - Bearer 제거 후 토큰: {}", token);
+        }
+
+        UserInfoResponseDTO user = userService.updateProfileImage(token, profile);
+        log.info(">>> [PATCH] /user - 회원 수정 완료: {}", user);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(BaseResponseBody.of(204, "프로필 사진 업데이트가 완료되었습니다."));
+    }
 }
