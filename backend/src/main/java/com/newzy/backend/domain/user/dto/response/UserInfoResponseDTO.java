@@ -63,7 +63,7 @@ public class UserInfoResponseDTO {
         }
         return UserInfoResponseDTO.builder()
                 .userId(user.getUserId())
-                .clusterId(user.getCluster().getClusterId())
+                // .clusterId(user.getCluster().getClusterId())
                 .nickname(user.getNickname())
                 .profile(user.getImage().getImageUrl())
                 .email(user.getEmail())
