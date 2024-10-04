@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class JwtProvider {
     private final Key key; // JWT 서명을 위한 키
     private final RedisTemplate<String, String> redisTemplate; // RedisTemplate 사용
-    private final long TOKEN_EXPIRATION_TIME = 3600; // 토큰 만료 시간 설정 (예: 1시간)
+    private final long TOKEN_EXPIRATION_TIME = 3600*24; // 토큰 만료 시간 설정 (예: 1시간)
 
     // 생성자에서 주입된 secretKey로 JWT 서명을 위한 키인 key를 초기화한다.
     public JwtProvider(@Value("${jwt.secretkey}") String secretKey, RedisTemplate<String, String> redisTemplate) {

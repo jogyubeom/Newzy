@@ -24,6 +24,9 @@ public class UserInfoResponseDTO {
     @Schema(description = "회원 닉네임", example = "nickname")
     private String nickname;
 
+    @Schema(description = "이미지 url", example = "https://s3fweflf")
+    private String profile;
+
     @Schema(description = "회원 이메일", example = "aaa@gmail.com")
     private String email;
 
@@ -62,6 +65,7 @@ public class UserInfoResponseDTO {
                 .userId(user.getUserId())
                 .clusterId(user.getCluster().getClusterId())
                 .nickname(user.getNickname())
+                .profile(user.getImage().getImageUrl())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .birth(user.getBirth())
