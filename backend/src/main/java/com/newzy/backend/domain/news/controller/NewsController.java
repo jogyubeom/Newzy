@@ -46,11 +46,13 @@ public class NewsController {
     @Operation(summary = "뉴스 목록 조회", description = "해당 뉴스 목록을 조회합니다.")
     public ResponseEntity<Map<String, Object>> getNewsList(
             @Parameter(description = "페이지 번호")
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "카테고리")
-            @RequestParam(value = "category", required = false, defaultValue = "3") int category) {
-        log.info(">>> [GET] /news - 요청 파라미터: page - {}, category - {}", page, category);
-        Map<String, Object> newsListGetResponseDtoMap = newsService.getNewsList(page, category);
+            @RequestParam(value = "category", required = false, defaultValue = "3") int category,
+            @Parameter(description = "키워드")
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        log.info(">>> [GET] /news - 요청 파라미터: page - {}, category - {}, keyword - {}", page, category, keyword);
+        Map<String, Object> newsListGetResponseDtoMap = newsService.getNewsList(page, category, keyword);
 
         return ResponseEntity.status(200).body(newsListGetResponseDtoMap);
     }

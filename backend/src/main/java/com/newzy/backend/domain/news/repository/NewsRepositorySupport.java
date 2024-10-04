@@ -3,6 +3,7 @@ package com.newzy.backend.domain.news.repository;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.entity.QNews;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
@@ -25,14 +26,27 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-    public Map<String, Object> findNewsList(int page, int category) {
+    public Map<String, Object> findNewsList(int page, int category, String keyword) {
         QNews qNews = QNews.news;
+
+        // 기본 where 조건을 생성
+        BooleanBuilder whereCondition = new BooleanBuilder();
+
+        // category가 3이 아닌 경우에만 카테고리 필터 추가
+        if (category != 3) {
+            whereCondition.and(qNews.category.eq(category));
+        }
+
+        // keyword가 null이 아니고 빈 문자열이 아닌 경우에만 타이틀 필터 추가
+        if (keyword != null && !keyword.isEmpty()) {
+            whereCondition.and(qNews.title.contains(keyword));
+        }
 
         // 전체 뉴스 개수 조회
         Long totalCount = queryFactory
                 .select(qNews.count())
                 .from(qNews)
-                .where(category != 3 ? qNews.category.eq(category) : null)
+                .where(whereCondition)
                 .fetchOne();
 
         // 총 페이지 수 계산 (마지막 페이지 번호)
@@ -47,12 +61,14 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                         qNews.contentText,
                         qNews.category,
                         qNews.publisher,
+                        qNews.thumbnail,
                         qNews.hit,
                         qNews.createdAt
                 ))
                 .from(qNews)
-                .where(category != 3 ? qNews.category.eq(category) : null)
-                .offset(page * size)
+                .where(whereCondition)
+                .orderBy(qNews.newsId.desc())
+                .offset((page - 1) * size)
                 .limit(size)
                 .fetch();
 
@@ -76,6 +92,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                         qNews.contentText,
                         qNews.category,
                         qNews.publisher,
+                        qNews.thumbnail,
                         qNews.hit,
                         qNews.createdAt
                 ))

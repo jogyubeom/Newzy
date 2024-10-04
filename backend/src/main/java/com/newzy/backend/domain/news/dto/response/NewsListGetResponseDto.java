@@ -18,6 +18,7 @@ public class NewsListGetResponseDto {
     private String contentText;
     private int category;
     private String publisher;
+    private String thumbnail;
     private int hit;
     private LocalDateTime createdAt;
 
@@ -32,6 +33,7 @@ public class NewsListGetResponseDto {
                 .contentText(news.getContentText())
                 .category(news.getCategory())
                 .publisher(news.getPublisher())
+                .thumbnail(news.getThumbnail())
                 .hit(news.getHit())
                 .createdAt(news.getCreatedAt())
                 .build();

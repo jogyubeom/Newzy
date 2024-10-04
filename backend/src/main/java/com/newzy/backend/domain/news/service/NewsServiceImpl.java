@@ -49,10 +49,10 @@ public class NewsServiceImpl implements NewsService {
 
     @Override  // branch : feature/get-news의 NewsServiceImpl 참고
     @Transactional(readOnly = true)
-    public Map<String, Object> getNewsList(int page, int category) {
-        log.info(">>> getNewsList - page: {}. category: {}", page, category);
+    public Map<String, Object> getNewsList(int page, int category, String keyword) {
+        log.info(">>> getNewsList - page: {}. category: {}. keyword: {}", page, category, keyword);
 
-        return newsRepositorySupport.findNewsList(page, category);
+        return newsRepositorySupport.findNewsList(page, category, keyword);
     }
 
 

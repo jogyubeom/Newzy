@@ -41,10 +41,9 @@ public class NewzyServiceImpl implements NewzyService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getNewzyListWithLastPage(int page, int category) {
-        log.info(">>> newzyServiceImpl getNewzyList - pages: {}, category: {}", page, category);
-        int size = 10;
-        Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, size, category);
+    public Map<String, Object> getNewzyListWithLastPage(int page, int category, String keyword) {
+        log.info(">>> newzyServiceImpl getNewzyList - pages: {}, category: {}, keyword: {}", page, category, keyword);
+        Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, category, keyword);
 
         if (newzyList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 뉴지 데이터를 조회할 수 없습니다.");
