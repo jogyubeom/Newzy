@@ -190,6 +190,7 @@ public class UserServiceImpl implements UserService {
                         .nickname(authRequestDTO.getNickname())
                         .password(authRequestDTO.getPassword())
                         .socialLoginType(authRequestDTO.getType())
+                        .isDeleted(Boolean.FALSE)
                         .build();
                 log.info("새로운 사용자 등록: {}", authRequestDTO.getEmail());
                 userRepository.save(user); // 새 사용자 저장
