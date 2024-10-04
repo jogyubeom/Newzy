@@ -24,7 +24,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
         this.queryFactory = queryFactory;
     }
 
-    public Map<String, Object> findNewzyList(int page, int size, int category) {
+    public Map<String, Object> findNewzyList(int page, int category, String keyword) {
         QNewzy qnewzy = QNewzy.newzy;
 
         BooleanBuilder builder = new BooleanBuilder();
@@ -35,6 +35,11 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
         // 카테고리 조건 (0~2인 경우에만 적용)
         if (category >= 0 && category <= 2) {
             builder.and(qnewzy.category.eq(category));
+        }
+
+        // keyword가 null이 아니고 빈 문자열이 아닌 경우에만 타이틀 필터 추가
+        if (keyword != null && !keyword.isEmpty()) {
+            builder.and(qnewzy.title.contains(keyword));
         }
 
         Long totalCount = queryFactory
@@ -57,7 +62,8 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
                 ))
                 .from(qnewzy)
                 .where(builder)  // 동적 조건
-                .offset(page * size)
+                .orderBy(qnewzy.newzyId.desc())
+                .offset((page-1) * size)
                 .limit(size)
                 .fetch();
 

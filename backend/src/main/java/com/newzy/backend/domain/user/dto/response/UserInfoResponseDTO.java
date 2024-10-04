@@ -18,8 +18,14 @@ public class UserInfoResponseDTO {
     @Schema(description = "회원 pk", example = "1")
     private Long userId;
 
+    @Schema(description = "회원 군집", example = "1")
+    private int clusterId;
+
     @Schema(description = "회원 닉네임", example = "nickname")
     private String nickname;
+
+    @Schema(description = "이미지 url", example = "https://s3fweflf")
+    private String profile;
 
     @Schema(description = "회원 이메일", example = "aaa@gmail.com")
     private String email;
@@ -32,9 +38,6 @@ public class UserInfoResponseDTO {
 
     @Schema(description = "회원 정보", example = "blabla")
     private String info;
-
-    @Schema(description = "회원 삭제 여부", example = "false")
-    private boolean isDeleted;
 
     @Schema(description = "회원 경험치", example = "0")
     private int exp;
@@ -60,12 +63,13 @@ public class UserInfoResponseDTO {
         }
         return UserInfoResponseDTO.builder()
                 .userId(user.getUserId())
+                // .clusterId(user.getCluster().getClusterId())
                 .nickname(user.getNickname())
+                .profile(user.getImage().getImageUrl())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .birth(user.getBirth())
                 .info(user.getInfo())
-                .isDeleted(user.isDeleted())
                 .exp(user.getExp())
                 .economyScore(user.getEconomyScore())
                 .societyScore(user.getSocietyScore())

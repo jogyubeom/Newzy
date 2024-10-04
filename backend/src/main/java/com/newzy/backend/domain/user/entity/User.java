@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.user.entity;
 
+import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
 import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -23,6 +24,14 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", unique = true, nullable = false)
     private Long userId;
+
+    @OneToOne
+    @JoinColumn(name = "image_id", referencedColumnName = "imageId")
+    private Image image;
+
+    @ManyToOne(targetEntity = Cluster.class)
+    @JoinColumn(name = "cluster_id", updatable = false)
+    private Cluster cluster;
 
     @Column(name = "nickname", nullable = false, length = 50)
     private String nickname;

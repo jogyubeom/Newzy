@@ -3,6 +3,7 @@ package com.newzy.backend.domain.dictionary.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzy.backend.domain.dictionary.dto.request.SearchWordRequestDTO;
+import com.newzy.backend.domain.dictionary.dto.request.VocaListRequestDTO;
 import com.newzy.backend.domain.dictionary.dto.response.DictionaryResponseDTO;
 import com.newzy.backend.domain.dictionary.dto.response.VocaListResponseDTO;
 import com.newzy.backend.domain.dictionary.dto.response.WordCloudResponseDTO;
@@ -50,35 +51,34 @@ public class DictionaryServiceImpl implements DictionaryService {
     public List<DictionaryResponseDTO> searchByWord(String word) {
         List<DictionaryResponseDTO> dictionaryResponseDTOList = new ArrayList<>();
         List<Dictionary> dictionaryList = dictionaryRepository.findByWordinfoWordContaining(word);
+        int cnt = 0;
         for (Dictionary dictionary : dictionaryList) {
+            if (cnt == 7) break; // 총 7개만 반환
             dictionaryResponseDTOList.add(new DictionaryResponseDTO(
                     dictionary.getId(),
-                    dictionary.getWordinfo().getWord(),
+                    dictionary.getWordinfo().getWord().replace("^", " "),
                     dictionary.getSenseinfo().getDefinition()
             ));
+            cnt++;
         }
-
         return dictionaryResponseDTOList;
     }
 
     @Override
-    public void addSearchWordHistory(Long userId, Long newsId, String word) {
+    public void addVocaList(Long userId, VocaListRequestDTO vocaListRequestDTO) {
         // User와 News의 유효성 체크
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException(userId + " 와 일치하는 사용자 엔티티를 찾을 수 없습니다.")
         );
-        News news = newsRepository.findById(newsId).orElseThrow(
-                () -> new EntityNotFoundException(newsId + " 와 일치하는 뉴스 엔티티를 찾을 수 없습니다.")
-        );
 
         // SearchWord 엔티티 생성 및 저장
-        SearchWord searchWord = new SearchWord(user.getUserId(), news.getNewsId(), word);
+        SearchWord searchWord = new SearchWord(user.getUserId(), vocaListRequestDTO.getWord(), vocaListRequestDTO.getDefinition());
         searchWordRepository.save(searchWord);
         log.info("SearchWord 엔티티가 MongoDB에 저장되었습니다: {}", searchWord);
     }
 
     @Override
-    public List<VocaListResponseDTO> getSearchWordHistory(SearchWordRequestDTO searchWordRequestDTO) {
+    public List<VocaListResponseDTO> getVocaList(SearchWordRequestDTO searchWordRequestDTO) {
         // PageRequest와 정렬 조건 설정
         Sort sorting = (searchWordRequestDTO.getSort() == 0) ? Sort.by(Sort.Direction.DESC, "createdAt") : Sort.by(Sort.Direction.ASC, "createdAt");
         PageRequest pageRequest = PageRequest.of(searchWordRequestDTO.getPage(), 10, sorting);
@@ -89,7 +89,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
         List<VocaListResponseDTO> vocaListResponseDTOList = new ArrayList<>();
         for (SearchWord searchWord : searchWords) {
-            VocaListResponseDTO vocaListResponseDTO = getWordMeanings(searchWord.getWord());
+            VocaListResponseDTO vocaListResponseDTO = new VocaListResponseDTO(searchWord.getWord(), searchWord.getDefinitinon());
             vocaListResponseDTOList.add(vocaListResponseDTO);
         }
 
@@ -101,22 +101,6 @@ public class DictionaryServiceImpl implements DictionaryService {
         // MongoDB에서 userId와 word가 일치하는 검색어 기록을 삭제
         searchWordRepository.deleteByUserIdAndWord(userId, word);
         log.info("userId {}와 word '{}'에 해당하는 검색 기록이 삭제되었습니다.", userId, word);
-    }
-
-    private VocaListResponseDTO getWordMeanings(String word) {
-        // ElasticsearchRepository를 사용하여 검색 쿼리를 수행
-        List<Dictionary> dictionaries = dictionaryRepository.findByWordinfoWordContaining(word);
-
-        // 단어와 일치하는 결과만 선택하여 최대 5개의 뜻을 리스트에 추가
-        List<String> meanings = dictionaries.stream()
-                .filter(dictionary -> dictionary.getWordinfo().getWord().equals(word))
-                .map(dictionary -> dictionary.getSenseinfo().getDefinition())
-                .limit(5)
-                .toList();
-
-        VocaListResponseDTO vocaListResponseDTO = new VocaListResponseDTO(word, meanings);
-
-        return vocaListResponseDTO;
     }
 
     @Override

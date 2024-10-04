@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Getter
@@ -16,4 +17,6 @@ import java.util.Map;
 public class TestResultRequestDto {
 
     private Map<Integer, Integer> categoryScores;
+    private LocalDate birth;
+    private String info;
 }

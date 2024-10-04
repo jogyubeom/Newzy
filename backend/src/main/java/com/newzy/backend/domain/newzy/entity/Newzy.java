@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.newzy.entity;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
+import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,10 +26,9 @@ public class Newzy extends BaseTimeEntity {
     @Column(name = "newzy_id", unique = true, nullable = false)
     private Long newzyId;
 
-    // // TODO: 추후 다시 수정 (newzy entity)
-//    @ManyToOne(targetEntity = User.class)
-//    @JoinColumn(name = "user_id", updatable = false)
-//    private User user;
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "user_id", updatable = false)
+    private User user;
 
     @Column(name = "title")
     private String title;
@@ -55,8 +55,9 @@ public class Newzy extends BaseTimeEntity {
         this.isDeleted = isDeleted;
     }
 
-    public static Newzy convertToEntity(NewzyRequestDTO dto){
+    public static Newzy convertToEntity(User user, NewzyRequestDTO dto){
         Newzy newzy = new Newzy();
+        newzy.setUser(user);
         newzy.setTitle(dto.getTitle());
         newzy.setContent(dto.getContent());
         newzy.setCategory(dto.getCategory());
@@ -64,8 +65,9 @@ public class Newzy extends BaseTimeEntity {
         return newzy;
     }
 
-    public static Newzy convertToEntity(Long newzyId , NewzyRequestDTO dto){
+    public static Newzy convertToEntity(User user, Long newzyId , NewzyRequestDTO dto){
         Newzy newzy = new Newzy();
+        newzy.setUser(user);
         newzy.setNewzyId(newzyId);
         newzy.setTitle(dto.getTitle());
         newzy.setContent(dto.getContent());

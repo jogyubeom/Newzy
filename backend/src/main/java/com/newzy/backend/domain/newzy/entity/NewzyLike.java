@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.entity;
 
+import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,12 +24,8 @@ public class NewzyLike extends BaseTimeEntity {
     @JoinColumn(name = "newzy_id", nullable = false)
     private Newzy newzy;
 
-
-    // TODO: 추후 다시 수정 (newzyLike entity)
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    @OnDelete(action = OnDeleteAction.CASCADE)
-//    private User user;
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

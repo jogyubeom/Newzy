@@ -9,23 +9,23 @@ import java.util.List;
 import java.util.Map;
 
 public interface NewzyService {
-    void save(NewzyRequestDTO dto);
+    void save(Long userId, NewzyRequestDTO dto);
 
-    NewzyResponseDTO update(Long newzyId, NewzyRequestDTO dto);
+    NewzyResponseDTO update(Long userId, Long newzyId, NewzyRequestDTO dto);
 
-    Map<String, Object> getNewzyListWithLastPage(int page, int category);
+    Map<String, Object> getNewzyListWithLastPage(int page, int category, String keyword);
 
     NewzyResponseDTO getNewzyDetail(Long newzyId);
 
-    void delete(Long newzyId);
+    void delete(Long userId, Long newzyId);
 
-    void bookmark(Long newzyId);
+    void bookmark(Long userId, Long newzyId);
 
-    void deleteBookmark(Long bookmarkId);
+    void deleteBookmark(Long userId, Long newzyId);
 
-    void likeNewzy(Long newzyId);
+    void likeNewzy(Long userId, Long newzyId);
 
-    void deleteLike(Long newzyLikeId);
+    void deleteNewzyLike(Long userId, Long newzyId);
 
     List<NewzyListGetResponseDTO> getHotNewzyList();
 }

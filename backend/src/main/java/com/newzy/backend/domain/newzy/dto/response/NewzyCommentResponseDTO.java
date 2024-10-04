@@ -2,6 +2,7 @@ package com.newzy.backend.domain.newzy.dto.response;
 
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.newzy.entity.NewzyComment;
+import com.newzy.backend.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -34,8 +35,8 @@ public class NewzyCommentResponseDTO {
     @Schema(description = "부모 댓글")
     private Long parentCommentId;
 
-//    @Schema(description = "유저", example = "User")
-//    private User user;
+    @Schema(description = "유저", example = "User")
+    private Long userId;
 
     public static NewzyCommentResponseDTO convertToDTO(NewzyComment newzyComment) {
         if (newzyComment == null) {
@@ -48,6 +49,7 @@ public class NewzyCommentResponseDTO {
                 .createdAt(newzyComment.getCreatedAt())
                 .newzyId(newzyComment.getNewzy().getNewzyId())
                 .parentCommentId(newzyComment.getParentComment() != null ? newzyComment.getParentComment().getNewzyCommentId() : null)
+                .userId(newzyComment.getUser().getUserId())
                 .build();
     }
 
