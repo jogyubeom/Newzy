@@ -38,6 +38,8 @@ public interface UserService {
 
     UserInfoResponseDTO updateProfileImage(String token, MultipartFile[] profile);
 
+    int getClusterId(Long userId);
+
     void followUser(Long userId, String nickname);
 
     void deleteFollower(Long userId, String nickname);

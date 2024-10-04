@@ -29,6 +29,10 @@ public class User extends BaseTimeEntity {
     @JoinColumn(name = "image_id", referencedColumnName = "imageId")
     private Image image;
 
+    @ManyToOne(targetEntity = Cluster.class)
+    @JoinColumn(name = "cluster_id", updatable = false)
+    private Cluster cluster;
+
     @Column(name = "nickname", nullable = false, length = 50)
     private String nickname;
 
@@ -44,11 +48,9 @@ public class User extends BaseTimeEntity {
     @Column(name = "info")
     private String info;
 
-    @Builder.Default
     @Column(name = "is_deleted")
     private boolean isDeleted = Boolean.FALSE;
 
-    @Builder.Default
     @Column(name = "exp")
     private int exp = 0;
 

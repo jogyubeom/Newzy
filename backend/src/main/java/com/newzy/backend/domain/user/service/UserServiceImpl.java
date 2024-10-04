@@ -151,6 +151,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public int getClusterId(Long userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("일치하는 유저가 없습니다."));
+        return user.getCluster().getClusterId();
+    }
+
+
+    @Override
     @Transactional
     public void deleteUser(String token) {
         log.info(">>> deleteUser - 토큰: {}", token);

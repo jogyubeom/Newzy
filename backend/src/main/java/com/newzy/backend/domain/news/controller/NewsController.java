@@ -1,10 +1,8 @@
 package com.newzy.backend.domain.news.controller;
 
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
-import com.newzy.backend.domain.news.dto.response.NewsCardListGetResponseDto;
-import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
-import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
-import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
+import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
+import com.newzy.backend.domain.news.dto.response.*;
 import com.newzy.backend.domain.news.service.NewsService;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
@@ -50,13 +48,17 @@ public class NewsController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "카테고리")
             @RequestParam(value = "category", required = false, defaultValue = "3") int category,
+            @Parameter(description = "정렬기준")
+            @RequestParam(value = "sort", required = false, defaultValue = "0") int sort,
             @Parameter(description = "키워드")
             @RequestParam(value = "keyword", required = false) String keyword) {
-        log.info(">>> [GET] /news - 요청 파라미터: page - {}, category - {}, keyword - {}", page, category, keyword);
-        Map<String, Object> newsListGetResponseDtoMap = newsService.getNewsList(page, category, keyword);
+        log.info(">>> [GET] /news - 요청 파라미터: page - {}, sort - {}, category - {}, keyword - {}", page, sort, category, keyword);
+        NewsListGetRequestDTO newsListGetRequestDTO = new NewsListGetRequestDTO(page, category, sort, keyword);
+        Map<String, Object> newsListGetResponseDtoMap = newsService.getNewsList(newsListGetRequestDTO);
 
         return ResponseEntity.status(200).body(newsListGetResponseDtoMap);
     }
+
 
 
     @GetMapping(value = "/hot")
@@ -81,6 +83,46 @@ public class NewsController {
         List<NewsRecommendGetResponseDTO> newsRecommendGetResponseDTOList = newsService.getRecommendedNewsList(userId);
 
         return ResponseEntity.status(200).body(newsRecommendGetResponseDTOList);
+    }
+
+
+    @GetMapping(value = "/daily")
+    @Operation(summary = "데일리 뉴스 + 퀴즈 조회", description = "사용자의 데일리 뉴스를 조회합니다.")
+    public ResponseEntity<NewsDailyGetResponseDTO> getDailyNews(
+            @Parameter(description = "JWT")
+            @RequestHeader(value = "Authorization") String token) {
+        log.info(">>> [GET] /news/daily-news - 요청 파라미터");
+        if (token == null || token.isEmpty())
+            throw new NoTokenRequestException("token이 비어있습니다");
+        Long userId = userService.getUser(token).getUserId();
+        NewsDailyGetResponseDTO newsDailyGetResponseDTO = newsService.getDailyContent(userId);
+        return ResponseEntity.status(200).body(newsDailyGetResponseDTO);
+    }
+
+
+    // 카테고리 정보를 int로 프론트에서 받아옴
+    @PostMapping(value = "/{newsId}/collect-news-card")
+    @Operation(summary = "뉴스 카드 수집", description = "읽은 뉴스를 요약하고 카드를 수집합니다.")
+    public ResponseEntity<BaseResponseBody> collectNewsCard(
+            @RequestBody NewsCardRequestDTO requestDto,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ){
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new IllegalStateException("유효한 유저 토큰이 없습니다.");
+        }
+
+        log.info(">>> [POST] /news/{}/collect-news-card - 요청 파라미터 : newsId - {}, userId - {}", requestDto.getNewsId(), requestDto.getNewsId(), userId);
+
+        if (requestDto == null) {
+            throw new CustomIllegalStateException("해당 뉴스 카드 요청 dto를 찾을 수 없습니다. " + requestDto);
+        }
+        newsService.collectNewsCard(userId, requestDto);
+
+        return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴스 카드를 수집했습니다."));
     }
 
 
@@ -120,32 +162,6 @@ public class NewsController {
 
         NewsCardListGetResponseDto cardInfo = newsService.getCardInfo(userId, cardId);
         return ResponseEntity.status(200).body(cardInfo);
-    }
-
-
-    // 카테고리 정보를 int로 프론트에서 받아옴
-    @PostMapping(value = "/{newsId}/collect-news-card")
-    @Operation(summary = "뉴스 카드 수집", description = "읽은 뉴스를 요약하고 카드를 수집합니다.")
-    public ResponseEntity<BaseResponseBody> collectNewsCard(
-            @RequestBody NewsCardRequestDTO requestDto,
-            @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = true) String token
-    ){
-        Long userId = 0L;
-        if (token != null) {
-            userId = userService.getUser(token).getUserId();
-        } else {
-            throw new IllegalStateException("유효한 유저 토큰이 없습니다.");
-        }
-
-        log.info(">>> [POST] /news/{}/collect-news-card - 요청 파라미터 : newsId - {}, userId - {}", requestDto.getNewsId(), requestDto.getNewsId(), userId);
-
-        if (requestDto == null) {
-            throw new CustomIllegalStateException("해당 뉴스 카드 요청 dto를 찾을 수 없습니다. " + requestDto);
-        }
-        newsService.collectNewsCard(userId, requestDto);
-
-        return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴스 카드를 수집했습니다."));
     }
 
 
