@@ -87,9 +87,9 @@ export const UserTest = () => {
 
       // 테스트용으로 콘솔에 출력
       console.log("유저 정보:", Data.birth, Data.info);
-      console.log("아는 경제 단어 개수:", Data.additionalProp1);
-      console.log("아는 사회 단어 개수:", Data.additionalProp2);
-      console.log("아는 세계 단어 개수:", Data.additionalProp3);
+      console.log("아는 경제 단어 개수:", Data.categoryScores.additionalProp1);
+      console.log("아는 사회 단어 개수:", Data.categoryScores.additionalProp2);
+      console.log("아는 세계 단어 개수:", Data.categoryScores.additionalProp3);
 
       try {
         // 서버로 데이터 전송
