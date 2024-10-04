@@ -114,7 +114,7 @@ public class NewsController {
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new IllegalStateException("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException ("유효한 유저 토큰이 없습니다.");
         }
 
         log.info(">>> [POST] /news/{}/collect-news-card - 요청 파라미터 : newsId - {}, userId - {}", requestDto.getNewsId(), requestDto.getNewsId(), userId);

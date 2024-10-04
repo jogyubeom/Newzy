@@ -22,10 +22,6 @@ public interface NewsService {
     void likeNews(Long userId, Long NewsId);
     void deleteLike(Long userId, Long NewsId);
 
-    NewsDailyGetResponseDTO getDailyContent(Long userId);
-
-    void collectNewsCard(Long userId, NewsCardRequestDTO newsCardRequestDTO);
-
     List<NewsCardListGetResponseDto> getCardList(Long userId);
     List<NewsListGetResponseDto> getHotNewsList();
     List<NewsRecommendGetResponseDTO> getRecommendedNewsList(Long userId);
