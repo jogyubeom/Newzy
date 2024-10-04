@@ -50,6 +50,7 @@ public class NewzyLikeRepositorySupport  extends QuerydslRepositorySupport {
                         qNewzy.newzyId,
                         qNewzy.user.nickname,
                         qNewzy.user.userId,
+                        qNewzy.user.image.imageUrl,
                         qNewzy.title,
                         qNewzy.content,
                         qNewzy.contentText,

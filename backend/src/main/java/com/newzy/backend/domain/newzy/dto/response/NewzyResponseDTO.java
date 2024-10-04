@@ -26,7 +26,7 @@ public class NewzyResponseDTO {
     private String email;
 
     @Schema(description = "유저 프로필", example = "img")
-    private Image profile;
+    private String profile;
 
     @Schema(description = "뉴지 제목", example = "title")
     private String title;
@@ -63,6 +63,7 @@ public class NewzyResponseDTO {
         return NewzyResponseDTO.builder()
                 .newzyId(newzy.getNewzyId())
                 .nickname(newzy.getUser().getNickname())
+                .profile(newzy.getUser().getImage().getImageUrl())
                 .title(newzy.getTitle())
                 .content(newzy.getContent())
                 .contentText(newzy.getContentText())

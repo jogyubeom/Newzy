@@ -26,9 +26,4 @@ public class Follow extends BaseTimeEntity {
     @JoinColumn(name = "from_id")
     private User fromUser;
 
-    @Column(name = "is_deleted")
-    @Builder.Default
-    private Boolean isDeleted = Boolean.FALSE;
-
-
 }

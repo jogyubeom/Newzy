@@ -17,7 +17,7 @@ public class NewzyListGetResponseDTO {
     private Long userId;
     private String nickname;
     private String email;
-    private Image profile;
+    private String profile;
 
     private Long newzyId;
     private String title;
@@ -40,7 +40,7 @@ public class NewzyListGetResponseDTO {
                 .userId(newzy.getUser().getUserId())
                 .nickname(newzy.getUser().getNickname())
                 .email(newzy.getUser().getEmail())
-                .profile(newzy.getUser().getImage())
+                .profile(newzy.getUser().getImage().getImageUrl())
                 .title(newzy.getTitle())
                 .content(newzy.getContent())
                 .contentText(newzy.getContentText())

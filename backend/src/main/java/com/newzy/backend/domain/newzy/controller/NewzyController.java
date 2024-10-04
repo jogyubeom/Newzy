@@ -65,7 +65,6 @@ public class NewzyController {
         return ResponseEntity.status(200).body(newzyListWithLastPage);
     }
 
-
     @GetMapping(value = "/{newzyId}")
     @Operation(summary = "뉴지 상세 조회", description = "해당 뉴지를 상세 조회합니다.")
     public ResponseEntity<NewzyResponseDTO> getNewzy(@PathVariable Long newzyId) {

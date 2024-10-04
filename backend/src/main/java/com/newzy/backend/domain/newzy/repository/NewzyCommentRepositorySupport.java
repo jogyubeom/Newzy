@@ -24,23 +24,16 @@ public class NewzyCommentRepositorySupport extends QuerydslRepositorySupport {
         this.jpaQueryFactory = jpaQueryFactory;
     }
 
-    public Map<String, Object> findCommentList(int page, int size, Long newzyId) {
+    public List<NewzyCommentListGetResponseDto> findCommentList(Long newzyId) {
         QNewzyComment qNewzyComment = QNewzyComment.newzyComment1;  // QNewzyComment 인스턴스 / newzyComment와 충돌해서 1이 붙음
         QUser qUser = QUser.user;
-
-        Long totalCount = jpaQueryFactory
-                .select(qNewzyComment.count())
-                .where(qNewzyComment.isDeleted.eq(false))
-                .fetchOne();
-
-        int totalPage = (int) ((totalCount + size - 1) / size);
 
         List<NewzyCommentListGetResponseDto> commentList = jpaQueryFactory
                 .select(Projections.constructor(NewzyCommentListGetResponseDto.class,
                         qUser.userId,
                         qUser.email,
                         qUser.nickname,
-                        qUser.image,
+                        qUser.image.imageUrl,
                         qNewzyComment.newzyCommentId,
                         qNewzyComment.newzyComment,
                         qNewzyComment.createdAt,
@@ -51,16 +44,10 @@ public class NewzyCommentRepositorySupport extends QuerydslRepositorySupport {
                 .join(qNewzyComment.user, qUser)
                 .where(qNewzyComment.newzy.newzyId.eq(newzyId)
                         .and(qNewzyComment.isDeleted.eq(false)))
-                .orderBy(qNewzyComment.createdAt.desc())
-                .offset((page - 1) * size)
-                .limit(size)
+                .orderBy(qNewzyComment.createdAt.desc()) // 전체 댓글을 작성 순으로 정렬하여 조회
                 .fetch();
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("newzyCommentList", commentList); // list
-        result.put("totalPage", totalPage); // int
-
-        return result;
+        return commentList;
     }
 
 }

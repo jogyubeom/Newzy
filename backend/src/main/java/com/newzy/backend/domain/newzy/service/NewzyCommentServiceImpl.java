@@ -35,10 +35,10 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
     private final UserRepository userRepository;
 
     @Override
-    public Map<String, Object> getNewzyCommentList(Long newzyId, int page) {
-        log.info(">>> newzyCommentServiceImpl getNewzyCommentList - newzyId: {}, page: {}", newzyId, page);
+    public List<NewzyCommentListGetResponseDto> getNewzyCommentList(Long newzyId) {
+
         int size = 10;
-        Map<String, Object> commentList = newzyCommentRepositorySupport.findCommentList(page, size, newzyId);
+        List<NewzyCommentListGetResponseDto> commentList = newzyCommentRepositorySupport.findCommentList(newzyId);
 
         if (commentList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 댓글 데이터를 조회할 수 없습니다.");

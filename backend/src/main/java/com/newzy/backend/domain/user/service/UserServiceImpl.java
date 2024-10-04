@@ -10,6 +10,7 @@ import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyLikeRepositorySupport;
+import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
 import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService {
     private final NewsLikeRepositorySupport newsLikeRepositorySupport;
     private final NewzyBookmarkRepositorySupport newzyBookmarkRepositorySupport;
     private final NewzyLikeRepositorySupport newzyLikeRepositorySupport;
+    private final NewzyRepositorySupport newzyRepositorySupport;
 
 
     @Override
@@ -280,6 +282,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void followUser(Long userId, String nickname) {
 
         User fromUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
@@ -295,6 +298,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteFollower(Long userId, String nickname) {
 
         User fromUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
@@ -328,19 +332,32 @@ public class UserServiceImpl implements UserService {
         return newsBookmarkRepositorySupport.findNewsListByNewsBookmark(page, userId);
     }
 
+
     @Override
     public Map<String, Object> getNewsLikeList(int page, Long userId) {
         return newsLikeRepositorySupport.findNewsListByNewsLike(page, userId);
     }
+
 
     @Override
     public Map<String, Object> getNewzyBookmarkList(int page, Long userId) {
         return newzyBookmarkRepositorySupport.findNewzyListByNewzyBookmark(page, userId);
     }
 
+
     @Override
     public Map<String, Object> getNewzyLikeList(int page, Long userId) {
         return newzyLikeRepositorySupport.findNewzyListByNewzyLike(page, userId);
+    }
+
+    @Override
+    public Map<String, Object> getMyNewzyList(int page, Long userId) {
+        return newzyRepositorySupport.getMyNewzyList(page, userId);
+    }
+
+    @Override
+    public Map<String, Object> getMyFollowersNewzyList(int page, Long userId) {
+        return followRepositorySupport.findMyFollowersNewzyList(page, userId);
     }
 
 

@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.newzy.controller;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyCommentRequestDTO;
+import com.newzy.backend.domain.newzy.dto.response.NewzyCommentListGetResponseDto;
 import com.newzy.backend.domain.newzy.service.NewzyCommentService;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
@@ -29,13 +30,11 @@ public class NewzyCommentController {
 
      @GetMapping
      @Operation(summary = "뉴지 댓글 목록", description = "뉴지 댓글 목록을 불러옵니다.")
-     public ResponseEntity<Map<String, Object>> getNewzyCommentList(
-             @PathVariable("newzyId") Long newzyId,
-             @Parameter(description = "페이지 번호")
-             @RequestParam(value = "page", required = false, defaultValue = "0") int page
+     public ResponseEntity<List<NewzyCommentListGetResponseDto>> getNewzyCommentList(
+             @PathVariable("newzyId") Long newzyId
      ){
-         log.info(">>> [GET] /newzy/{}/comments - 요청 파라미터: newzyId - {}, page - {}", newzyId, newzyId, page);
-         Map<String, Object> commentList = newzyCommentService.getNewzyCommentList(newzyId, page);
+         log.info(">>> [GET] /newzy/{}/comments - 요청 파라미터: newzyId - {}", newzyId, newzyId);
+         List<NewzyCommentListGetResponseDto> commentList = newzyCommentService.getNewzyCommentList(newzyId);
 
          return ResponseEntity.status(200).body(commentList);
      }
