@@ -11,23 +11,12 @@ import CardListModal from "pages/profile/ui/cardListModal";
 
 import userProfile from "shared/images/user.png";
 import cards from "shared/images/cards.svg";
+import baseAxios from "shared/utils/baseAxios";
 
 import "./profile.css"
 
 const getZoomLevel = () => {
   return window.devicePixelRatio * 100;
-};
-
-// 임시 유저 더미데이터
-const user = {
-  name: "정지훈",
-  exp: 7023,
-  introduce: `안녕하세요\n잘 부탁드립니다!!`,
-  img: null,
-  followers: 42,
-  newzy: 7,
-  followings: 25,
-  birth: "2001-03-05",
 };
 
 const gradeDescriptions = {
@@ -57,22 +46,6 @@ const gradeDescriptions = {
   ),
 };
 
-// exp 값을 기준으로 grade를 구하는 함수
-const getGradeByExp = (exp) => {
-  if (exp >= 10000) return 4;
-  if (exp >= 500) return 3;
-  if (exp >= 10) return 2;
-  return 1;
-};
-
-// 각 grade의 최대 경험치값
-const maxExpByGrade = {
-  1: 10,    // 0~9: Level 1
-  2: 500,   // 10~499: Level 2
-  3: 10000, // 500~9999: Level 3
-  4: user.exp, // 10000 이상: Level 4
-};
-
 export const Profile = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation(); // 현재 경로를 가져오기 위해 useLocation 훅 사용
@@ -81,6 +54,75 @@ export const Profile = () => {
   const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
   const [isCardListModalOpen, setIsCardListModalOpen] = useState(false); // CardListModa
   const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
+
+  const [user, setUser] = useState(null); // 유저 데이터 상태
+
+  // 편집 모드 관리
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [profileData, setProfileData] = useState({
+    name: '',
+    introduce: '',
+    img: null,
+    birth: '',
+  });
+
+  const [newImage, setNewImage] = useState(null); // 새로 업로드할 이미지 상태
+
+  const [paddingX, setPaddingX] = useState(32); // 기본 패딩
+
+  // 패딩 업데이트 로직을 추가합니다.
+  useEffect(() => {
+    const updatePaddingBasedOnZoom = () => {
+      const zoomLevel = getZoomLevel();
+  
+      if (zoomLevel <= 90) {
+        setPaddingX(300); // 줌 레벨이 80% 이하일 때 80px
+      } else if (zoomLevel <= 100) {
+        setPaddingX(150); // 줌 레벨이 80% ~ 90%일 때 56px
+      } else if (zoomLevel <= 120) {
+        setPaddingX(100); // 줌 레벨이 90% ~ 100%일 때 32px
+      } else {
+        setPaddingX(32); // 줌 레벨이 100% 이상일 때 16px
+      }
+    };
+
+    // 초기 실행
+    updatePaddingBasedOnZoom();
+
+    // 매 500ms마다 줌 레벨을 확인하여 패딩을 업데이트
+    const intervalId = setInterval(updatePaddingBasedOnZoom, 500);
+
+    // cleanup 함수로 interval 제거
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  // 유저 정보 불러오기
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await baseAxios().get("/user"); // 유저 정보 API 호출
+
+        const userData = response.data;
+
+        // 유저 데이터가 로드된 후 profileData 초기화
+        setUser(userData);
+        setProfileData({
+          name: userData.nickname,
+          introduce: userData.info || "자기소개가 없습니다.",
+          img: userData.profile,
+          birth: userData.birth || "",
+        });
+      } catch (error) {
+        console.error("유저 정보를 불러오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchUserData(); 
+  }, []);
+
 
   // 현재 경로에 따라 메뉴를 선택 상태로 설정
   useEffect(() => {
@@ -100,19 +142,93 @@ export const Profile = () => {
     }
   }, [location]);
 
+  // 유저 정보 저장 (이미지 제외)
+  const handleSaveProfile = async () => {
+    if (!user) return;
+
+    try {
+      // 수정할 데이터를 서버로 전송
+      await baseAxios().patch("/user", {
+        userId: user.userId,
+        nickname: profileData.name,
+        email: user.email, // 고정된 이메일
+        password: user.password, // 비밀번호는 수정하지 않음
+        birth: profileData.birth,
+        info: profileData.introduce,
+        exp: user.exp, // 경험치도 수정하지 않음
+        economyScore: user.economyScore,
+        societyScore: user.societyScore,
+        internationalScore: user.internationalScore,
+        state: user.state,
+        socialLoginType: user.socialLoginType,
+      });
+
+    } catch (error) {
+      console.error("프로필 정보 수정 중 오류 발생:", error);
+      alert("프로필 정보를 수정하는 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 프로필 이미지 업로드
+  const handleImageUpload = async () => {
+    if (!newImage) return;
+
+    const formData = new FormData();
+    formData.append("profile", newImage); // 이미지 파일 추가
+
+    try {
+      await baseAxios().post("/user/uploadProfileImage", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // 이미지 파일 전송 시 필요
+        },
+      });
+
+    } catch (error) {
+      console.error("프로필 이미지 업로드 중 오류 발생:", error);
+      alert("프로필 이미지를 업로드하는 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 이미지 변경 핸들러
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileData({ ...profileData, img: URL.createObjectURL(file) }); // 미리보기 이미지 업데이트
+      setNewImage(file); // 새로 업로드할 이미지 설정
+    }
+  };
+
+  // 이미지 제거 핸들러
+  const handleImageRemove = () => {
+    setProfileData({ ...profileData, img: null });
+    setNewImage(null); // 업로드할 이미지도 초기화
+  };
+
+  // exp 값을 기준으로 grade를 구하는 함수
+  const getGradeByExp = (exp) => {
+    if (exp >= 10000) return 4;
+    if (exp >= 5000) return 3;
+    if (exp >= 1000) return 2;
+    return 1;
+  };
+
+  // 유저 정보가 로드되지 않았을 때 로딩 메시지 표시
+  if (!user) {
+    return <div>로딩 중...</div>;
+  }
+
+  // 각 grade의 최대 경험치값
+  const maxExpByGrade = {
+    1: 1000,    // 0~999: Level 1
+    2: 5000,   // 1000~4999: Level 2
+    3: 10000, // 5000~9999: Level 3
+    4: user.exp, // 10000 이상: Level 4
+  };
+
   // 유저의 grade 및 비중 계산
   const userGrade = getGradeByExp(user.exp);
   const maxExp = maxExpByGrade[userGrade];
   const expRatio = (user.exp / maxExp) * 100; // 현재 경험치 비중 계산 (퍼센트 값)
-
-  // 편집 모드 관리
-  const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: user.name,
-    introduce: user.introduce,
-    img: user.img,
-    birth: user.birth,
-  });
 
   // SVG에서 사용할 경험치바 계산
   const radius = 135;
@@ -132,22 +248,11 @@ export const Profile = () => {
 
   // 저장 버튼 클릭 시 변경 사항 저장
   const handleSave = () => {
-    console.log("저장된 데이터:", profileData);
+    handleImageUpload()
+    handleSaveProfile()
     setIsEditing(false);
   };
 
-  // 이미지 변경 핸들러
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfileData({ ...profileData, img: URL.createObjectURL(file) });
-    }
-  };
-
-  // 이미지 제거 핸들러
-  const handleImageRemove = () => {
-    setProfileData({ ...profileData, img: null });
-  };
 
   // 메뉴 클릭 시 경로를 변경
   const handleMenuChange = (menuIndex) => {
@@ -181,36 +286,6 @@ export const Profile = () => {
     }
   };
 
-  const [paddingX, setPaddingX] = useState(32); // 기본 패딩
-
-  // 패딩 업데이트 로직을 추가합니다.
-  useEffect(() => {
-    const updatePaddingBasedOnZoom = () => {
-      const zoomLevel = getZoomLevel();
-  
-      if (zoomLevel <= 90) {
-        setPaddingX(300); // 줌 레벨이 80% 이하일 때 80px
-      } else if (zoomLevel <= 100) {
-        setPaddingX(150); // 줌 레벨이 80% ~ 90%일 때 56px
-      } else if (zoomLevel <= 120) {
-        setPaddingX(100); // 줌 레벨이 90% ~ 100%일 때 32px
-      } else {
-        setPaddingX(32); // 줌 레벨이 100% 이상일 때 16px
-      }
-    };
-
-    // 초기 실행
-    updatePaddingBasedOnZoom();
-
-    // 매 500ms마다 줌 레벨을 확인하여 패딩을 업데이트
-    const intervalId = setInterval(updatePaddingBasedOnZoom, 500);
-
-    // cleanup 함수로 interval 제거
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
-
   return (
     <div className="overflow-x-auto bg-[#FFFFFF]">
       <div id="target" className="h-[409px] bg-[#132956] relative flex mb-12" style={{ paddingLeft: `${paddingX}px`, paddingRight: `${paddingX}px` }}>
@@ -220,7 +295,7 @@ export const Profile = () => {
             className="absolute top-[10px] left-[150px] w-full flex justify-center items-center text-yellow-500 text-base font-extrabold tracking-wide whitespace-nowrap"
             style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)" }}
             >
-            {user.exp} / {maxExp}
+            {user.exp > 10000 ? '10000 / 10000' : `${user.exp} / ${maxExp}`}
           </div>
           {/* SVG로 경험치 바 추가 */}
           <svg width="310" height="310" className="absolute top-[35px] left-[0px]" style={{ transform: "rotate(-90deg)" }}>
@@ -351,7 +426,7 @@ export const Profile = () => {
                 Newzy
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {user.newzy}
+                7
               </div>
             </div>
             <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
@@ -359,7 +434,7 @@ export const Profile = () => {
                 Followers
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {user.followers}
+                42
               </div>
             </div>
             <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
@@ -367,7 +442,7 @@ export const Profile = () => {
                 Followings
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {user.followings}
+                25
               </div>
             </div>
           </div>

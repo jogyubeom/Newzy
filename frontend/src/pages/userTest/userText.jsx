@@ -1,27 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "./ui/Modal";
 import { useNavigate } from "react-router-dom";
-
-const vocabularyData = {
-  economy: [
-    "경제학", "인플레이션", "디플레이션", "주식", "채권",
-    "환율", "금리", "재무제표", "GDP", "경기순환",
-    "거시경제", "미시경제", "투자", "이자율", "무역",
-    "외환", "세금", "예산", "자본주의", "사회적책임"
-  ],
-  society: [
-    "사회학", "문화", "인류학", "교육", "빈곤",
-    "사회복지", "시민권", "평등", "인권", "정의",
-    "복지국가", "청년실업", "다문화", "고령화", "민주주의",
-    "사회의식", "보건", "주거문제", "환경운동", "시민단체"
-  ],
-  world: [
-    "유엔", "세계화", "국제분쟁", "무역협정", "난민",
-    "국제기구", "기후변화", "외교", "테러", "다국적기업",
-    "세계은행", "유럽연합", "신흥국", "북극해", "이슬람문화",
-    "원조", "국제법", "해양문제", "국제정치", "세계경제"
-  ]
-};
+import baseAxios from "shared/utils/baseAxios";
 
 const categories = ["economy", "society", "world", "signup"];
 
@@ -33,11 +13,42 @@ export const UserTest = () => {
     world: []
   });
 
+  const [vocabularyData, setVocabularyData] = useState({
+    economy: [],
+    society: [],
+    world: []
+  });
+
   const [birthDate, setBirthDate] = useState("");
   const [introduction, setIntroduction] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(true); // 모달 상태 관리
 
   const currentCategory = categories[currentCategoryIndex];
+  const nav = useNavigate()
+
+
+  // 서버에서 어휘 테스트 데이터를 받아오는 함수
+  const fetchVocabularyData = async () => {
+    try {
+      const res = await baseAxios().get("/user/vocabulary-test");
+      const fetchedData = res.data;
+
+      // 서버에서 받은 데이터를 카테고리별로 분류
+      const organizedData = {
+        economy: fetchedData.filter((word) => word.category === 0).map((word) => word.word),
+        society: fetchedData.filter((word) => word.category === 1).map((word) => word.word),
+        world: fetchedData.filter((word) => word.category === 2).map((word) => word.word),
+      };
+
+      setVocabularyData(organizedData); // 상태에 저장
+    } catch (error) {
+      console.error("어휘 테스트 데이터를 불러오는 중 오류 발생:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchVocabularyData(); // 컴포넌트 마운트 시 어휘 테스트 데이터 요청
+  }, []);
 
   const handleWordClick = (word) => {
     setSelectedWords((prevSelectedWords) => {
@@ -53,9 +64,8 @@ export const UserTest = () => {
     });
   };
 
-  const nav = useNavigate()
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentCategoryIndex < categories.length - 1) {
       setCurrentCategoryIndex(currentCategoryIndex + 1);
     } else {
@@ -64,44 +74,42 @@ export const UserTest = () => {
         return;
       }
 
-      // 회원가입 정보와 어휘 테스트 결과 서버로 전송
-      const Data = {
-        economy: selectedWords.economy.length,
-        society: selectedWords.society.length,
-        world: selectedWords.world.length,
-        userInfo: {
-          birthDate,
-          introduction
-        }
-      };
+      // 회원가입 정보와 어휘 테스트 결과 서버로 전송할 데이터 구성
+    const Data = {
+      categoryScores: {
+        additionalProp1: selectedWords.economy.length,  // 경제 부문
+        additionalProp2: selectedWords.society.length,  // 사회 부문
+        additionalProp3: selectedWords.world.length     // 세계 부문
+      },
+      birth: birthDate,
+      info: introduction
+    };
 
       // 테스트용으로 콘솔에 출력
-      console.log("유저 정보:", Data.userInfo);
-      console.log("아는 경제 단어 개수:", Data.economy);
-      console.log("아는 사회 단어 개수:", Data.society);
-      console.log("아는 세계 단어 개수:", Data.world);
+      console.log("유저 정보:", Data.birth, Data.info);
+      console.log("아는 경제 단어 개수:", Data.additionalProp1);
+      console.log("아는 사회 단어 개수:", Data.additionalProp2);
+      console.log("아는 세계 단어 개수:", Data.additionalProp3);
 
-      // 실제 서버 전송 시
-      // fetch("/api/submit", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json"
-      //   },
-      //   body: JSON.stringify(testData)
-      // }).then(response => response.json())
-      //   .then(data => {
-      //     console.log("서버 응답:", data);
-      //     nav('/');
-      //   })
-      //   .catch(error => console.error("서버 전송 오류:", error));
-
-      alert("테스트가 완료되었습니다!");
-      nav('/');
+      try {
+        // 서버로 데이터 전송
+        const response = await baseAxios().post("/user/vocabulary-test", Data);
+        
+        // 서버 응답 확인 (테스트용)
+        console.log("서버 응답:", response.data);
+  
+        // 전송이 성공하면 알림을 띄우고 메인 페이지로 이동
+        alert("어휘 테스트 및 회원가입이 완료되었습니다!");
+        nav('/');
+      } catch (error) {
+        // 전송 실패 시 오류 처리
+        console.error("서버 전송 오류:", error);
+        alert("서버로 데이터를 전송하는 중 오류가 발생했습니다. 다시 시도해주세요.");
+      }
     }
   };
-
   return (
-    <div className="mx-auto py-10 px-28 bg-white rounded-lg shadow-lg">
+    <div className="mx-auto py-10 px-24 bg-white rounded-lg shadow-lg">
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <h2 className="text-xl font-bold mb-2">Newzy 어휘 테스트 안내</h2>
         <div className="mt-10">
@@ -175,7 +183,7 @@ export const UserTest = () => {
           onClick={handleNext}
           className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
         >
-          {currentCategoryIndex === categories.length - 1 ? "완료" : "다음"}
+          {currentCategoryIndex === categories.length - 1 ? "제출" : "다음"}
         </button>
       </div>
     </div>
