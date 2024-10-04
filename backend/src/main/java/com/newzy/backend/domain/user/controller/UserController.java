@@ -172,13 +172,12 @@ public class UserController {
 
 
     // /user/{nickname}/followings?page={page}
-
     @GetMapping(value = "/{nickname}/followings")
     @Operation(summary = "팔로워 목록", description = "팔로우한 사람들의 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getFollowings(
             @PathVariable String nickname,
             @Parameter(description = "페이지 번호")
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
     ){
@@ -190,19 +189,40 @@ public class UserController {
         }
         log.info(">>> [GET] /news/{}/followings - 요청 파라미터: nickname - {}, page - {}", nickname, nickname, page);
 
+        Map<String, Object> followingList = userService.getFollowingList(page, nickname);
+
+        return ResponseEntity.status(HttpStatus.OK).body(followingList);
+    }
+
+    // /user/{nickname}/followers?page={page}
+    @GetMapping(value = "/{nick}/followers")
+    @Operation(summary = "", description = "")
+    public ResponseEntity<Map<String, Object>> getFollowers(
+            @PathVariable String nickname,
+            @Parameter(description = "페이지 번호")
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ){
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
+        log.info(">>> [GET] /news/{}/followers - 요청 파라미터: nickname - {}, page - {}", nickname, nickname, page);
+
         Map<String, Object> followerList = userService.getFollowerList(page, nickname);
 
         return ResponseEntity.status(HttpStatus.OK).body(followerList);
     }
-
-    // /user/{nickname}/followers?page={page}
 
 
     // 유저가 북마크한 뉴스
     @GetMapping(value = "/news-bookmark")
     @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getNewsBookmarkList(
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
     ){
@@ -222,7 +242,7 @@ public class UserController {
     @GetMapping(value = "/news-like")
     @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getNewsLikemarkList(
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
     ){
@@ -242,7 +262,7 @@ public class UserController {
     @GetMapping(value = "/newzy-bookmark")
     @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getNewzyBookmarkList(
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
     ){
@@ -261,7 +281,7 @@ public class UserController {
     @GetMapping(value = "/newzy-like")
     @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getNewzyLikemarkList(
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
     ){

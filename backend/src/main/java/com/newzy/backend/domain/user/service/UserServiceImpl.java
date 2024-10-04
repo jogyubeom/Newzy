@@ -1,6 +1,12 @@
 package com.newzy.backend.domain.user.service;
 
+import com.newzy.backend.domain.news.repository.NewsBookmarkRepository;
+import com.newzy.backend.domain.news.repository.NewsBookmarkRepositorySupport;
+import com.newzy.backend.domain.news.repository.NewsLikeRepositorySupport;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
+import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
+import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepositorySupport;
+import com.newzy.backend.domain.newzy.repository.NewzyLikeRepositorySupport;
 import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
@@ -10,6 +16,7 @@ import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
 import com.newzy.backend.domain.user.entity.Follow;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.FollowRepository;
+import com.newzy.backend.domain.user.repository.FollowRepositorySupport;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.auth.JwtProvider;
 import com.newzy.backend.global.exception.EntityNotFoundException;
@@ -37,6 +44,12 @@ public class UserServiceImpl implements UserService {
     private final JwtProvider jwtProvider;
     private final RedisUtil redisUtil;
     private final FollowRepository followRepository;
+    private final FollowRepositorySupport followRepositorySupport;
+    private final NewsBookmarkRepositorySupport newsBookmarkRepositorySupport;
+    private final NewsLikeRepositorySupport newsLikeRepositorySupport;
+    private final NewzyBookmarkRepositorySupport newzyBookmarkRepositorySupport;
+    private final NewzyLikeRepositorySupport newzyLikeRepositorySupport;
+
 
     @Override
     public void save(UserInfoRequestDTO requestDTO) {
@@ -250,29 +263,40 @@ public class UserServiceImpl implements UserService {
         followRepository.delete(follow);
     }
 
-    @Override
-    public Map<String, Object> getFollowerList(int page, String nickname) {
-        return Map.of();
+
+    @Override       // 팔로잉 목록
+    public Map<String, Object> getFollowingList(int page, String nickname) {
+
+        return followRepositorySupport.findFollowingList(page, nickname);
     }
+
+
+    @Override       // 팔로워 목록
+    public Map<String, Object> getFollowerList(int page, String nickname) {
+
+        return followRepositorySupport.findFollowerList(page, nickname);
+    }
+
 
     @Override
     public Map<String, Object> getNewsBookmarkList(int page, Long userId) {
-        return Map.of();
+        return newsBookmarkRepositorySupport.findNewsListByNewsBookmark(page, userId);
     }
 
     @Override
     public Map<String, Object> getNewsLikeList(int page, Long userId) {
-        return Map.of();
+        return newsLikeRepositorySupport.findNewsListByNewsLike(page, userId);
     }
 
     @Override
     public Map<String, Object> getNewzyBookmarkList(int page, Long userId) {
-        return Map.of();
+        return newzyBookmarkRepositorySupport.findNewzyListByNewzyBookmark(page, userId);
     }
 
     @Override
     public Map<String, Object> getNewzyLikeList(int page, Long userId) {
-        return Map.of();
+        return newzyLikeRepositorySupport.findNewzyListByNewzyLike(page, userId);
     }
+
 
 }
