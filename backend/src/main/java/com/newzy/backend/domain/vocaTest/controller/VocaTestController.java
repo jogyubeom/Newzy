@@ -39,8 +39,8 @@ public class VocaTestController {
     @PostMapping
     @Operation(summary = "어휘 테스트 결과" , description = "어휘 테스트 결과를 반환합니다.")
     public ResponseEntity<BaseResponseBody> gradeUserScore(
-            @Parameter(description = "JWT", required = false)
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @Parameter(description = "JWT")
+            @RequestHeader(value = "Authorization") String token,
             @RequestBody @Valid TestResultRequestDto scoreList
     ){
         Long userId = 0L;

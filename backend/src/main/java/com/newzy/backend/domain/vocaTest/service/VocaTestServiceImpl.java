@@ -6,7 +6,6 @@ import com.newzy.backend.domain.vocaTest.dto.request.TestResultRequestDto;
 import com.newzy.backend.domain.vocaTest.dto.response.TestWordListResponseDto;
 import com.newzy.backend.domain.vocaTest.entity.TestWord;
 import com.newzy.backend.domain.vocaTest.repository.VocaTestRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,8 +47,13 @@ public class VocaTestServiceImpl implements VocaTestService {
                 }
             }
         } catch (Exception e) {
-            log.error("점수를 저장하지 못했습니다", e.getMessage());
-            throw new RuntimeException("점수 저장 실패", e);
+            throw new RuntimeException("어휘력 테스트 결과 저장 중 오류가 발생하였습니다.");
+        }
+        // 생년월일 저장
+        user.setBirth(scoreList.getBirth());
+        // 자기소개 저장
+        if (scoreList.getInfo() != null && !scoreList.getInfo().isEmpty()) {
+            user.setInfo(scoreList.getInfo());
         }
         userRepository.save(user);
     }
