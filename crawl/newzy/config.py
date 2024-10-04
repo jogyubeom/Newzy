@@ -1,5 +1,6 @@
 from konlpy.tag import Okt
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -13,8 +14,9 @@ def create_webdriver():
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
-
+    # Service 객체를 사용하여 드라이버 생성
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver
 
 
