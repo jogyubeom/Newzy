@@ -99,7 +99,7 @@ public class DictionaryController {
     public ResponseEntity<BaseResponseBody> deleteSearchWordHistory(
             @Parameter(description = "JWT")
             @RequestHeader(value = "Authorization") String token,
-            @Parameter(description = "사용자가 검색한 어휘 목록")
+            @Parameter(description = "사용자가 검색한 어휘 목록 - path: /api/word?wordList=하이, 바이, 크크 / 중간에 띄워쓰기 필수")
             @RequestParam(value = "wordList") List<String> wordList
     ) {
         log.info(">>> [DELETE] /word?wordList={} - 요청 파라미터: wordList: {}", wordList, wordList);
