@@ -18,6 +18,9 @@ public class NewzyResponseDTO {
     @Schema(description = "뉴지 pk", example = "1")
     private Long newzyId;
 
+    @Schema(description = "유저 닉네임", example = "nickname")
+    private String nickname;
+
     @Schema(description = "뉴지 제목", example = "title")
     private String title;
 
@@ -34,7 +37,10 @@ public class NewzyResponseDTO {
     private int likeCnt;
 
     @Schema(description = "뉴지 방문자 수", example = "0")
-    private int visitCnt;
+    private int hit;
+
+    @Schema(description = "", example = "https://abcdesdfklj")
+    private String thumbnail;
 
     @Schema(description = "삭제 여부", example = "false")
     private boolean isDeleted;
@@ -49,12 +55,14 @@ public class NewzyResponseDTO {
         }
         return NewzyResponseDTO.builder()
                 .newzyId(newzy.getNewzyId())
+                .nickname(newzy.getUser().getNickname())
                 .title(newzy.getTitle())
                 .content(newzy.getContent())
                 .contentText(newzy.getContentText())
                 .category(newzy.getCategory())
                 .likeCnt(newzy.getLikeCnt())
-                .visitCnt(newzy.getHit())
+                .hit(newzy.getHit())
+                .thumbnail(newzy.getThumbnail())
                 .createdAt(newzy.getCreatedAt())
                 .isDeleted(newzy.isDeleted())  // 삭제 여부 추가
                 .build();
