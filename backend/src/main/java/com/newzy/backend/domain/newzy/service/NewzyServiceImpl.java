@@ -23,7 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 @Slf4j
 @Service
@@ -83,16 +84,31 @@ public class NewzyServiceImpl implements NewzyService {
     public void save(Long userId, NewzyRequestDTO dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
 
+        // HTML 파싱 적용 by Jsoup
+        String content = dto.getContent();
+        String ContentText = parseHtmlToText(content);
+
         Newzy newzy = Newzy.convertToEntity(user, dto);
+        newzy.setContentText(ContentText);
         newzyRepository.save(newzy);
     }
 
+    // HTML 파싱
+    private String parseHtmlToText(String content) {
+        Document document = Jsoup.parse(content);
+        return document.text();
+    }
 
     @Override
     public NewzyResponseDTO update(Long userId, Long newzyId, NewzyRequestDTO dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
 
-        Newzy updatedNewzy = Newzy.convertToEntity(user, newzyId, dto);
+        // HTML 파싱 적용 by Jsoup
+        String content = dto.getContent();
+        String ContentText = parseHtmlToText(content);
+
+        Newzy updatedNewzy = Newzy.convertToEntity(user, newzyId, dto, ContentText);
+
         Newzy newzy = newzyRepository.updateNewzyInfo(updatedNewzy);
         NewzyResponseDTO newzyResponseDTO = NewzyResponseDTO.convertToDTO(newzy);
 

@@ -62,6 +62,7 @@ public class Newzy extends BaseTimeEntity {
         this.isDeleted = isDeleted;
     }
 
+    // save newzy
     public static Newzy convertToEntity(User user, NewzyRequestDTO dto){
         Newzy newzy = new Newzy();
         newzy.setUser(user);
@@ -72,12 +73,14 @@ public class Newzy extends BaseTimeEntity {
         return newzy;
     }
 
-    public static Newzy convertToEntity(User user, Long newzyId , NewzyRequestDTO dto){
+    // update newzy
+    public static Newzy convertToEntity(User user, Long newzyId , NewzyRequestDTO dto, String contentText){
         Newzy newzy = new Newzy();
         newzy.setUser(user);
         newzy.setNewzyId(newzyId);
         newzy.setTitle(dto.getTitle());
         newzy.setContent(dto.getContent());
+        newzy.setContentText(contentText);
         newzy.setCategory(dto.getCategory());
 
         return newzy;
