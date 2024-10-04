@@ -46,7 +46,9 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {
+        return true;
+    }
 
     // 추가적인 사용자 정보 접근자 메서드
     public String getNickname() {
