@@ -12,6 +12,7 @@ import { WeekNewpoter } from "./ui/weekNewporter";
 import { HotNewzy } from "./ui/hotNewzy";
 import useHomeStore from "./store/useHomeStore";
 import useAuthStore from "shared/store/userStore";
+import baseAxios from "shared/utils/baseAxios";
 
 export const Home = () => {
   const {
@@ -40,17 +41,36 @@ export const Home = () => {
     // 토큰이 이미 저장되어 있는 경우에는 쿼리 파라미터 확인을 건너뜀
     if (token) return;
 
-    // URL에서 쿼리 파라미터 추출
-    const queryParams = new URLSearchParams(window.location.search);
-    const queryToken = queryParams.get("token");
+    const checkAndNavigate = async () => {
+      // URL에서 쿼리 파라미터 추출
+      const queryParams = new URLSearchParams(window.location.search);
+      const queryToken = queryParams.get("token");
 
-    // 쿼리 파라미터에 토큰이 있으면 상태에 저장
-    if (queryToken) {
-      setToken(queryToken);
-
-      // 쿼리 파라미터에서 토큰을 제거하고 홈 화면으로 리다이렉트
-      navigate("/", { replace: true });
-    }
+      if (queryToken) {
+        // 쿼리 파라미터에 토큰이 있으면 상태에 저장
+        setToken(queryToken);
+  
+        // 어휘력 테스트 여부 확인
+        try {
+          const res = await baseAxios().get("/user/first/login");
+          if (res.data.firstLogin) {
+            // firstLogin이 true이면 어휘력 테스트로 리다이렉트
+            navigate("/usertest", { replace: true });
+          } else {
+            // firstLogin이 false이면 홈 화면으로 리다이렉트
+            navigate("/", { replace: true });
+          }
+        } catch (error) {
+          console.error("어휘력 테스트 체크 중 오류 발생:", error);
+          navigate("/", { replace: true });
+        }
+      } else {
+        // 토큰이 없으면 홈 화면으로 리다이렉트
+        navigate("/", { replace: true });
+      }
+    };
+  
+    checkAndNavigate();
   }, [token, setToken, navigate]);
 
   return (
