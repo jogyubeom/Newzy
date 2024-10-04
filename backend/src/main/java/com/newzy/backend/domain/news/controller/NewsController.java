@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.news.controller;
 
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
+import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
 import com.newzy.backend.domain.news.dto.response.NewsDailyGetResponseDTO;
 import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
@@ -50,10 +51,13 @@ public class NewsController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "카테고리")
             @RequestParam(value = "category", required = false, defaultValue = "3") int category,
+            @Parameter(description = "정렬기준")
+            @RequestParam(value = "sort", required = false, defaultValue = "0") int sort,
             @Parameter(description = "키워드")
             @RequestParam(value = "keyword", required = false) String keyword) {
-        log.info(">>> [GET] /news - 요청 파라미터: page - {}, category - {}, keyword - {}", page, category, keyword);
-        Map<String, Object> newsListGetResponseDtoMap = newsService.getNewsList(page, category, keyword);
+        log.info(">>> [GET] /news - 요청 파라미터: page - {}, sort - {}, category - {}, keyword - {}", page, sort, category, keyword);
+        NewsListGetRequestDTO newsListGetRequestDTO = new NewsListGetRequestDTO(page, category, sort, keyword);
+        Map<String, Object> newsListGetResponseDtoMap = newsService.getNewsList(newsListGetRequestDTO);
 
         return ResponseEntity.status(200).body(newsListGetResponseDtoMap);
     }

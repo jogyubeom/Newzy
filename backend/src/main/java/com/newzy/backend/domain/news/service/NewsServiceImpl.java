@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
+import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
 import com.newzy.backend.domain.news.dto.response.NewsDailyGetResponseDTO;
 import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
@@ -48,10 +49,15 @@ public class NewsServiceImpl implements NewsService {
 
     @Override  // branch : feature/get-news의 NewsServiceImpl 참고
     @Transactional(readOnly = true)
-    public Map<String, Object> getNewsList(int page, int category, String keyword) {
-        log.info(">>> getNewsList - page: {}. category: {}. keyword: {}", page, category, keyword);
+    public Map<String, Object> getNewsList(NewsListGetRequestDTO newsListGetRequestDTO) {
+        log.info(">>> getNewsList - dto: {}", newsListGetRequestDTO);
 
-        return newsRepositorySupport.findNewsList(page, category, keyword);
+        int page = newsListGetRequestDTO.getPage();
+        int category = newsListGetRequestDTO.getCategory();
+        int sort = newsListGetRequestDTO.getSort();
+        String keyword = newsListGetRequestDTO.getKeyword();
+
+        return newsRepositorySupport.findNewsList(page, sort, category, keyword);
     }
 
 
