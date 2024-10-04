@@ -14,13 +14,15 @@ import java.time.LocalDateTime;
 public class NewzyListGetResponseDTO {
 
     private Long newzyId;
+    private String nickname;
     private Long userId;
     private String title;
     private String content;
     private String contentText;
     private int category;
     private int likeCnt;
-    private int visitCnt;
+    private String thumbnail;
+    private int hit;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -37,7 +39,8 @@ public class NewzyListGetResponseDTO {
                 .contentText(newzy.getContentText())
                 .category(newzy.getCategory())
                 .likeCnt(newzy.getLikeCnt())
-                .visitCnt(newzy.getHit())
+                .thumbnail(newzy.getThumbnail())
+                .hit(newzy.getHit())
                 .createdAt(newzy.getCreatedAt())
                 .updatedAt(newzy.getUpdatedAt())
                 .build();
