@@ -11,7 +11,6 @@ import com.newzy.backend.domain.dictionary.entity.Dictionary;
 import com.newzy.backend.domain.dictionary.entity.SearchWord;
 import com.newzy.backend.domain.dictionary.repository.DictionaryRepository;
 import com.newzy.backend.domain.dictionary.repository.SearchWordRepository;
-import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.repository.NewsRepository;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
@@ -42,7 +41,6 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     private final DictionaryRepository dictionaryRepository;
     private final SearchWordRepository searchWordRepository;
-    private final NewsRepository newsRepository;
     private final UserRepository userRepository;
 
     private final long SEARCH_HISTORY_EXPIRATION_TIME = 432000; // 5 days
@@ -153,17 +151,11 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public void saveSearchWordHistoryToRedis(Long newsId, String word) {
+    public void saveSearchWordHistoryToRedis(int category, String word) {
         String today = LocalDate.now().toString();
         String wordKey = "word:" + today + ":" + word;
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-
-        // 뉴스에서 카테고리 추출
-        News news = newsRepository.findById(newsId).orElseThrow(
-                () -> new EntityNotFoundException(newsId + " 와 일치하는 뉴스 엔티티를 찾을 수 없습니다.")
-        );
-        int category = news.getCategory(); // 뉴스 엔티티에서 카테고리 정보를 추출
 
         try {
             if (Boolean.TRUE.equals(redisTemplate.hasKey(wordKey))) {
