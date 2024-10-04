@@ -18,30 +18,16 @@ public class NewsDetailGetResponseDto {
     private String link;
     private String title;
     private String content;
+    private String contentText;
     private int difficulty;
     private int category;
     private String publisher;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @Builder.Default
     private LocalDateTime crawledAt = LocalDateTime.now();
+    @Builder.Default
     private int hit = 0;
     private String thumbnail;
-
-
-    public static NewsDetailGetResponseDto convertToDTO(News news) {
-        NewsDetailGetResponseDto dto = new NewsDetailGetResponseDto();
-        dto.setNewsId(news.getNewsId());
-        dto.setLink(news.getLink());
-        dto.setTitle(news.getTitle());
-        dto.setContent(news.getContent());
-        dto.setDifficulty(news.getDifficulty());
-        dto.setCategory(news.getCategory());
-        dto.setPublisher(news.getPublisher());
-        dto.setCreatedAt(news.getCreatedAt());
-        dto.setUpdatedAt(news.getUpdatedAt());
-        dto.setHit(news.getHit());
-        dto.setThumbnail(news.getThumbnail());
-        return dto;
-    }
 
 }

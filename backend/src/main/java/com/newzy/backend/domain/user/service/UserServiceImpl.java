@@ -1,16 +1,26 @@
 package com.newzy.backend.domain.user.service;
 
+import com.newzy.backend.domain.news.repository.NewsBookmarkRepository;
+import com.newzy.backend.domain.news.repository.NewsBookmarkRepositorySupport;
+import com.newzy.backend.domain.news.repository.NewsLikeRepositorySupport;
 import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.image.repository.ImageRepository;
 import com.newzy.backend.domain.image.service.ImageService;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
+import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
+import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepositorySupport;
+import com.newzy.backend.domain.newzy.repository.NewzyLikeRepositorySupport;
+import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
 import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
+import com.newzy.backend.domain.user.entity.Follow;
 import com.newzy.backend.domain.user.entity.User;
+import com.newzy.backend.domain.user.repository.FollowRepository;
+import com.newzy.backend.domain.user.repository.FollowRepositorySupport;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.auth.JwtProvider;
 import com.newzy.backend.global.exception.EntityNotFoundException;
@@ -26,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -39,6 +50,14 @@ public class UserServiceImpl implements UserService {
     private final RedisUtil redisUtil;
     private final ImageService imageService;
     private final ImageRepository imageRepository;
+    private final FollowRepository followRepository;
+    private final FollowRepositorySupport followRepositorySupport;
+    private final NewsBookmarkRepositorySupport newsBookmarkRepositorySupport;
+    private final NewsLikeRepositorySupport newsLikeRepositorySupport;
+    private final NewzyBookmarkRepositorySupport newzyBookmarkRepositorySupport;
+    private final NewzyLikeRepositorySupport newzyLikeRepositorySupport;
+    private final NewzyRepositorySupport newzyRepositorySupport;
+
 
     @Override
     public void save(UserInfoRequestDTO requestDTO) {
@@ -132,6 +151,13 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    @Override
+    public int getClusterId(Long userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("일치하는 유저가 없습니다."));
+        return user.getCluster().getClusterId();
+    }
+
 
     @Override
     @Transactional
@@ -256,8 +282,83 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int getClusterId(Long userId) {
-        User user = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("일치하는 유저가 없습니다."));
-        return user.getCluster().getClusterId();
+    @Transactional
+    public void followUser(Long userId, String nickname) {
+
+        User fromUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
+        User toUSer = userRepository.findByNickname(nickname);
+        if (toUSer == null) {
+            throw new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다.");
+        }
+
+        Follow follow = new Follow();
+        follow.setFromUser(fromUser);
+        follow.setToUser(toUSer);
+        followRepository.save(follow);
     }
+
+    @Override
+    @Transactional
+    public void deleteFollower(Long userId, String nickname) {
+
+        User fromUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
+        User toUser = userRepository.findByNickname(nickname);
+        if (toUser == null) {
+            throw new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다.");
+        }
+
+        Follow follow = followRepository.findByFromUserAndToUser(fromUser, toUser);
+
+        followRepository.delete(follow);
+    }
+
+
+    @Override       // 팔로잉 목록
+    public Map<String, Object> getFollowingList(int page, String nickname) {
+
+        return followRepositorySupport.findFollowingList(page, nickname);
+    }
+
+
+    @Override       // 팔로워 목록
+    public Map<String, Object> getFollowerList(int page, String nickname) {
+
+        return followRepositorySupport.findFollowerList(page, nickname);
+    }
+
+
+    @Override
+    public Map<String, Object> getNewsBookmarkList(int page, Long userId) {
+        return newsBookmarkRepositorySupport.findNewsListByNewsBookmark(page, userId);
+    }
+
+
+    @Override
+    public Map<String, Object> getNewsLikeList(int page, Long userId) {
+        return newsLikeRepositorySupport.findNewsListByNewsLike(page, userId);
+    }
+
+
+    @Override
+    public Map<String, Object> getNewzyBookmarkList(int page, Long userId) {
+        return newzyBookmarkRepositorySupport.findNewzyListByNewzyBookmark(page, userId);
+    }
+
+
+    @Override
+    public Map<String, Object> getNewzyLikeList(int page, Long userId) {
+        return newzyLikeRepositorySupport.findNewzyListByNewzyLike(page, userId);
+    }
+
+    @Override
+    public Map<String, Object> getMyNewzyList(int page, Long userId) {
+        return newzyRepositorySupport.getMyNewzyList(page, userId);
+    }
+
+    @Override
+    public Map<String, Object> getMyFollowersNewzyList(int page, Long userId) {
+        return followRepositorySupport.findMyFollowersNewzyList(page, userId);
+    }
+
+
 }

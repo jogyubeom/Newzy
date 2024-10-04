@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.dto.response;
 
+import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -18,11 +19,23 @@ public class NewzyResponseDTO {
     @Schema(description = "뉴지 pk", example = "1")
     private Long newzyId;
 
+    @Schema(description = "유저 닉네임", example = "nickname")
+    private String nickname;
+
+    @Schema(description = "유저 이메일", example = "email")
+    private String email;
+
+    @Schema(description = "유저 프로필", example = "img")
+    private String profile;
+
     @Schema(description = "뉴지 제목", example = "title")
     private String title;
 
     @Schema(description = "뉴지 내용", example = "content")
     private String content;
+
+    @Schema(description = "뉴지 내용 text", example = "content text")
+    private String contentText;
 
     @Schema(description = "뉴지 카테고리", example = "1")
     private int category;
@@ -31,7 +44,10 @@ public class NewzyResponseDTO {
     private int likeCnt;
 
     @Schema(description = "뉴지 방문자 수", example = "0")
-    private int visitCnt;
+    private int hit;
+
+    @Schema(description = "", example = "https://abcdesdfklj")
+    private String thumbnail;
 
     @Schema(description = "삭제 여부", example = "false")
     private boolean isDeleted;
@@ -46,11 +62,15 @@ public class NewzyResponseDTO {
         }
         return NewzyResponseDTO.builder()
                 .newzyId(newzy.getNewzyId())
+                .nickname(newzy.getUser().getNickname())
+                .profile(newzy.getUser().getImage().getImageUrl())
                 .title(newzy.getTitle())
                 .content(newzy.getContent())
+                .contentText(newzy.getContentText())
                 .category(newzy.getCategory())
                 .likeCnt(newzy.getLikeCnt())
-                .visitCnt(newzy.getVisitCnt())
+                .hit(newzy.getHit())
+                .thumbnail(newzy.getThumbnail())
                 .createdAt(newzy.getCreatedAt())
                 .isDeleted(newzy.isDeleted())  // 삭제 여부 추가
                 .build();

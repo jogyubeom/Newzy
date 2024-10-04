@@ -16,5 +16,5 @@ public interface NewzyCommentService {
 
     void deleteComment(Long userId, Long newzyCommentId);
 
-    Map<String, Object> getNewzyCommentList(Long newzyId, int page);
+    List<NewzyCommentListGetResponseDto> getNewzyCommentList(Long newzyId);
 }

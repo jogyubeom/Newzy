@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.dto.response;
 
+import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.newzy.entity.NewzyComment;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import lombok.*;
@@ -14,6 +15,9 @@ import java.time.LocalDateTime;
 public class NewzyCommentListGetResponseDto {
 
     private Long userId;
+    private String email;
+    private String nickname;
+    private String imageUrl;
     private Long newzyCommentId;
     private String newzyComment;
     private LocalDateTime createdAt;
@@ -27,6 +31,9 @@ public class NewzyCommentListGetResponseDto {
 
         return NewzyCommentListGetResponseDto.builder()
                 .userId(newzyComment.getUser().getUserId())
+                .email(newzyComment.getUser().getEmail())
+                .nickname(newzyComment.getUser().getNickname())
+                .imageUrl(newzyComment.getUser().getImage().getImageUrl())
                 .newzyCommentId(newzyComment.getNewzyCommentId())
                 .newzyComment(newzyComment.getNewzyComment())
                 .createdAt(newzyComment.getCreatedAt())

@@ -2,6 +2,7 @@ package com.newzy.backend.domain.news.entity;
 
 
 import com.newzy.backend.domain.user.entity.User;
+import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "news_like")
-public class NewsLike {
+public class NewsLike extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -84,6 +84,9 @@ dependencies {
     // JSON library
     implementation 'org.json:json:20210307'
 
+    // Jsoup : 뉴지 post 할 때 html 파싱
+    implementation group: 'org.jsoup', name: 'jsoup', version: '1.7.2'
+
     // scheduler
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework:spring-aspects'

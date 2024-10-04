@@ -36,6 +36,9 @@ public class Newzy extends BaseTimeEntity {
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "content_text", columnDefinition = "TEXT", nullable = false)
+    private String contentText;
+
     @Column(name = "category")
     private int category;
 
@@ -48,13 +51,18 @@ public class Newzy extends BaseTimeEntity {
     @Column(name = "like_cnt")
     private int likeCnt = 0;
 
-    @Column(name = "visit_cnt")
-    private int visitCnt = 0;
+    @Column(name = "hit")
+    private int hit = 0;
+
+    @Column(name = "thumbnail", length = 255, nullable = true)
+    private String thumbnail;
+
 
     public void setIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
 
+    // save newzy
     public static Newzy convertToEntity(User user, NewzyRequestDTO dto){
         Newzy newzy = new Newzy();
         newzy.setUser(user);
@@ -65,12 +73,14 @@ public class Newzy extends BaseTimeEntity {
         return newzy;
     }
 
-    public static Newzy convertToEntity(User user, Long newzyId , NewzyRequestDTO dto){
+    // update newzy
+    public static Newzy convertToEntity(User user, Long newzyId , NewzyRequestDTO dto, String contentText){
         Newzy newzy = new Newzy();
         newzy.setUser(user);
         newzy.setNewzyId(newzyId);
         newzy.setTitle(dto.getTitle());
         newzy.setContent(dto.getContent());
+        newzy.setContentText(contentText);
         newzy.setCategory(dto.getCategory());
 
         return newzy;
