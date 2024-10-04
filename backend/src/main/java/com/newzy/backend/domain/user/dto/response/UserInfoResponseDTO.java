@@ -1,10 +1,7 @@
 package com.newzy.backend.domain.user.dto.response;
 
-import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.*;
 
 import java.time.LocalDate;

@@ -7,7 +7,6 @@ import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
-import jakarta.mail.Multipart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

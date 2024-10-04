@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
         log.info(">>> updateProfileImage - 추출된 사용자 ID: {}", userId);
 
         Optional<User> optionalUser = userRepository.findByUserIdAndIsDeletedFalse(userId);
-        if(optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             // 회원 대표 사진 변경
             if (profile != null) {

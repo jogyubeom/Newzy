@@ -1,12 +1,9 @@
 package com.newzy.backend.domain.user.controller;
 
-import com.newzy.backend.domain.image.exception.InvalidImageFileException;
-import com.newzy.backend.domain.image.exception.S3FileUploadException;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
-import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.NoTokenRequestException;
 import com.newzy.backend.global.exception.NotValidRequestException;
@@ -125,7 +122,7 @@ public class UserController {
 
     @PostMapping("/uploadProfileImage")
     public ResponseEntity<BaseResponseBody> uploadProfileImage(@RequestPart(value = "profile", required = false) MultipartFile[] profile,
-                                                @RequestHeader(value = "Authorization", required = false) String token) {
+                                                               @RequestHeader(value = "Authorization", required = false) String token) {
         log.info(">>> [POST] /api/users/uploadProfileImage - 프로필 사진 업로드 요청");
 
         if (token.startsWith("Bearer ")) {
