@@ -1,6 +1,5 @@
 package com.newzy.backend.domain.news.dto.response;
 
-import com.newzy.backend.domain.news.entity.News;
 import lombok.*;
 
 @AllArgsConstructor

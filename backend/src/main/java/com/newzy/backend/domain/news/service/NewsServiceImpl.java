@@ -5,6 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
+import com.newzy.backend.domain.news.dto.response.NewsDailyGetResponseDTO;
+import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
+import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
+import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
+import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
 import com.newzy.backend.domain.news.dto.response.*;
 import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.entity.NewsBookmark;
@@ -20,7 +25,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,7 +68,6 @@ public class NewsServiceImpl implements NewsService {
     }
 
 
-
     @Override
     @Transactional(readOnly = true)
     public List<NewsListGetResponseDto> getHotNewsList() {
@@ -79,6 +85,7 @@ public class NewsServiceImpl implements NewsService {
         return newsCardRepositorySupport.findNewsCardList(userId);
     }
 
+
     @Override
     public NewsCardListGetResponseDto getCardInfo(Long userId, Long cardId) {
 
@@ -92,10 +99,9 @@ public class NewsServiceImpl implements NewsService {
 
         try {
             // 1. 오늘 날짜 계산
-//            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            // 2. Redis 키 생성 (cluster_id는 1로 가정)
-            String clusterId = "1";
+            // 2. Redis 키 생성
+            String clusterId = String.valueOf(userService.getClusterId(userId));
             String redisKey = String.format(":1:recommended_news:%s:cluster_%s", today, clusterId);
 
             // 3. Redis에서 키 조회
@@ -106,8 +112,12 @@ public class NewsServiceImpl implements NewsService {
                 JsonNode newsIdList = jsonNode.get("list");
                 if (newsIdList != null && newsIdList.isArray()) {
                     int count = 0;
-
+                    int idx = 0;
                     for (JsonNode newsIdNode : newsIdList) {
+                        if (idx == 0) { // 첫번째 기사는 데일리 기사로 선정
+                            idx++;
+                            continue;
+                        }
                         if (count >= 8) break; // 8개까지만 추출
 
                         Long newsId = newsIdNode.asLong();
@@ -140,85 +150,6 @@ public class NewsServiceImpl implements NewsService {
         return recommendedNewsList;
     }
 
-
-    @Override
-    public NewsDetailGetResponseDto getNewsDetail(Long NewsId) {    // 조회수 + 1
-        News news = newsRepository.findById(NewsId)
-                .orElseThrow(() -> new EntityNotFoundException("일치하는 뉴스 데이터를 조회할 수 없습니다."));
-
-        // 조회수 + 1 로직 추가
-        news.setHit(news.getHit() + 1);
-        newsRepository.save(news);
-
-        // DTO로 변환하여 반환
-        return newsRepositorySupport.getNewsDetail(news.getNewsId());
-    }
-
-
-    @Override
-    public void bookmark(Long userId, Long newsId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
-        News news = newsRepository.findById(newsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
-        boolean isBookmark = newsBookmarkRepository.existsByUserAndNews(user, news);
-
-        if (isBookmark) {
-            throw new EntityIsFoundException("이미 북마크가 존재합니다.");
-        }
-
-        NewsBookmark newsBookmark = new NewsBookmark();
-        newsBookmark.setNews(news);
-        newsBookmark.setUser(user);
-
-        newsBookmarkRepository.save(newsBookmark);
-    }
-
-
-    @Override
-    public void deleteBookmark(Long NewsId, Long userId) {
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
-        News news = newsRepository.findById(NewsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
-        boolean isBookmark = newsBookmarkRepository.existsByUserAndNews(user, news);
-
-        if (! isBookmark) {
-            throw new EntityNotFoundException("해당하는 북마크를 찾을 수 없습니다.");
-        }
-
-        newsBookmarkRepository.deleteByUserAndNews(user, news);
-    }
-
-
-    @Override
-    public void likeNews(Long userId, Long newsId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
-        News news = newsRepository.findById(newsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
-
-        Boolean isLike = newsLikeRepository.existsByUserAndNews(user, news);
-
-        if (isLike) {
-            throw new EntityIsFoundException("해당하는 좋아요가 이미 존재합니다.");
-        }
-
-        NewsLike newsLike = new NewsLike();
-        newsLike.setNews(news);
-        newsLike.setUser(user);
-        newsLikeRepository.save(newsLike);
-    }
-
-
-    @Override
-    public void deleteLike(Long userId, Long newsId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
-        News news = newsRepository.findById(newsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
-
-        Boolean isLike = newsLikeRepository.existsByUserAndNews(user, news);
-
-        if (! isLike) {
-            throw new EntityNotFoundException("해당하는 북마크를 찾을 수 없습니다.");
-        }
-
-        newsLikeRepository.deleteByUserAndNews(user, news);
-    }
 
     @Override
     public NewsDailyGetResponseDTO getDailyContent(Long userId) {
@@ -299,6 +230,84 @@ public class NewsServiceImpl implements NewsService {
         }
     }
 
+    @Override
+    public NewsDetailGetResponseDto getNewsDetail(Long NewsId) {    // 조회수 + 1
+        News news = newsRepository.findById(NewsId)
+                .orElseThrow(() -> new EntityNotFoundException("일치하는 뉴스 데이터를 조회할 수 없습니다."));
+
+        // 조회수 + 1 로직 추가
+        news.setHit(news.getHit() + 1);
+        newsRepository.save(news);
+
+        // DTO로 변환하여 반환
+        return newsRepositorySupport.getNewsDetail(news.getNewsId());
+    }
+
+
+    @Override
+    public void bookmark(Long userId, Long newsId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
+        News news = newsRepository.findById(newsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
+        boolean isBookmark = newsBookmarkRepository.existsByUserAndNews(user, news);
+
+        if (isBookmark) {
+            throw new EntityIsFoundException("이미 북마크가 존재합니다.");
+        }
+
+        NewsBookmark newsBookmark = new NewsBookmark();
+        newsBookmark.setNews(news);
+        newsBookmark.setUser(user);
+
+        newsBookmarkRepository.save(newsBookmark);
+    }
+
+
+    @Override
+    public void deleteBookmark(Long NewsId, Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
+        News news = newsRepository.findById(NewsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
+        boolean isBookmark = newsBookmarkRepository.existsByUserAndNews(user, news);
+
+        if (!isBookmark) {
+            throw new EntityNotFoundException("해당하는 북마크를 찾을 수 없습니다.");
+        }
+
+        newsBookmarkRepository.deleteByUserAndNews(user, news);
+    }
+
+
+    @Override
+    public void likeNews(Long userId, Long newsId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
+        News news = newsRepository.findById(newsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
+
+        Boolean isLike = newsLikeRepository.existsByUserAndNews(user, news);
+
+        if (isLike) {
+            throw new EntityIsFoundException("해당하는 좋아요가 이미 존재합니다.");
+        }
+
+        NewsLike newsLike = new NewsLike();
+        newsLike.setNews(news);
+        newsLike.setUser(user);
+        newsLikeRepository.save(newsLike);
+    }
+
+
+    @Override
+    public void deleteLike(Long userId, Long newsId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다."));
+        News news = newsRepository.findById(newsId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴스 엔티티를 찾을 수 없습니다."));
+
+        Boolean isLike = newsLikeRepository.existsByUserAndNews(user, news);
+
+        if (!isLike) {
+            throw new EntityNotFoundException("해당하는 북마크를 찾을 수 없습니다.");
+        }
+
+        newsLikeRepository.deleteByUserAndNews(user, news);
+    }
 
 
     @Override

@@ -3,6 +3,11 @@ package com.newzy.backend.domain.news.controller;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
 import com.newzy.backend.domain.news.dto.response.*;
+import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
+import com.newzy.backend.domain.news.dto.response.NewsDailyGetResponseDTO;
+import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
+import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
+import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
 import com.newzy.backend.domain.news.service.NewsService;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
@@ -60,7 +65,6 @@ public class NewsController {
     }
 
 
-
     @GetMapping(value = "/hot")
     @Operation(summary = "많이 본 뉴스 조회", description = "조회수가 많은 뉴스를 조회합니다.")
     public ResponseEntity<List<NewsListGetResponseDto>> getHotNewsList() {
@@ -69,7 +73,6 @@ public class NewsController {
 
         return ResponseEntity.status(200).body(hotNewsList);
     }
-
 
     @GetMapping(value = "/recommend")
     @Operation(summary = "추천 뉴스 조회", description = "사용자에 맞는 추천 뉴스를 조회합니다.")
@@ -84,7 +87,6 @@ public class NewsController {
 
         return ResponseEntity.status(200).body(newsRecommendGetResponseDTOList);
     }
-
 
     @GetMapping(value = "/daily")
     @Operation(summary = "데일리 뉴스 + 퀴즈 조회", description = "사용자의 데일리 뉴스를 조회합니다.")

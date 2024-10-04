@@ -5,7 +5,9 @@ import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.entity.QNews;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
@@ -95,8 +97,6 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-
-
     public NewsDetailGetResponseDto getNewsDetail(Long newsId) {
         QNews qNews = QNews.news;
 
@@ -120,6 +120,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                 .where(qNews.newsId.eq(newsId))
                 .fetchOne();
     }
+
 
     public List<NewsListGetResponseDto> findTop3NewsByDayWithHighestHits(LocalDateTime startOfDay, LocalDateTime now) {
         QNews qNews = QNews.news;
