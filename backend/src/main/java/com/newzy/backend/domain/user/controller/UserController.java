@@ -313,4 +313,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(NewzyLikeList);
     }
 
+    /*
+        내가 작성한 뉴지 목록
+    */
+
 }

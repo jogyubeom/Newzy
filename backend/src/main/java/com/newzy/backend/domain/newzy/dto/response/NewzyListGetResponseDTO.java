@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.dto.response;
 
+import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.user.entity.User;
 import lombok.*;
@@ -13,9 +14,12 @@ import java.time.LocalDateTime;
 @ToString
 public class NewzyListGetResponseDTO {
 
-    private Long newzyId;
-    private String nickname;
     private Long userId;
+    private String nickname;
+    private String email;
+    private Image profile;
+
+    private Long newzyId;
     private String title;
     private String content;
     private String contentText;
@@ -34,6 +38,9 @@ public class NewzyListGetResponseDTO {
         return NewzyListGetResponseDTO.builder()
                 .newzyId(newzy.getNewzyId())
                 .userId(newzy.getUser().getUserId())
+                .nickname(newzy.getUser().getNickname())
+                .email(newzy.getUser().getEmail())
+                .profile(newzy.getUser().getImage())
                 .title(newzy.getTitle())
                 .content(newzy.getContent())
                 .contentText(newzy.getContentText())

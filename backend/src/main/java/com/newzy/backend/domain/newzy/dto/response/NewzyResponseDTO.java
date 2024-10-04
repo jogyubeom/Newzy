@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.dto.response;
 
+import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -20,6 +21,12 @@ public class NewzyResponseDTO {
 
     @Schema(description = "유저 닉네임", example = "nickname")
     private String nickname;
+
+    @Schema(description = "유저 이메일", example = "email")
+    private String email;
+
+    @Schema(description = "유저 프로필", example = "img")
+    private Image profile;
 
     @Schema(description = "뉴지 제목", example = "title")
     private String title;
