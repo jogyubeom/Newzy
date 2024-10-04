@@ -17,13 +17,13 @@ function baseAxios() {
   instance.interceptors.request.use(
     (config) => {
       // 로컬에서 기능 테스트할 때 사용하는 수동 토큰 설정 코드
-      config.headers.Authorization =
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDM0IiwiZXhwIjoxNzI4MTE1NDI1fQ.OYHegHlDEN497kK5Nv_zrIKxsbUOSQ8BLMm7WLQC1Cw";
+      // config.headers.Authorization =
+      //   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDM0IiwiZXhwIjoxNzI4MTE1NDI1fQ.OYHegHlDEN497kK5Nv_zrIKxsbUOSQ8BLMm7WLQC1Cw";
 
-      // const token = useAuthStore.getState().token; // zustand 스토어에서 토큰 가져오기
-      // if (token) {
-      //   config.headers.Authorization = `Bearer ${token}`; // 토큰이 있으면 Authorization 헤더에 추가
-      // }
+      const token = useAuthStore.getState().token; // zustand 스토어에서 토큰 가져오기
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`; // 토큰이 있으면 Authorization 헤더에 추가
+      }
       return config;
     },
     (error) => {

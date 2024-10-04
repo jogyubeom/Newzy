@@ -6,8 +6,11 @@ const useAuthStore = create(
   persist(
     (set, get) => ({
       token: null, // 토큰 상태
+      userInfo: null, // 유저 정보 상태 추가
       setToken: (newToken) => set({ token: newToken }), // 토큰 저장 함수
       clearToken: () => set({ token: null }), // 토큰 삭제 함수
+      setUserInfo: (newUserInfo) => set({ userInfo: newUserInfo }), // 유저 정보 저장 함수 추가
+      clearUserInfo: () => set({ userInfo: null }), // 유저 정보 삭제 함수 추가
       isLoggedIn: () => !!get().token, // 로그인 상태 확인 함수
     }),
     {
