@@ -241,11 +241,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserInfoResponseDTO oauthSignup(AuthRequestDTO authRequestDTO) {
         // 새로운 사용자 등록
+        Optional<Image> image = imageRepository.findByImageUrl("https://plogbucket.s3.ap-northeast-2.amazonaws.com/e63129aa-4855-43a4-a75b-840668687252_user.png");
+
         User user = User.builder()
                 .email(authRequestDTO.getEmail())
                 .nickname(authRequestDTO.getNickname())
                 .password(authRequestDTO.getPassword())
                 .socialLoginType(authRequestDTO.getType())
+                .image(image.get())
                 .build();
         log.info("새로운 사용자 등록: {}", authRequestDTO.getEmail());
         userRepository.save(user); // 새 사용자 저장
