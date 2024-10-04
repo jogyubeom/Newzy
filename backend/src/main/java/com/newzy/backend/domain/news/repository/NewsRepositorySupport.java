@@ -4,6 +4,7 @@ import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.entity.QNews;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
@@ -29,11 +30,24 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
     public Map<String, Object> findNewsList(int page, int category) {
         QNews qNews = QNews.news;
 
+        // 기본 where 조건을 생성
+        BooleanBuilder whereCondition = new BooleanBuilder();
+
+        // category가 3이 아닌 경우에만 카테고리 필터 추가
+        if (category != 3) {
+            whereCondition.and(qNews.category.eq(category));
+        }
+
+        // keyword가 null이 아니고 빈 문자열이 아닌 경우에만 타이틀 필터 추가
+        if (keyword != null && !keyword.isEmpty()) {
+            whereCondition.and(qNews.title.contains(keyword));
+        }
+
         // 전체 뉴스 개수 조회
         Long totalCount = queryFactory
                 .select(qNews.count())
                 .from(qNews)
-                .where(category != 3 ? qNews.category.eq(category) : null)
+                .where(whereCondition)
                 .fetchOne();
 
         // 총 페이지 수 계산 (마지막 페이지 번호)
@@ -48,13 +62,14 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                         qNews.contentText,
                         qNews.category,
                         qNews.publisher,
+                        qNews.thumbnail,
                         qNews.hit,
                         qNews.createdAt
                 ))
                 .from(qNews)
-                .where(category != 3 ? qNews.category.eq(category) : null)
-                .orderBy(qNews.createdAt.desc())
-                .offset(page * size)
+                .where(whereCondition)
+                .orderBy(qNews.newsId.desc())
+                .offset((page - 1) * size)
                 .limit(size)
                 .fetch();
 
@@ -90,8 +105,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                 .fetchOne();
     }
 
-
-    public List<NewsListGetResponseDto> findTop3NewsByDayWithHighestHits(LocalDateTime startOf24HoursAgo, LocalDateTime now) {
+    public List<NewsListGetResponseDto> findTop3NewsByDayWithHighestHits(LocalDateTime startOfDay) {
         QNews qNews = QNews.news;
 
         return queryFactory
@@ -102,16 +116,16 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                         qNews.contentText,
                         qNews.category,
                         qNews.publisher,
+                        qNews.thumbnail,
                         qNews.hit,
                         qNews.createdAt
                 ))
                 .from(qNews)
-                .where(qNews.createdAt.between(startOf24HoursAgo, now)) // 하루 시작 시점부터 현재 시간까지
+                .where(qNews.createdAt.goe(startOfDay)) // 하루 시작 시점부터 현재 시간까지
                 .orderBy(qNews.hit.desc()) // 조회수 내림차순
                 .limit(3) // 상위 3개만
                 .fetch();
     }
-
 }
 
 

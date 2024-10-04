@@ -18,7 +18,24 @@ public class NewsListGetResponseDto {
     private String contentText;
     private int category;
     private String publisher;
+    private String thumbnail;
     private int hit;
     private LocalDateTime createdAt;
 
+    public static NewsListGetResponseDto convertToDTO(News news){
+        if (news == null){
+            throw new IllegalArgumentException("뉴스 엔티티가 없습니다.");
+        }
+        return NewsListGetResponseDto.builder()
+                .newsId(news.getNewsId())
+                .link(news.getLink())
+                .title(news.getTitle())
+                .contentText(news.getContentText())
+                .category(news.getCategory())
+                .publisher(news.getPublisher())
+                .thumbnail(news.getThumbnail())
+                .hit(news.getHit())
+                .createdAt(news.getCreatedAt())
+                .build();
+    }
 }

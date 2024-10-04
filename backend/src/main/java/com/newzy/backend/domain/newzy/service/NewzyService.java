@@ -13,7 +13,7 @@ public interface NewzyService {
 
     NewzyResponseDTO update(Long userId, Long newzyId, NewzyRequestDTO dto);
 
-    Map<String, Object> getNewzyListWithLastPage(int page, int category);
+    Map<String, Object> getNewzyListWithLastPage(int page, int category, String keyword);
 
     NewzyResponseDTO getNewzyDetail(Long newzyId);
 

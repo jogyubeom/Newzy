@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface NewsService {
-    Map<String, Object> getNewsList(int page, int category);
+    Map<String, Object> getNewsList(int page, int category, String keyword);
     NewsDetailGetResponseDto getNewsDetail(Long NewsId);
 
     void bookmark(Long userId, Long NewsId);
