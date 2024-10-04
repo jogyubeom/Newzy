@@ -51,6 +51,7 @@ public class DictionaryController {
 
         return ResponseEntity.status(200).body(dictionaryList);
     }
+
     @PostMapping
     @Operation(summary = "사용자의 나만의 단어장에 어휘 추가", description = "나만의 단어장에 어휘를 저장합니다.")
     public ResponseEntity<BaseResponseBody> saveSearchWord (
@@ -99,14 +100,15 @@ public class DictionaryController {
             @Parameter(description = "JWT")
             @RequestHeader(value = "Authorization") String token,
             @Parameter(description = "사용자가 검색한 어휘")
-            @RequestParam(value = "word", defaultValue = "나무") String word
+            @RequestParam(value = "wordList") List<String> wordList
     ) {
-        log.info(">>> [DELETE] /word/{} - 요청 파라미터: wordId={}", word, word);
-        if (word == null || word.isEmpty())
+        log.info(">>> [DELETE] /word?wordList={} - 요청 파라미터: wordList: {}", wordList, wordList);
+        if (wordList == null || wordList.isEmpty() || wordList.size() == 0)
             throw new NotValidRequestException("삭제할 단어가 없습니다.");
+
         Long userId = userService.getUser(token).getUserId();
 
-        dictionaryService.deleteSearchWordHistory(userId, word);
+        dictionaryService.deleteSearchWordHistory(userId, wordList);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 어휘 검색 기록 삭제가 완료되었습니다."));
     }

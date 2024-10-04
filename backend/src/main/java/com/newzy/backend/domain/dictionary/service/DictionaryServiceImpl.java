@@ -16,6 +16,8 @@ import com.newzy.backend.domain.news.repository.NewsRepository;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.exception.EntityNotFoundException;
+import com.newzy.backend.global.exception.NotValidRequestException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -96,11 +98,19 @@ public class DictionaryServiceImpl implements DictionaryService {
         return vocaListResponseDTOList;
     }
 
+    @Transactional
     @Override
-    public void deleteSearchWordHistory(Long userId, String word) {
+    public void deleteSearchWordHistory(Long userId, List<String> wordList) {
         // MongoDB에서 userId와 word가 일치하는 검색어 기록을 삭제
-        searchWordRepository.deleteByUserIdAndWord(userId, word);
-        log.info("userId {}와 word '{}'에 해당하는 검색 기록이 삭제되었습니다.", userId, word);
+
+        // 단어 목록을 순회하면서 각 단어별로 삭제 메서드 호출
+        for (String word : wordList) {
+            if (word == null || word.isEmpty()) {
+                throw new NotValidRequestException("삭제할 단어가 유효하지 않습니다: " + word);
+            }
+            searchWordRepository.deleteByUserIdAndWord(userId, word);
+        }
+        log.info("userId {}와 wordList: {}에 해당하는 검색 기록이 삭제되었습니다.", userId, wordList);
     }
 
     @Override

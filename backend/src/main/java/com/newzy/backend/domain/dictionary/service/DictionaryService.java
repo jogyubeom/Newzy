@@ -13,7 +13,7 @@ public interface DictionaryService {
 
     void addVocaList(Long userId, VocaListRequestDTO vocaListRequestDTO);
     List<VocaListResponseDTO> getVocaList(SearchWordRequestDTO searchWordRequestDTO);
-    void deleteSearchWordHistory(Long userId, String word);
+    void deleteSearchWordHistory(Long userId, List<String> wordList);
     List<WordCloudResponseDTO> getWordCloudHistory();
 
     void saveSearchWordHistoryToRedis(Long newsId, String word);
