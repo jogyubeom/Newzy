@@ -8,6 +8,7 @@ from newzy.db_operations import save_recommended_news_by_cluster, \
     get_cluster_count, get_cluster_info
 from newzy.create_quiz.create_quiz import create_quiz_from_news
 from newzy.models import User
+from newzy.recommend.cluster_user import cluster_user
 from newzy.recommend.ncf_recommender import NCFRecommender
 from newzy.redis_operation import get_redis_key, save_news_info_to_redis, \
     save_recommended_news_list_to_redis
@@ -97,6 +98,9 @@ def recommend_news_by_cluster(cluster_id: int):
 
 # 군집별 추천 알고리즘 적용 - batch task
 def recommend_news():
+    # 유저 군집화 먼저
+    cluster_user()
+
     cluster_cnt = get_cluster_count()
     logging.info(f"군집별 뉴스 추천 알고리즘 시작: 군집 개수: {cluster_cnt}")
 
