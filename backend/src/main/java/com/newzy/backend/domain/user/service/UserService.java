@@ -32,4 +32,6 @@ public interface UserService {
     void userSignOut(String token);
 
     UserFirstLoginResponseDTO isFirstLogin(String token);
+
+    int getClusterId(Long userId);
 }

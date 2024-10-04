@@ -18,6 +18,9 @@ public class UserInfoResponseDTO {
     @Schema(description = "회원 pk", example = "1")
     private Long userId;
 
+    @Schema(description = "회원 군집", example = "1")
+    private int clusterId;
+
     @Schema(description = "회원 닉네임", example = "nickname")
     private String nickname;
 
@@ -57,6 +60,7 @@ public class UserInfoResponseDTO {
         }
         return UserInfoResponseDTO.builder()
                 .userId(user.getUserId())
+                .clusterId(user.getCluster().getClusterId())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .password(user.getPassword())

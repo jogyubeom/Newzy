@@ -217,5 +217,9 @@ public class UserServiceImpl implements UserService {
         return UserInfoResponseDTO.convertToDTO(user);
     }
 
-
+    @Override
+    public int getClusterId(Long userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("일치하는 유저가 없습니다."));
+        return user.getCluster().getClusterId();
+    }
 }
