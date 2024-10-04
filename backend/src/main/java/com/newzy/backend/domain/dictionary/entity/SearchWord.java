@@ -16,17 +16,17 @@ public class SearchWord {
 
     private Long userId;
 
-    private Long newsId;
-
     private String word;
+
+    private String definitinon;
 
     private LocalDateTime createdAt;
 
     // 생성자
-    public SearchWord(Long userId, Long newsId, String word) {
+    public SearchWord(Long userId, String word, String definitinon) {
         this.userId = userId;
-        this.newsId = newsId;
         this.word = word;
+        this.definitinon = definitinon;
         this.createdAt = LocalDateTime.now();
     }
 }

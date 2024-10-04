@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.dictionary.controller;
 
 import com.newzy.backend.domain.dictionary.dto.request.SearchWordRequestDTO;
+import com.newzy.backend.domain.dictionary.dto.request.VocaListRequestDTO;
 import com.newzy.backend.domain.dictionary.dto.response.DictionaryResponseDTO;
 import com.newzy.backend.domain.dictionary.dto.response.VocaListResponseDTO;
 import com.newzy.backend.domain.dictionary.dto.response.WordCloudResponseDTO;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,18 +32,12 @@ public class DictionaryController {
     @GetMapping("/{newsId}")
     @Operation(summary = "어휘 검색 정보 조회", description = "입력으로 주어진 word의 검색 결과를 반환합니다.")
     public ResponseEntity<List<DictionaryResponseDTO>> searchByWord(
-            @Parameter(description = "JWT", required = false)
-            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "뉴스 ID", required = true)
             @PathVariable Long newsId,
             @Parameter(description = "검색 단어", required = true, example = "나무")
             @RequestParam(value = "search") String search) {
-        Long userId = 0L;
-        if (token != null) {
-            userId = userService.getUser(token).getUserId();
-        }
 
-        log.info(">>> [GET] /word/{}?search={} - 요청 파라미터: userId:{}, newsId:{}, search:{}", newsId, search, userId, newsId, search);
+        log.info(">>> [GET] /word/{}?search={} - 요청 파라미터: newsId:{}, search:{}", newsId, search, newsId, search);
 
         if (search == null || search.isEmpty())
             throw new NotValidRequestException("검색 단어가 없습니다.");
@@ -52,18 +48,31 @@ public class DictionaryController {
 
         // 검색한 어휘 Redis 에 저장
         dictionaryService.saveSearchWordHistoryToRedis(newsId, search);
-        // 사용자의 단어장에 저장
-        if (userId != 0)
-            dictionaryService.addSearchWordHistory(userId, newsId, search);
 
-        log.info(">>> 단어 검색 결과 개수: {}", dictionaryList.size());
         return ResponseEntity.status(200).body(dictionaryList);
     }
+    @PostMapping
+    @Operation(summary = "사용자의 나만의 단어장에 어휘 추가", description = "나만의 단어장에 어휘를 저장합니다.")
+    public ResponseEntity<BaseResponseBody> saveSearchWord (
+            @Parameter(description = "JWT")
+            @RequestHeader(value = "Authorization") String token,
+            @RequestBody @Validated VocaListRequestDTO vocaListRequestDTO
+            ) {
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        }
 
+        log.info(">>> [POST] /word - 요청 파라미터: userId:{}, dto: {}", userId, vocaListRequestDTO);
+
+        dictionaryService.addVocaList(userId, vocaListRequestDTO);
+
+        return ResponseEntity.status(200).body(BaseResponseBody.of(200, "나만의 단어장에 저장이 완료되었습니다."));
+    }
     @GetMapping
     @Operation(summary = "사용자의 어휘 검색 기록 조회", description = "사용자가 검색한 어휘를 조회합니다.")
     public ResponseEntity<List<VocaListResponseDTO>> getSearchWordHistory(
-            @Parameter(description = "JWT", required = false)
+            @Parameter(description = "JWT")
             @RequestHeader(value = "Authorization") String token,
             @Parameter(description = "페이지 번호")
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
@@ -79,9 +88,10 @@ public class DictionaryController {
                 .sort(sort)
                 .build();
 
-        List<VocaListResponseDTO> dictionaryResponseDTOList = dictionaryService.getSearchWordHistory(searchWordRequestDTO);
+        List<VocaListResponseDTO> dictionaryResponseDTOList = dictionaryService.getVocaList(searchWordRequestDTO);
         return ResponseEntity.status(200).body(dictionaryResponseDTOList);
     }
+
 
     @DeleteMapping
     @Operation(summary = "사용자의 어휘 검색 기록 삭제", description = "사용자가 검색한 어휘를 삭제합니다.")

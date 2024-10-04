@@ -1,6 +1,8 @@
 package com.newzy.backend.domain.news.controller;
 
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
+import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
+import com.newzy.backend.domain.news.dto.response.NewsDailyGetResponseDTO;
 import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
@@ -49,10 +51,13 @@ public class NewsController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "카테고리")
             @RequestParam(value = "category", required = false, defaultValue = "3") int category,
+            @Parameter(description = "정렬기준")
+            @RequestParam(value = "sort", required = false, defaultValue = "0") int sort,
             @Parameter(description = "키워드")
             @RequestParam(value = "keyword", required = false) String keyword) {
-        log.info(">>> [GET] /news - 요청 파라미터: page - {}, category - {}, keyword - {}", page, category, keyword);
-        Map<String, Object> newsListGetResponseDtoMap = newsService.getNewsList(page, category, keyword);
+        log.info(">>> [GET] /news - 요청 파라미터: page - {}, sort - {}, category - {}, keyword - {}", page, sort, category, keyword);
+        NewsListGetRequestDTO newsListGetRequestDTO = new NewsListGetRequestDTO(page, category, sort, keyword);
+        Map<String, Object> newsListGetResponseDtoMap = newsService.getNewsList(newsListGetRequestDTO);
 
         return ResponseEntity.status(200).body(newsListGetResponseDtoMap);
     }
@@ -81,6 +86,18 @@ public class NewsController {
         return ResponseEntity.status(200).body(newsRecommendGetResponseDTOList);
     }
 
+    @GetMapping(value = "/daily")
+    @Operation(summary = "데일리 뉴스 + 퀴즈 조회", description = "사용자의 데일리 뉴스를 조회합니다.")
+    public ResponseEntity<NewsDailyGetResponseDTO> getDailyNews(
+            @Parameter(description = "JWT")
+            @RequestHeader(value = "Authorization") String token) {
+        log.info(">>> [GET] /news/daily-news - 요청 파라미터");
+        if (token == null || token.isEmpty())
+            throw new NoTokenRequestException("token이 비어있습니다");
+        Long userId = userService.getUser(token).getUserId();
+        NewsDailyGetResponseDTO newsDailyGetResponseDTO = newsService.getDailyContent(userId);
+        return ResponseEntity.status(200).body(newsDailyGetResponseDTO);
+    }
     // 카테고리 정보를 int로 프론트에서 받아옴
     @PostMapping(value = "/{newsId}/collect-news-card")
     @Operation(summary = "뉴스 카드 수집", description = "읽은 뉴스를 요약하고 카드를 수집합니다.")

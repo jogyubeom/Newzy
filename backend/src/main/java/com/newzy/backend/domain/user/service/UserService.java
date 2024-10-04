@@ -36,4 +36,6 @@ public interface UserService {
     UserFirstLoginResponseDTO isFirstLogin(String token);
 
     UserInfoResponseDTO updateProfileImage(String token, MultipartFile[] profile);
+
+    int getClusterId(Long userId);
 }

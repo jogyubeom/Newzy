@@ -29,6 +29,10 @@ public class User extends BaseTimeEntity {
     @JoinColumn(name = "image_id", referencedColumnName = "imageId")
     private Image image;
 
+    @ManyToOne(targetEntity = Cluster.class)
+    @JoinColumn(name = "cluster_id", updatable = false)
+    private Cluster cluster;
+
     @Column(name = "nickname", nullable = false, length = 50)
     private String nickname;
 

@@ -4,7 +4,9 @@ import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.entity.QNews;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -26,7 +28,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-    public Map<String, Object> findNewsList(int page, int category, String keyword) {
+    public Map<String, Object> findNewsList(int page, int sort, int category, String keyword) {
         QNews qNews = QNews.news;
 
         // 기본 where 조건을 생성
@@ -52,6 +54,18 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
         // 총 페이지 수 계산 (마지막 페이지 번호)
         int totalPage = (int) ((totalCount + size - 1) / size);
 
+        // 정렬 기준 설정
+        OrderSpecifier<?> orderSpecifier;
+        switch (sort) {
+            case 1:
+                orderSpecifier = qNews.newsId.asc(); // 오래된 순
+                break;
+            case 2:
+                orderSpecifier = qNews.hit.desc(); // 조회수 순
+                break;
+            default:
+                orderSpecifier = qNews.newsId.desc(); // 최신순
+        }
         // 뉴스 목록 조회
         List<NewsListGetResponseDto> newsList = queryFactory
                 .select(Projections.constructor(NewsListGetResponseDto.class,
@@ -67,7 +81,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                 ))
                 .from(qNews)
                 .where(whereCondition)
-                .orderBy(qNews.newsId.desc())
+                .orderBy(orderSpecifier)
                 .offset((page - 1) * size)
                 .limit(size)
                 .fetch();

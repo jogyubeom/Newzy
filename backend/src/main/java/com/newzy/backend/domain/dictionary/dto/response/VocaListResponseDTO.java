@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class VocaListResponseDTO {
     private String word;
-    private List<String> meanings;
+    private String definition;
 }
