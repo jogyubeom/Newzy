@@ -21,19 +21,4 @@ public class NewsListGetResponseDto {
     private int hit;
     private LocalDateTime createdAt;
 
-    public static NewsListGetResponseDto convertToDTO(News news){
-        if (news == null){
-            throw new IllegalArgumentException("뉴스 엔티티가 없습니다.");
-        }
-        return NewsListGetResponseDto.builder()
-                .newsId(news.getNewsId())
-                .link(news.getLink())
-                .title(news.getTitle())
-                .contentText(news.getContentText())
-                .category(news.getCategory())
-                .publisher(news.getPublisher())
-                .hit(news.getHit())
-                .createdAt(news.getCreatedAt())
-                .build();
-    }
 }

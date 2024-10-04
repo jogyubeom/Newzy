@@ -1,13 +1,9 @@
 package com.newzy.backend.domain.newzy.controller;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyCommentRequestDTO;
-import com.newzy.backend.domain.newzy.dto.response.NewzyCommentListGetResponseDto;
-import com.newzy.backend.domain.newzy.dto.response.NewzyCommentResponseDTO;
-import com.newzy.backend.domain.newzy.service.NewzyCommentServiceImpl;
+import com.newzy.backend.domain.newzy.service.NewzyCommentService;
 import com.newzy.backend.domain.user.service.UserService;
-import com.newzy.backend.domain.user.service.UserServiceImpl;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
-import com.newzy.backend.global.exception.EntityNotFoundException;
 import com.newzy.backend.global.exception.NoTokenRequestException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +11,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +24,7 @@ import java.util.Map;
 @RequestMapping("/newzy/{newzyId}/comments")
 public class NewzyCommentController {
 
-     private final NewzyCommentServiceImpl newzyCommentServiceImpl;
+     private final NewzyCommentService newzyCommentService;
      private final UserService userService;
 
      @GetMapping
@@ -40,7 +35,7 @@ public class NewzyCommentController {
              @RequestParam(value = "page", required = false, defaultValue = "0") int page
      ){
          log.info(">>> [GET] /newzy/{}/comments - 요청 파라미터: newzyId - {}, page - {}", newzyId, newzyId, page);
-         Map<String, Object> commentList = newzyCommentServiceImpl.getNewzyCommentList(newzyId, page);
+         Map<String, Object> commentList = newzyCommentService.getNewzyCommentList(newzyId, page);
 
          return ResponseEntity.status(200).body(commentList);
      }
@@ -65,7 +60,7 @@ public class NewzyCommentController {
         if (dto == null) {
             throw new CustomIllegalStateException("해당 뉴지 댓글의 dto를 찾을 수 없습니다.: " + dto);
         }
-        newzyCommentServiceImpl.saveComment(userId, newzyId, dto);
+        newzyCommentService.saveComment(userId, newzyId, dto);
 
         return ResponseEntity.status(201).body(BaseResponseBody.of(201, "뉴지 댓글 등록이 완료되었습니다."));
     }
@@ -87,7 +82,7 @@ public class NewzyCommentController {
             throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
          log.info(">> [PATCH] /newzy/{}/comments/{} - 요청 파라미터: newzyId - {}, commentId - {}, userId - {}", newzyId, commentId, newzyId, commentId, userId);
-         newzyCommentServiceImpl.updateComment(userId, commentId, dto);
+        newzyCommentService.updateComment(userId, commentId, dto);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴지의 댓글 수정이 완료되었습니다."));
     }
@@ -108,7 +103,7 @@ public class NewzyCommentController {
             throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
         log.info(">> [DELETE] /newzy/{}/comments/{} - 요청파라미터: newzyId - {}, commentId - {}, userId - {}", newzyId, newzyCommentId, newzyId, newzyCommentId, userId);
-         newzyCommentServiceImpl.deleteComment(userId, newzyCommentId);
+        newzyCommentService.deleteComment(userId, newzyCommentId);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴지의 댓글 삭제가 완료되었습니다."));
     }

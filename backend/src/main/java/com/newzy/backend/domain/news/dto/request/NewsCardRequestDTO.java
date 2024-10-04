@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class NewsCardRequestDTO {
 
-    private Long userId;
+    private Long category;
     private Long newsId;
     private int score;
     private String summary;

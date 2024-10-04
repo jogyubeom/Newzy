@@ -2,16 +2,15 @@ package com.newzy.backend.domain.user.entity;
 
 import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity(name = "follow")
-@Getter
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "follow")
+@Builder
 public class Follow extends BaseTimeEntity {
 
     @Id
@@ -19,17 +18,17 @@ public class Follow extends BaseTimeEntity {
     @Column(name = "follow_id", unique = true, nullable = false)
     private Long followId;
 
-    // TODO: 추후 다시 수정 (follow entity)
-//    @ManyToOne
-//    @JoinColumn(name = "to_id")
-//    private User toId;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "from_id")
-//    private User fromId;
+    @ManyToOne
+    @JoinColumn(name = "to_id")
+    private User toUser;
 
-    @Column
-    private boolean isDeleted = Boolean.FALSE;
+    @ManyToOne
+    @JoinColumn(name = "from_id")
+    private User fromUser;
+
+    @Column(name = "is_deleted")
+    @Builder.Default
+    private Boolean isDeleted = Boolean.FALSE;
 
 
 }

@@ -24,6 +24,9 @@ public class NewzyResponseDTO {
     @Schema(description = "뉴지 내용", example = "content")
     private String content;
 
+    @Schema(description = "뉴지 내용 text", example = "content text")
+    private String contentText;
+
     @Schema(description = "뉴지 카테고리", example = "1")
     private int category;
 
@@ -48,9 +51,10 @@ public class NewzyResponseDTO {
                 .newzyId(newzy.getNewzyId())
                 .title(newzy.getTitle())
                 .content(newzy.getContent())
+                .contentText(newzy.getContentText())
                 .category(newzy.getCategory())
                 .likeCnt(newzy.getLikeCnt())
-                .visitCnt(newzy.getVisitCnt())
+                .visitCnt(newzy.getHit())
                 .createdAt(newzy.getCreatedAt())
                 .isDeleted(newzy.isDeleted())  // 삭제 여부 추가
                 .build();

@@ -48,12 +48,13 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
         List<NewzyListGetResponseDTO> newzyList = queryFactory
                 .select(Projections.fields(NewzyListGetResponseDTO.class,
                         qnewzy.newzyId,
+                        qnewzy.user.userId,
                         qnewzy.title,
                         qnewzy.content,
                         qnewzy.category,
                         qnewzy.createdAt,
                         qnewzy.likeCnt,
-                        qnewzy.visitCnt
+                        qnewzy.hit
                 ))
                 .from(qnewzy)
                 .where(builder)  // 동적 조건

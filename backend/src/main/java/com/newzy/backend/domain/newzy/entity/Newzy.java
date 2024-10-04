@@ -36,6 +36,9 @@ public class Newzy extends BaseTimeEntity {
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "content_text", columnDefinition = "TEXT", nullable = false)
+    private String contentText;
+
     @Column(name = "category")
     private int category;
 
@@ -48,8 +51,12 @@ public class Newzy extends BaseTimeEntity {
     @Column(name = "like_cnt")
     private int likeCnt = 0;
 
-    @Column(name = "visit_cnt")
-    private int visitCnt = 0;
+    @Column(name = "hit")
+    private int hit = 0;
+
+    @Column(name = "thumbnail", length = 255, nullable = true)
+    private String thumbnail;
+
 
     public void setIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;

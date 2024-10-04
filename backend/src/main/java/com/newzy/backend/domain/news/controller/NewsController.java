@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.news.controller;
 
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
+import com.newzy.backend.domain.news.dto.response.NewsCardListGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
@@ -65,6 +66,7 @@ public class NewsController {
         return ResponseEntity.status(200).body(hotNewsList);
     }
 
+
     @GetMapping(value = "/recommend")
     @Operation(summary = "추천 뉴스 조회", description = "사용자에 맞는 추천 뉴스를 조회합니다.")
     public ResponseEntity<List<NewsRecommendGetResponseDTO>> getRecommendedNewsList(
@@ -78,6 +80,46 @@ public class NewsController {
 
         return ResponseEntity.status(200).body(newsRecommendGetResponseDTOList);
     }
+
+
+    @GetMapping(value = "/news-card-list")
+    @Operation(summary = "뉴스 카드 리스트", description = "뉴스 카드 리스트를 반환합니다.")
+    public ResponseEntity<List<NewsCardListGetResponseDto>> getNewsCardList(
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ){
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new IllegalStateException("유효한 유저 토큰이 없습니다.");
+        }
+        log.info(">>> [GET] /news/news-card-list - 요청 파라미터 : userId - {}", userId);
+
+        List<NewsCardListGetResponseDto> cardList = newsService.getCardList(userId);
+        return ResponseEntity.status(200).body(cardList);
+    }
+
+
+    @GetMapping(value = "/news-card-list/{cardId}")
+    @Operation(summary = "뉴스 카드", description = "뉴스 카드의 상세 정보를 반환합니다.")
+    public ResponseEntity<NewsCardListGetResponseDto> getNewsCardDetail(
+            @PathVariable("cardId") Long cardId,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ){
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new IllegalStateException("유효한 유저 토큰이 없습니다.");
+        }
+        log.info(">>> [GET] /news/news-card-list - 요청 파라미터 : userId - {}, cardId - {}", userId, cardId);
+
+        NewsCardListGetResponseDto cardInfo = newsService.getCardInfo(userId, cardId);
+        return ResponseEntity.status(200).body(cardInfo);
+    }
+
 
     // 카테고리 정보를 int로 프론트에서 받아옴
     @PostMapping(value = "/{newsId}/collect-news-card")

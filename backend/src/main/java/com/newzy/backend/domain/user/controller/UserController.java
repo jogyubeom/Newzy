@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.user.controller;
 
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
+import com.newzy.backend.domain.user.dto.response.FollowListGetResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
@@ -9,11 +10,15 @@ import com.newzy.backend.global.exception.NoTokenRequestException;
 import com.newzy.backend.global.exception.NotValidRequestException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -118,5 +123,157 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userFirstLoginResponseDTO);
     }
 
+
+    /*
+        유저 팔로우, 북마크, 좋아요 기능
+    */
+
+
+    @PostMapping(value = "/{nickname}/followers")
+    @Operation(summary = "팔로우", description = "선택한 상대를 구독합니다.")
+    public ResponseEntity<BaseResponseBody> followers(
+            @PathVariable String nickname,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ) {
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
+        log.info(">>> [POST] /news/{}/followings - 요청 파라미터: nickname - {}, userId - {}", nickname, nickname, userId);
+
+        userService.followUser(userId, nickname);
+
+        return ResponseEntity.status(200).body(BaseResponseBody.of(200, "{nickname}을 팔로워했습니다."));
+    }
+
+
+    @DeleteMapping(value = "/{nickname}/followers")
+    @Operation(summary = "팔로우 취소", description = "선택한 상대를 언팔로우합니다.")
+    public ResponseEntity<BaseResponseBody> deletefollower(
+            @PathVariable String nickname,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ) {
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
+        log.info(">>> [DELETE] /news/{}/followings - 요청 파라미터: nickname - {}, userId - {}", nickname, nickname, userId);
+
+        userService.deleteFollower(userId, nickname);
+
+        return ResponseEntity.status(200).body(BaseResponseBody.of(200, "{nickname}을 언팔로우했습니다."));
+    }
+
+
+    // /user/{nickname}/followings?page={page}
+
+    @GetMapping(value = "/{nickname}/followings")
+    @Operation(summary = "팔로워 목록", description = "팔로우한 사람들의 목록을 반환합니다.")
+    public ResponseEntity<Map<String, Object>> getFollowings(
+            @PathVariable String nickname,
+            @Parameter(description = "페이지 번호")
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ){
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
+        log.info(">>> [GET] /news/{}/followings - 요청 파라미터: nickname - {}, page - {}", nickname, nickname, page);
+
+        Map<String, Object> followerList = userService.getFollowerList(page, nickname);
+
+        return ResponseEntity.status(HttpStatus.OK).body(followerList);
+    }
+
+    // /user/{nickname}/followers?page={page}
+
+
+    // 유저가 북마크한 뉴스
+    @GetMapping(value = "/news-bookmark")
+    @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
+    public ResponseEntity<Map<String, Object>> getNewsBookmarkList(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ){
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
+        log.info(">>> [GET] /news/news-bookmark - 요청 파라미터: userId - {}, page - {}", userId, page);
+        Map<String, Object> NewsBookmarkList = userService.getNewsBookmarkList(page, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(NewsBookmarkList);
+    }
+
+
+    // 유저가 좋아요한 뉴스
+    @GetMapping(value = "/news-like")
+    @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
+    public ResponseEntity<Map<String, Object>> getNewsLikemarkList(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ){
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
+        log.info(">>> [GET] /news/news-like - 요청 파라미터: userId - {}, page - {}", userId, page);
+        Map<String, Object> NewsLikeList = userService.getNewsLikeList(page, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(NewsLikeList);
+    }
+
+
+    // 유저가 북마크한 뉴지
+    @GetMapping(value = "/newzy-bookmark")
+    @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
+    public ResponseEntity<Map<String, Object>> getNewzyBookmarkList(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ){
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
+        log.info(">>> [GET] /newzy/newzy-bookmark - 요청 파라미터: userId - {}, page - {}", userId, page);
+        Map<String, Object> NewzyBookmarkList = userService.getNewzyBookmarkList(page, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(NewzyBookmarkList);
+    }
+
+    // 유저가 좋아요한 뉴지
+    @GetMapping(value = "/newzy-like")
+    @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
+    public ResponseEntity<Map<String, Object>> getNewzyLikemarkList(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ){
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
+        log.info(">>> [GET] /newzy/newzy-like - 요청 파라미터: userId - {}, page - {}", userId, page);
+        Map<String, Object> NewzyLikeList = userService.getNewzyLikeList(page, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(NewzyLikeList);
+    }
 
 }

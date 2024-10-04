@@ -3,6 +3,7 @@ package com.newzy.backend.domain.news.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
+import com.newzy.backend.domain.news.dto.response.NewsCardListGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
@@ -10,11 +11,7 @@ import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.entity.NewsBookmark;
 import com.newzy.backend.domain.news.entity.NewsCard;
 import com.newzy.backend.domain.news.entity.NewsLike;
-import com.newzy.backend.domain.news.repository.NewsBookmarkRepository;
-import com.newzy.backend.domain.news.repository.NewsLikeRepository;
-import com.newzy.backend.domain.news.repository.NewsRepository;
-import com.newzy.backend.domain.news.repository.NewsRepositorySupport;
-import com.newzy.backend.domain.news.repository.NewsCardRepository;
+import com.newzy.backend.domain.news.repository.*;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.exception.EntityIsFoundException;
@@ -46,6 +43,8 @@ public class NewsServiceImpl implements NewsService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 파싱을 위해 사용
+    private final NewsCardRepositorySupport newsCardRepositorySupport;
+
 
     @Override  // branch : feature/get-news의 NewsServiceImpl 참고
     @Transactional(readOnly = true)
@@ -60,10 +59,25 @@ public class NewsServiceImpl implements NewsService {
     @Transactional(readOnly = true)
     public List<NewsListGetResponseDto> getHotNewsList() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOfDay = now.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime startOf24HoursAgo = now.minusHours(24); // 현재 시간에서 24시간 이전 시점 계산
 
-        return newsRepositorySupport.findTop3NewsByDayWithHighestHits(startOfDay);
+        return newsRepositorySupport.findTop3NewsByDayWithHighestHits(startOf24HoursAgo, now);
     }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<NewsCardListGetResponseDto> getCardList(Long userId) {
+
+        return newsCardRepositorySupport.findNewsCardList(userId);
+    }
+
+    @Override
+    public NewsCardListGetResponseDto getCardInfo(Long userId, Long cardId) {
+
+        return newsCardRepositorySupport.findNewsCardInfo(cardId);
+    }
+
 
     @Override
     public List<NewsRecommendGetResponseDTO> getRecommendedNewsList(Long userId) {
@@ -130,7 +144,7 @@ public class NewsServiceImpl implements NewsService {
         newsRepository.save(news);
 
         // DTO로 변환하여 반환
-        return NewsDetailGetResponseDto.convertToDTO(news);
+        return newsRepositorySupport.getNewsDetail(news.getNewsId());
     }
 
 
@@ -202,7 +216,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public void collectNewsCard(Long userId, NewsCardRequestDTO requestDTO) {
-        User user = userRepository.findById(requestDTO.getUserId()).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티가 없습니다."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티가 없습니다."));
         News news = newsRepository.findById(requestDTO.getNewsId()).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 뉴스가 없습니다."));
 
         Boolean isNewsCard = newsCardRepository.existsByUserAndNews(user, news);

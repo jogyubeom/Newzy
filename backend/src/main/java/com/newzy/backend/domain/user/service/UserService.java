@@ -9,6 +9,7 @@ import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     void save(UserInfoRequestDTO requestDTO);
@@ -32,4 +33,20 @@ public interface UserService {
     void userSignOut(String token);
 
     UserFirstLoginResponseDTO isFirstLogin(String token);
+
+    void followUser(Long userId, String nickname);
+
+    void deleteFollower(Long userId, String nickname);
+
+    Map<String, Object> getFollowerList(int page, String nickname);
+
+    Map<String, Object> getNewsBookmarkList(int page, Long userId);
+
+    Map<String, Object> getNewsLikeList(int page, Long userId);
+
+    Map<String, Object> getNewzyBookmarkList(int page, Long userId);
+
+    Map<String, Object> getNewzyLikeList(int page, Long userId);
+
+
 }

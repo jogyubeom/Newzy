@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.news.service;
 
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
+import com.newzy.backend.domain.news.dto.response.NewsCardListGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
 import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
@@ -22,4 +23,8 @@ public interface NewsService {
     List<NewsRecommendGetResponseDTO> getRecommendedNewsList(Long userId);
 
     void collectNewsCard(Long userId, NewsCardRequestDTO newsCardRequestDTO);
+
+    List<NewsCardListGetResponseDto> getCardList(Long userId);
+
+    NewsCardListGetResponseDto getCardInfo(Long userId, Long cardId);
 }

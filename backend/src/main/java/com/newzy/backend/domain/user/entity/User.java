@@ -39,9 +39,11 @@ public class User extends BaseTimeEntity {
     @Column(name = "info")
     private String info;
 
+    @Builder.Default
     @Column(name = "is_deleted")
     private Boolean isDeleted = Boolean.FALSE;
 
+    @Builder.Default
     @Column(name = "exp")
     private int exp = 0;
 

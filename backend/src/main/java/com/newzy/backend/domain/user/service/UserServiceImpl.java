@@ -7,7 +7,9 @@ import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
+import com.newzy.backend.domain.user.entity.Follow;
 import com.newzy.backend.domain.user.entity.User;
+import com.newzy.backend.domain.user.repository.FollowRepository;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.auth.JwtProvider;
 import com.newzy.backend.global.exception.EntityNotFoundException;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -33,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final RedisUtil redisUtil;
+    private final FollowRepository followRepository;
 
     @Override
     public void save(UserInfoRequestDTO requestDTO) {
@@ -97,6 +101,7 @@ public class UserServiceImpl implements UserService {
                 .isFirstLogin(user.getBirth() == null)
                 .build();  // birth가 null이면 첫 로그인
     }
+
 
     @Override
     @Transactional
@@ -201,7 +206,6 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 처리 중 문제가 발생했습니다.");
         }
     }
-
     @Override
     public UserInfoResponseDTO oauthSignup(AuthRequestDTO authRequestDTO) {
         // 새로운 사용자 등록
@@ -216,5 +220,58 @@ public class UserServiceImpl implements UserService {
         return UserInfoResponseDTO.convertToDTO(user);
     }
 
+    @Override
+    public void followUser(Long userId, String nickname) {
+
+        User fromUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
+        User toUSer = userRepository.findByNickname(nickname);
+        if (toUSer == null) {
+            throw new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다.");
+        }
+
+        Follow follow = new Follow();
+        follow.setFromUser(fromUser);
+        follow.setToUser(toUSer);
+        followRepository.save(follow);
+    }
+
+    @Override
+    public void deleteFollower(Long userId, String nickname) {
+
+        User fromUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
+        User toUser = userRepository.findByNickname(nickname);
+        if (toUser == null) {
+            throw new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다.");
+        }
+
+        Follow follow = followRepository.findByFromUserAndToUser(fromUser, toUser);
+
+        followRepository.delete(follow);
+    }
+
+    @Override
+    public Map<String, Object> getFollowerList(int page, String nickname) {
+        return Map.of();
+    }
+
+    @Override
+    public Map<String, Object> getNewsBookmarkList(int page, Long userId) {
+        return Map.of();
+    }
+
+    @Override
+    public Map<String, Object> getNewsLikeList(int page, Long userId) {
+        return Map.of();
+    }
+
+    @Override
+    public Map<String, Object> getNewzyBookmarkList(int page, Long userId) {
+        return Map.of();
+    }
+
+    @Override
+    public Map<String, Object> getNewzyLikeList(int page, Long userId) {
+        return Map.of();
+    }
 
 }
