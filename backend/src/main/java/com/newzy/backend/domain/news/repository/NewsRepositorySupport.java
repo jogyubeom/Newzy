@@ -27,7 +27,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-    public Map<String, Object> findNewsList(int page, int category) {
+    public Map<String, Object> findNewsList(int page, int category, String keyword) {
         QNews qNews = QNews.news;
 
         // 기본 where 조건을 생성
@@ -105,7 +105,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                 .fetchOne();
     }
 
-    public List<NewsListGetResponseDto> findTop3NewsByDayWithHighestHits(LocalDateTime startOfDay) {
+    public List<NewsListGetResponseDto> findTop3NewsByDayWithHighestHits(LocalDateTime startOfDay, LocalDateTime now) {
         QNews qNews = QNews.news;
 
         return queryFactory
