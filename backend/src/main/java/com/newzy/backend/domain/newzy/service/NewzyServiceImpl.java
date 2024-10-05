@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.service;
 
+import com.newzy.backend.domain.image.service.ImageService;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
@@ -39,6 +40,7 @@ public class NewzyServiceImpl implements NewzyService {
     private final NewzyRepositorySupport newzyRepositorySupport;
     private final UserRepository userRepository;
     private final NewzyBookmarkRepository newzyBookmarkRepository;
+    private final ImageService imageService;
 
 
     @Override
@@ -98,6 +100,13 @@ public class NewzyServiceImpl implements NewzyService {
 
         Newzy newzy = Newzy.convertToEntity(user, dto);
         newzy.setContentText(ContentText);
+
+        // 이미지 업로드 및 뉴지와 이미지 매핑 처리
+        if (dto.getImages() != null && dto.getImages().length > 0) {
+            String[] uploadedUrls = imageService.newzyUploadImages(dto.getImages(), newzy.getNewzyId(), 0);
+            newzy.setThumbnail(uploadedUrls[0]);  // 첫 번째 이미지를 썸네일로 설정
+        }
+
         newzyRepository.save(newzy);
     }
 
