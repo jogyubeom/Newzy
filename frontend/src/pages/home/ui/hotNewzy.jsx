@@ -14,14 +14,13 @@ export const HotNewzy = () => {
               key={item.newzyId}
               className="w-[312px] h-[180px] shadow-lg rounded-lg flex flex-row justify-start items-center gap-4 p-4 overflow-hidden bg-[#F7F4F4]"
             >
-              {/* Text 컨텐츠 */}
+              a{/* Text 컨텐츠 */}
               <div className="flex h-full flex-col items-start gap-2">
                 <div className="flex flex-col gap-1">
-                  {/* Title */}
+                  {/* Title */}aaaaaa
                   <div className="w-full text-[#26262C] font-sans text-md leading-5 font-semibold">
                     {item.title}
                   </div>
-
                   {/* 날짜, 조회수 */}
                   <div className="flex items-center w-full text-xs text-gray-500 gap-1">
                     <span>{formatKoreanDate(item.createdAt)}</span>·
@@ -49,7 +48,6 @@ export const HotNewzy = () => {
                   {item.content}
                 </div>
               </div>
-
               {/* Thumbnail 이미지 */}
               {item.thumbnail && ( //썸네일이 있다면...
                 <img

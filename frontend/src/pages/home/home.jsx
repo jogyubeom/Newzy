@@ -15,13 +15,7 @@ import useAuthStore from "shared/store/userStore";
 import baseAxios from "shared/utils/baseAxios";
 
 export const Home = () => {
-  const {
-    recommendNews,
-    top3News,
-    wordSearchData,
-    hotNewzy,
-    fetchHomeData, // API 호출 함수
-  } = useHomeStore();
+  const { fetchHomeData } = useHomeStore();
 
   // 컴포넌트가 마운트될 때 한 번만 API 요청
   useEffect(() => {
@@ -59,18 +53,18 @@ export const Home = () => {
         }
       }
     };
-  
+
     fetchUserInfoIfTokenExists();
-  
+
     const checkAndNavigate = async () => {
       // URL에서 쿼리 파라미터 추출
       const queryParams = new URLSearchParams(window.location.search);
       const queryToken = queryParams.get("token");
-  
+
       if (queryToken) {
         // 쿼리 파라미터에 토큰이 있으면 상태에 저장
         setToken(queryToken);
-  
+
         // 어휘력 테스트 여부 확인
         try {
           const res = await baseAxios().get("/user/first/login");
@@ -90,12 +84,12 @@ export const Home = () => {
         navigate("/", { replace: true });
       }
     };
-  
+
     if (!token) {
       checkAndNavigate();
     }
   }, [token, setToken, navigate, fetchUserInfo]);
-  
+
   useEffect(() => {
     // 토큰이 설정된 후 유저 정보 요청
     if (token) {

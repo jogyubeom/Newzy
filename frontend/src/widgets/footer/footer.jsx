@@ -1,7 +1,7 @@
 // widgets/footer/footer/jsx
 
 import { useEffect, useRef } from "react";
-import { useFooterStore } from "shared/store/useFooterStore";
+import { useFooterStore } from "shared/store/footerStore";
 
 export const Footer = () => {
   const setFooterHeight = useFooterStore((state) => state.setFooterHeight);

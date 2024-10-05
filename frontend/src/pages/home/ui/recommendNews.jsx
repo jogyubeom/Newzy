@@ -1,61 +1,22 @@
 import { useState } from "react";
 import { FaAngleLeft } from "react-icons/fa6";
 import { FaAngleRight } from "react-icons/fa6";
-
+import useHomeStore from "../store/useHomeStore";
 export const RecommendNews = () => {
+  const { recommendNews } = useHomeStore();
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  // 더미 뉴스 카드 데이터
-  const newsCards = [
-    {
-      newsId: 1,
-      summary: "This is the summary of News 1",
-      thumbnail: "https://picsum.photos/300?random=1",
-    },
-    {
-      newsId: 2,
-      summary: "This is the summary of News 2",
-      thumbnail: "https://picsum.photos/300?random=2",
-    },
-    {
-      newsId: 3,
-      summary: "This is the summary of News 3",
-      thumbnail: "https://picsum.photos/300?random=3",
-    },
-    {
-      newsId: 4,
-      summary: "This is the summary of News 4",
-      thumbnail: "https://picsum.photos/300?random=4",
-    },
-    {
-      newsId: 5,
-      summary: "This is the summary of News 5",
-      thumbnail: "https://picsum.photos/300?random=5",
-    },
-    {
-      newsId: 6,
-      summary: "This is the summary of News 6",
-      thumbnail: "https://picsum.photos/300?random=6",
-    },
-    {
-      newsId: 7,
-      summary: "This is the summary of News 7",
-      thumbnail: "https://picsum.photos/300?random=7",
-    },
-    {
-      newsId: 8,
-      summary: "This is the summary of News 8",
-      thumbnail: "https://picsum.photos/300?random=8",
-    },
-  ];
 
   // 슬라이드 이동 핸들러
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev === 0 ? newsCards.length - 4 : prev - 1));
+    setCurrentIndex((prev) =>
+      prev === 0 ? recommendNews.length - 3 : prev - 1
+    );
   };
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev === newsCards.length - 4 ? 0 : prev + 1));
+    setCurrentIndex((prev) =>
+      prev === recommendNews.length - 3 ? 0 : prev + 1
+    );
   };
 
   return (
@@ -70,22 +31,28 @@ export const RecommendNews = () => {
         <div
           className="flex transition-transform duration-300 ease-out"
           style={{
-            transform: `translateX(-${currentIndex * 25}%)`, // 4개 뉴스 카드 보여주기 -> 25%
+            transform: `translateX(-${currentIndex * 33.33}%)`, // 3개 뉴스 카드 보여주기 -> 25%
           }}
         >
-          {newsCards.map((news) => (
+          {recommendNews?.map((news) => (
             <div
               key={news.newsId}
-              className="min-w-[25%] p-4 hover:duration-150"
+              className="min-w-[33.33%] p-4 hover:duration-150 flex flex-col"
             >
               {/* 뉴스 카드 디자인 */}
-              <div className="rounded-lg shadow-lg overflow-hidden">
-                <img
-                  src={news.thumbnail}
-                  alt={`Thumbnail for news ${news.newsId}`}
-                  className="w-full h-full object-cover"
-                />
-                <div className="p-4">
+              <div className="rounded-lg shadow-lg overflow-hidden flex flex-col h-full">
+                {news.thumbnail !== "null" ? (
+                  <img
+                    src={news.thumbnail}
+                    alt={`Thumbnail for news ${news.newsId}`}
+                    className="w-full h-48 object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-purple-300 flex items-center justify-center">
+                    <span className="text-white font-card">Newzy</span>
+                  </div>
+                )}
+                <div className="p-4 flex-1">
                   <p className="text-sm text-gray-700">{news.summary}</p>
                 </div>
               </div>

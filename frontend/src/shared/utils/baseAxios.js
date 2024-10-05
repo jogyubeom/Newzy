@@ -16,10 +16,11 @@ function baseAxios() {
   // 요청 인터셉터 설정
   instance.interceptors.request.use(
     (config) => {
-      // 로컬에서 기능 테스트할 때 사용하는 수동 토큰 설정 코드
+      // // 로컬에서 기능 테스트할 때 사용하는 수동 토큰 설정 코드
       // config.headers.Authorization =
-      //   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDM0IiwiZXhwIjoxNzI4MTE1NDI1fQ.OYHegHlDEN497kK5Nv_zrIKxsbUOSQ8BLMm7WLQC1Cw";
+      //   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDI4IiwiZXhwIjoxNzI4MTE0NTMxfQ.MAfBJTsL_LbMwLRDolwDqIXHjZjzD1uU9x2HZv6ZPcI";
 
+      // 배포 할 때 코드
       const token = useAuthStore.getState().token; // zustand 스토어에서 토큰 가져오기
       if (token) {
         config.headers.Authorization = `Bearer ${token}`; // 토큰이 있으면 Authorization 헤더에 추가

@@ -54,7 +54,7 @@ export const Header = () => {
         </div>
       </div>
 
-      {isLoggedIn ? (
+      {isLoggedIn ? ( // 로그인 됐을 때
         <div className="absolute flex bottom-0 left-0 ">
           <button className="w-[453px] h-[215px] bg-purple-600 flex flex-col items-center rounded-t-lg p-4 gap-2">
             <div className="flex justify-center items-center text-center">
@@ -71,29 +71,30 @@ export const Header = () => {
             </div>
           </button>
 
-          <button className="w-[453px] h-[215px] bg-orange-600 flex flex-col items-center rounded-t-lg p-4 gap-2">
+          <button className="w-[453px] h-[215px] bg-yellow-600 flex flex-col items-center rounded-t-lg p-4 gap-2">
             <div className="flex justify-center items-center text-right gap-4">
               <div className="text-white text-7xl font-semibold">
                 TODAY QUIZ
               </div>
-              <div className="p-4 m-2 bg-orange-300 rounded-full">
-                <Lock className="text-orange-800 text-[80px]" />
+              <div className="p-4 m-2 bg-yellow-300 rounded-full">
+                <Lock className="text-yellow-800 text-[80px]" />
               </div>
             </div>
-            <div className="text-center text-orange-200 opacity-80 text-[12px]">
+            <div className="text-center text-yellow-200 opacity-80 text-[12px]">
               <p>로그인하고 오늘의 퀴즈를 풀어보세요!</p>
               <p>퀴즈는 Daily News의 내용을 바탕으로 만들어집니다.</p>
             </div>
           </button>
         </div>
       ) : (
-        <div className="absolute flex bottom-0 left-0 ">
+        // 로그인 안됐을 때
+        <div className="absolute flex flex-col bottom-0 left-0 xl:flex-row">
           <button
             className="w-[453px] h-[215px] bg-purple-600 flex flex-col items-center rounded-t-lg p-4 gap-2"
             onClick={openModal}
           >
             <div className="flex justify-center items-center text-center">
-              <div className="text-white text-7xl font-semibold">
+              <div className="text-white text-6xl font-semibold">
                 TODAY NEWS
               </div>
               <div className="p-4 m-2 bg-purple-300 rounded-full">
@@ -107,18 +108,18 @@ export const Header = () => {
           </button>
 
           <button
-            className="w-[453px] h-[215px] bg-orange-600 flex flex-col items-center rounded-t-lg p-4 gap-2"
+            className="w-[453px] h-[215px] bg-yellow-400 flex flex-col items-center rounded-t-lg p-4 gap-2"
             onClick={openModal}
           >
             <div className="flex justify-center items-center text-right gap-4">
               <div className="text-white text-7xl font-semibold">
                 TODAY QUIZ
               </div>
-              <div className="p-4 m-2 bg-orange-300 rounded-full">
-                <Lock className="text-orange-800 text-[80px]" />
+              <div className="p-4 m-2 bg-yellow-600 rounded-full">
+                <Lock className="text-yellow-100 text-[80px]" />
               </div>
             </div>
-            <div className="text-center text-orange-200 opacity-80 text-[12px]">
+            <div className="text-center text-yellow-700 opacity-80 text-[12px]">
               <p>로그인하고 오늘의 퀴즈를 풀어보세요!</p>
               <p>퀴즈는 Daily News의 내용을 바탕으로 만들어집니다.</p>
             </div>
