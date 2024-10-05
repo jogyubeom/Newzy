@@ -1,6 +1,7 @@
 package com.newzy.backend.global.exception.handler;
 
 import com.newzy.backend.global.exception.CustomIllegalStateException;
+import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import com.newzy.backend.global.exception.NotValidRequestException;
 import com.newzy.backend.global.exception.model.ExceptionResponseDto;
@@ -69,4 +70,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
+    @ExceptionHandler(EntityIsFoundException.class)
+    public ResponseEntity<ExceptionResponseDto> handleEntityIsFoundException(
+            Exception ex, HttpServletRequest request) {
+        log.error("EntityIsFoundException 발생 - URL: {}, Message: {}", request.getRequestURI(), ex.getMessage());
+        ExceptionResponseDto response = ExceptionResponseDto.of(
+                request.getMethod(),
+                request.getRequestURI(),
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
 }
