@@ -79,12 +79,25 @@ public class UserController {
 
     @Operation(summary = "회원 정보 조회", description = "회원 정보를 조회합니다.")
     @GetMapping
-    public ResponseEntity<UserInfoResponseDTO> getUser(@RequestHeader(value = "Authorization", required = false) String token) {
+    public ResponseEntity<UserInfoResponseDTO> getUser(
+            @RequestHeader(value = "Authorization", required = false) String token
+    ) {
         if (token == null)
             throw new NoTokenRequestException("Access 토큰이 필요합니다.");
         log.info(">>> [GET] /user - 회원 정보 조회 요청: {}", token);
         UserInfoResponseDTO userGetResponseDto = userService.getUser(token);
         log.info(">>> [GET] /user - 회원 정보 조회 완료: {}", userGetResponseDto);
+        return ResponseEntity.status(200).body(userGetResponseDto);
+    }
+
+    @GetMapping("/profile/{nickname}")
+    @Operation(summary = "회원 정보 조회 By Nickname", description = "회원 정보를 조회합니다.")
+    public ResponseEntity<UserInfoResponseDTO> getUserByNickname(
+            @PathVariable(value = "nickname") String nickname
+    ) {
+        log.info(">>> [GET] /user/profile/{} - 회원 정보 조회 요청: {}", nickname);
+        UserInfoResponseDTO userGetResponseDto = userService.getUserByNickname(nickname);
+        log.info(">>> [GET] /user/profile/{} - 회원 정보 조회 완료: {}", nickname, userGetResponseDto);
         return ResponseEntity.status(200).body(userGetResponseDto);
     }
 

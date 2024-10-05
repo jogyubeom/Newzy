@@ -11,11 +11,12 @@ import com.newzy.backend.domain.dictionary.entity.Dictionary;
 import com.newzy.backend.domain.dictionary.entity.SearchWord;
 import com.newzy.backend.domain.dictionary.repository.DictionaryRepository;
 import com.newzy.backend.domain.dictionary.repository.SearchWordRepository;
-import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.repository.NewsRepository;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.exception.EntityNotFoundException;
+import com.newzy.backend.global.exception.NotValidRequestException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,7 +41,6 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     private final DictionaryRepository dictionaryRepository;
     private final SearchWordRepository searchWordRepository;
-    private final NewsRepository newsRepository;
     private final UserRepository userRepository;
 
     private final long SEARCH_HISTORY_EXPIRATION_TIME = 432000; // 5 days
@@ -96,11 +96,19 @@ public class DictionaryServiceImpl implements DictionaryService {
         return vocaListResponseDTOList;
     }
 
+    @Transactional
     @Override
-    public void deleteSearchWordHistory(Long userId, String word) {
+    public void deleteSearchWordHistory(Long userId, List<String> wordList) {
         // MongoDB에서 userId와 word가 일치하는 검색어 기록을 삭제
-        searchWordRepository.deleteByUserIdAndWord(userId, word);
-        log.info("userId {}와 word '{}'에 해당하는 검색 기록이 삭제되었습니다.", userId, word);
+
+        // 단어 목록을 순회하면서 각 단어별로 삭제 메서드 호출
+        for (String word : wordList) {
+            if (word == null || word.isEmpty()) {
+                throw new NotValidRequestException("삭제할 단어가 유효하지 않습니다: " + word);
+            }
+            searchWordRepository.deleteByUserIdAndWord(userId, word);
+        }
+        log.info("userId {}와 wordList: {}에 해당하는 검색 기록이 삭제되었습니다.", userId, wordList);
     }
 
     @Override
@@ -143,17 +151,11 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public void saveSearchWordHistoryToRedis(Long newsId, String word) {
+    public void saveSearchWordHistoryToRedis(int category, String word) {
         String today = LocalDate.now().toString();
         String wordKey = "word:" + today + ":" + word;
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-
-        // 뉴스에서 카테고리 추출
-        News news = newsRepository.findById(newsId).orElseThrow(
-                () -> new EntityNotFoundException(newsId + " 와 일치하는 뉴스 엔티티를 찾을 수 없습니다.")
-        );
-        int category = news.getCategory(); // 뉴스 엔티티에서 카테고리 정보를 추출
 
         try {
             if (Boolean.TRUE.equals(redisTemplate.hasKey(wordKey))) {

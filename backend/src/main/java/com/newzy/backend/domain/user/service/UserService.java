@@ -26,6 +26,8 @@ public interface UserService {
 
     UserInfoResponseDTO getUser(String token);
 
+    UserInfoResponseDTO getUserByNickname(String nickname);
+
     UserInfoResponseDTO getUserByEmail(String email);
 
     UserInfoResponseDTO oauthLogin(AuthRequestDTO authRequestDTO);

@@ -202,17 +202,28 @@ public class UserServiceImpl implements UserService {
             userId = jwtProvider.getUserIdFromToken(token); // JWT 토큰에서 userId 추출
             log.info(">>> getUser - 추출된 사용자 ID: {}", userId);
         } catch (Exception e) {
-            log.error(">>> getUser - 토큰으로부터 사용자 ID를 추출하는 데 실패함: {}", e.getMessage());
             throw new NotValidRequestException("유효하지 않은 토큰입니다.");
         }
 
         // 2. 사용자 조회
         User user = userRepository.findByUserIdAndIsDeletedFalse(userId).orElseThrow(() -> {
-            log.error(">>> getUser - 사용자를 찾을 수 없음: {}", userId);
-            throw new NotValidRequestException("사용자를 찾을 수 없습니다.");
+            throw new EntityNotFoundException("사용자를 찾을 수 없습니다.");
         });
 
         log.info(">>> getUser - 사용자 정보: {}", user);
+
+        // 3. 사용자 정보 DTO 반환
+        return UserInfoResponseDTO.convertToDTO(user);
+    }
+
+    @Override
+    public UserInfoResponseDTO getUserByNickname(String nickname) {
+        // 2. 사용자 조회
+        User user = userRepository.findUserByNickname(nickname).orElseThrow(() -> {
+            throw new EntityNotFoundException("사용자를 찾을 수 없습니다.");
+        });
+
+        log.info(">>> getUserByNickname - 사용자 정보: {}", user);
 
         // 3. 사용자 정보 DTO 반환
         return UserInfoResponseDTO.convertToDTO(user);
@@ -223,8 +234,7 @@ public class UserServiceImpl implements UserService {
 
         // 2. 사용자 조회
         User user = userRepository.findUserByEmail(email).orElseThrow(() -> {
-            log.error(">>> getUserByEmail - 사용자를 찾을 수 없음: {}", email);
-            throw new NotValidRequestException("사용자를 찾을 수 없습니다.");
+            throw new EntityNotFoundException("사용자를 찾을 수 없습니다.");
         });
 
         log.info(">>> getUserByEmail - 사용자 정보: {}", user);
