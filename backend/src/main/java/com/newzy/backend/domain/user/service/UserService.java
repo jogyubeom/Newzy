@@ -59,5 +59,4 @@ public interface UserService {
 
     Map<String, Object> getMyNewzyList(int page, Long userId);
 
-    Map<String, Object> getMyFollowersNewzyList(int page, Long userId);
 }

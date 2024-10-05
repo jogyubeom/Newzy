@@ -355,10 +355,6 @@ public class UserServiceImpl implements UserService {
         return newzyRepositorySupport.getMyNewzyList(page, userId);
     }
 
-    @Override
-    public Map<String, Object> getMyFollowersNewzyList(int page, Long userId) {
-        return followRepositorySupport.findMyFollowersNewzyList(page, userId);
-    }
 
 
 }

@@ -149,7 +149,7 @@ public class UserController {
     */
 
 
-    @PostMapping(value = "/{nickname}/followers")
+    @PostMapping(value = "/{nickname}/follower")
     @Operation(summary = "팔로우", description = "선택한 상대를 구독합니다.")
     public ResponseEntity<BaseResponseBody> followers(
             @PathVariable String nickname,
@@ -170,7 +170,7 @@ public class UserController {
     }
 
 
-    @DeleteMapping(value = "/{nickname}/followers")
+    @DeleteMapping(value = "/{nickname}/follower")
     @Operation(summary = "팔로우 취소", description = "선택한 상대를 언팔로우합니다.")
     public ResponseEntity<BaseResponseBody> deletefollower(
             @PathVariable String nickname,
@@ -192,8 +192,8 @@ public class UserController {
 
 
     // /user/{nickname}/followings?page={page}
-    @GetMapping(value = "/{nickname}/followings")
-    @Operation(summary = "팔로워 목록", description = "팔로우한 사람들의 목록을 반환합니다.")
+    @GetMapping(value = "/{nickname}/followings-list")
+    @Operation(summary = "팔로잉 목록", description = "내가 팔로잉한 사람들의 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getFollowings(
             @PathVariable String nickname,
             @Parameter(description = "페이지 번호")
@@ -215,8 +215,8 @@ public class UserController {
     }
 
     // /user/{nickname}/followers?page={page}
-    @GetMapping(value = "/{nickname}/followers")
-    @Operation(summary = "", description = "")
+    @GetMapping(value = "/{nickname}/followers-list")
+    @Operation(summary = "팔로워 목록", description = "나를 팔로우한 사람들의 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getFollowers(
             @PathVariable String nickname,
             @Parameter(description = "페이지 번호")
@@ -326,8 +326,8 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> getMyNewzyList(
             @Parameter(description = "페이지 번호")
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = true) String token
+            @Parameter(description = "JWT", required = false)
+            @RequestHeader(value = "Authorization", required = false) String token
     ){
         Long userId = 0L;
         if (token != null) {
@@ -341,29 +341,6 @@ public class UserController {
         Map<String, Object> myNewzyList = userService.getMyNewzyList(page, userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(myNewzyList);
-    }
-
-
-    @GetMapping(value = "/my-followers/newzy-list")
-    @Operation(summary = "내가 구독한 사람의 뉴지 목록", description = "내가 구독한 사람들의 뉴지 목록을 반환합니다.")
-    public ResponseEntity<Map<String, Object>> getMyFollowersNewzyList(
-            @Parameter(description = "페이지 번호")
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = true) String token
-    ){
-        Long userId = 0L;
-        if (token != null) {
-            userId = userService.getUser(token).getUserId();
-        } else {
-            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
-        }
-
-        log.info(">>> [GET] /newzy/my-followers/newzy-list - 요청 파라미터: userId - {}, page - {}", userId, page);
-
-        Map<String, Object> myFollowersNewzyList = userService.getMyFollowersNewzyList(page, userId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(myFollowersNewzyList);
     }
 
 

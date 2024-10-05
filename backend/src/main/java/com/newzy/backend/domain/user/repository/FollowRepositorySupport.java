@@ -43,7 +43,7 @@ public class FollowRepositorySupport extends QuerydslRepositorySupport {
 
         int totalPage = (int) ((totalCount + size - 1) / size);
 
-        List<FollowListGetResponseDTO> followerList = queryFactory
+        List<FollowListGetResponseDTO> followingList = queryFactory
                 .select(Projections.constructor(FollowListGetResponseDTO.class,
                         qFollow.followId,
                         qFollow.fromUser.nickname,
@@ -57,7 +57,7 @@ public class FollowRepositorySupport extends QuerydslRepositorySupport {
                 .fetch();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("followerList", followerList); // list
+        result.put("followingList", followingList); // list
         result.put("totalPage", totalPage); // int
 
         return result;
@@ -101,58 +101,5 @@ public class FollowRepositorySupport extends QuerydslRepositorySupport {
         return result;
     }
 
-    public Map<String, Object> findMyFollowersNewzyList(int page, Long userId) {
-
-        QNewzy qnewzy = QNewzy.newzy;
-        QUser qUser = QUser.user;
-        QFollow qFollow = QFollow.follow;
-
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(qnewzy.isDeleted.eq(false));  // 게시글이 삭제되지 않은 조건
-        builder.and(qFollow.fromUser.userId.eq(userId));  // 내가 팔로우한 사용자의 조건 추가
-
-        // 조인을 통해 내가 팔로우한 사용자의 게시글만 필터링
-        Long totalCount = queryFactory
-                .select(qnewzy.count())
-                .from(qnewzy)
-                .join(qnewzy.user, qUser)  // Newzy의 user와 Join
-                .join(qFollow).on(qFollow.toUser.eq(qUser))  // Follow 테이블의 toUser와 Join
-                .where(builder)  // 동적 조건
-                .fetchOne();
-
-        int totalPage = (int) ((totalCount + size - 1) / size);
-
-        List<NewzyListGetResponseDTO> myFollowersNewzyList = queryFactory
-                .select(Projections.constructor(NewzyListGetResponseDTO.class,
-                        qnewzy.user.userId,
-                        qnewzy.user.nickname,
-                        qnewzy.user.email,
-                        qnewzy.user.image.imageUrl,
-                        qnewzy.newzyId,
-                        qnewzy.title,
-                        qnewzy.content,
-                        qnewzy.contentText,
-                        qnewzy.category,
-                        qnewzy.likeCnt,
-                        qnewzy.thumbnail,
-                        qnewzy.hit,
-                        qnewzy.createdAt,
-                        qnewzy.updatedAt
-                ))
-                .from(qnewzy)
-                .join(qnewzy.user, qUser)  // Newzy의 user와 Join
-                .join(qFollow).on(qFollow.toUser.eq(qUser))  // Follow 테이블의 toUser와 Join
-                .where(builder)  // 동적 조건 적용
-                .orderBy(qnewzy.createdAt.desc())  // 최신순 정렬
-                .offset((page - 1) * size)  // 페이지네이션 offset
-                .limit(size)  // 페이지네이션 limit
-                .fetch();
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("myFollowersNewzyList", myFollowersNewzyList); // list
-        result.put("totalPage", totalPage); // int
-
-        return result;
-    }
 
 }
