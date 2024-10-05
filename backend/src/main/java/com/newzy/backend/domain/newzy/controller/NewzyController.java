@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,8 @@ public class NewzyController {
     public ResponseEntity<BaseResponseBody> create(
             @Parameter(description = "JWT", required = false)
             @RequestHeader(value = "Authorization", required = false) String token,
-            @RequestBody @Validated NewzyRequestDTO dto
+            @RequestBody @Validated NewzyRequestDTO dto,
+            @RequestPart(value = "images", required = false) MultipartFile[] images
     ) {
         Long userId = 0L;
         if (token != null) {
@@ -44,6 +46,7 @@ public class NewzyController {
         }
 
         log.info(">>> [POST] /newzy - 요청 파라미터: dto - {}, userId - {}", dto.toString(), userId);
+        dto.setImages(images);
         newzyService.save(userId, dto);
 
         return ResponseEntity.status(201).body(BaseResponseBody.of(201, "뉴지 등록이 완료되었습니다."));
