@@ -65,7 +65,7 @@ export const Header = () => {
         <div className="flex items-center space-x-4">
           <button
             className="flex-shrink-0 w-[76px] h-[37px] flex items-center justify-center rounded-full hover:bg-gray-100"
-            onClick={() => { nav("/usertest") }}
+            onClick={handleBellClick}
           >
             <BiBell className="w-6 h-6 text-gray-800" />
           </button>
