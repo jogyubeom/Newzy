@@ -1,4 +1,4 @@
-// shared/store/useFooterStore.js
+// shared/store/footerStore.js
 
 import create from "zustand";
 

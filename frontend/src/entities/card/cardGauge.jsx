@@ -61,7 +61,7 @@ export const CardGauge = () => {
     setModalStep(0); // 모달 닫기
   };
   return (
-    <div className="fixed w-[120px] h-[172px] bottom-3 left-3 bg-gray-300 rounded-lg shadow-lg">
+    <div className="fixed w-[120px] h-[172px] bottom-7 left-3 bg-gray-300 rounded-lg shadow-lg">
       {isComplete && (
         <div
           className="absolute inset-0 rounded-lg border-2 border-white"

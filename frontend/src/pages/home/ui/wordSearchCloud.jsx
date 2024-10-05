@@ -3,19 +3,6 @@ import WordCloud from "react-wordcloud";
 import baseAxios from "shared/utils/baseAxios";
 import useHomeStore from "../store/useHomeStore";
 
-const words = [
-  { text: "감언이설", value: 50, category: 0 },
-  { text: "액트지오", value: 40, category: 1 },
-  { text: "상충", value: 30, category: 2 },
-  { text: "대선", value: 25, category: 3 },
-  { text: "시추", value: 20, category: 2 },
-  { text: "유망 구조", value: 28, category: 2 },
-  { text: "석유공사", value: 18, category: 1 },
-  { text: "가스전", value: 22, category: 2 },
-  { text: "탐사", value: 17, category: 1 },
-  { text: "유전", value: 12, category: 1 },
-];
-
 const options = {
   rotations: 1,
   rotationAngles: [0],
@@ -31,24 +18,11 @@ const categories = [
   { id: 3, label: "세계" },
 ];
 
-const fetchWordSerachCloud = async () => {
-  try {
-    const response = await baseAxios().get("/word/wordcloud");
-    console.log(response.data);
-    return response.data; // 데이터 반환
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    throw error; // 오류 처리
-  }
-};
-
-fetchWordSerachCloud();
-
 export function WordSearchCloud() {
   const { wordSearchCloud } = useHomeStore();
   const [category, setCategory] = useState(0);
 
-  const searchWords = words.filter(
+  const searchWords = wordSearchCloud?.filter(
     (word) => category === 0 || word.category === category
   );
 

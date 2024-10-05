@@ -1,7 +1,5 @@
-// entities/card/cradSummary.jsx
-
 import { useState } from "react";
-import { getByteLengthUTF8, checkByteLength } from "shared/utils/stringUtils";
+import { useCardStore } from "./store/cardStore";
 import {
   BsEmojiDizzyFill as Hard,
   BsEmojiSmileFill as Normal,
@@ -9,56 +7,64 @@ import {
 } from "react-icons/bs";
 
 const difficultyItems = [
-  { label: "쉬워요", icon: <Easy />, value: "easy" },
-  { label: "보통이예요", icon: <Normal />, value: "normal" },
-  { label: "어려워요", icon: <Hard />, value: "hard" },
+  { label: "쉬워요", icon: <Easy />, value: "0" },
+  { label: "보통이예요", icon: <Normal />, value: "1" },
+  { label: "어려워요", icon: <Hard />, value: "2" },
 ];
 
 export const CardSummary = ({ onAcquire, onClose }) => {
-  const [inputText, setInputText] = useState("");
-  const [byteLength, setByteLength] = useState(0);
-  const [modalMessage, setModalMessage] = useState(""); // 모달 메시지
-  const [isModalVisible, setIsModalVisible] = useState(false); // 모달 상태
+  const { summaryText, setSummaryText } = useCardStore();
+  const [inputLength, setInputLength] = useState(0);
+  const [trimmedLength, setTrimmedLength] = useState(0);
+  const [modalMessage, setModalMessage] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const minBytes = 10;
-  const maxBytes = 450;
+  const minLength = 10; // 공백 제외 최소 글자 수
+  const maxLength = 150; // 최대 글자 수
 
+  // 텍스트 인풋 핸들러
   const handleInputChange = (e) => {
-    const value = e.target.value;
-    const { byteLength, isExceeded } = checkByteLength(value, maxBytes);
+    let value = e.target.value;
+    const currentLength = value.length;
 
-    if (isExceeded) {
-      setModalMessage(`${maxBytes}자 이하로 입력해주세요.`);
+    // 글자 수가 maxLength를 초과하면 자르기
+    if (currentLength > maxLength) {
+      value = value.substring(0, maxLength); // 최대 글자 수를 넘지 않도록 자름
+      setModalMessage(`${maxLength}자 이하로 입력해 주세요.`);
       setIsModalVisible(true);
-      setTimeout(() => setIsModalVisible(false), 2000);
-      return;
+      setTimeout(() => setIsModalVisible(false), 1500);
     }
 
-    setInputText(value);
-    setByteLength(getByteLengthUTF8(value)); // 공백 포함한 바이트 수 계산
+    // 상태 업데이트
+    setSummaryText(value);
+    setInputLength(value.length); // 입력된 글자 수 (공백 포함)
+    setTrimmedLength(value.replace(/\s/g, "").length); // 공백 제거한 글자 수
   };
 
   const handleDifficultySelect = (value) => {
     setSelectedDifficulty(value);
   };
 
-  const handleSubmit = (value) => {
-    if (byteLength < minBytes) {
-      setModalMessage(`최소 ${minBytes} 바이트 이상 입력해야 합니다.`);
+  const handleSubmit = () => {
+    if (trimmedLength < minLength) {
+      setModalMessage(`공백을 제외하고 최소 ${minLength}자 이상 입력해 주세요`);
       setIsModalVisible(true);
       setTimeout(() => setIsModalVisible(false), 1500);
     } else {
       // 애니메이션 발동
       setIsAnimating(true);
       setTimeout(() => {
-        onAcquire(inputText); // 업데이트된 값을 전달
-        // console.log(finalSummaryText, "카드 요약");
+        onAcquire(summaryText); // 업데이트된 값을 전달
         setIsAnimating(false);
-      }, 1500); // 애니메이션 효과가 끝난 후 상태 리셋
+      }, 1500);
     }
   };
+
+  // 카드 획득 버튼 활성화 조건
+  const isButtonEnabled =
+    trimmedLength >= minLength && selectedDifficulty !== null;
 
   return (
     <div
@@ -73,13 +79,13 @@ export const CardSummary = ({ onAcquire, onClose }) => {
         </div>
         <div className="flex flex-col w-full border border-[#F9E7FF] rounded-md p-2 mt-2">
           <textarea
-            placeholder="기사의 핵심 정보를 요약해 보세요. 요약 내용은 마이페이지에서 카드의 뒷면에서 확인할 수 있습니다."
+            placeholder="기사의 핵심 내용을 간단히 요약해 보세요. 이 요약은 나의 페이지의 카드 뒷면에서 확인할 수 있습니다."
             className="text-white w-full h-36 text-sm mt-2 bg-transparent resize-none focus:outline-none placeholder-[#F9E7FF]"
-            value={inputText}
+            value={summaryText}
             onChange={handleInputChange}
           ></textarea>
           <div className="text-[#F9E7FF] text-xs text-end mt-1">
-            {byteLength}/{maxBytes}
+            {inputLength}/{maxLength}
           </div>
         </div>
 
@@ -87,11 +93,11 @@ export const CardSummary = ({ onAcquire, onClose }) => {
           <div className="text-white text-sm font-semibold text-center">
             이 기사는 읽기에 어땠나요?
           </div>
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-6">
             {difficultyItems.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center gap-1 w-full"
+                className="flex flex-col items-center w-[50px] gap-1 "
               >
                 <button
                   className={`rounded-full ${
@@ -113,10 +119,11 @@ export const CardSummary = ({ onAcquire, onClose }) => {
 
         <div className="absolute px-8 w-full bottom-6 flex items-center">
           <button
-            className={
-              "w-full h-12 rounded-md bg-[#5E007E] text-white text-lg font-semibold "
-            }
+            className={`w-full h-12 rounded-md ${
+              isButtonEnabled ? "bg-[#5E007E]" : "bg-gray-400"
+            } text-white text-lg font-semibold `}
             onClick={handleSubmit}
+            disabled={!isButtonEnabled} // 버튼 비활성화
           >
             카드 획득
           </button>
@@ -125,9 +132,9 @@ export const CardSummary = ({ onAcquire, onClose }) => {
 
       {/* 모달 컴포넌트 */}
       {isModalVisible && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="absolute">
           <div className="bg-white p-4 rounded-md shadow-md">
-            <p className="text-black">{modalMessage}</p>
+            <p className="text-black text-sm text-header">{modalMessage}</p>
           </div>
         </div>
       )}
