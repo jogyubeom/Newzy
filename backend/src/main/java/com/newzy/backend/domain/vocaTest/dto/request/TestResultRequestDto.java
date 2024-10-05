@@ -17,6 +17,7 @@ import java.util.Map;
 public class TestResultRequestDto {
 
     private Map<Integer, Integer> categoryScores;
+    private String nickname;
     private LocalDate birth;
     private String info;
 }
