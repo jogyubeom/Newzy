@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.controller;
 
+import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
@@ -56,13 +57,23 @@ public class NewzyController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "category (0: 시사, 1: 문화, 2: 자유)")
             @RequestParam(value = "category", required = false, defaultValue = "3") int category,
+            @Parameter(description = "정렬기준")
+            @RequestParam(value = "sort", required = false, defaultValue = "0") int sort,
             @Parameter(description = "키워드")
-            @RequestParam(value = "keyword", required = false) String keyword
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @Parameter(description = "JWT", required = false)
+            @RequestHeader(value = "Authorization", required = false) String token
     ) {
-        log.info(">>> [GET] /newzy - 요청 파라미터: page - {}, category - {}, keyword - {}", page, category, keyword);
-        Map<String, Object> newzyListWithLastPage = newzyService.getNewzyListWithLastPage(page, category, keyword);
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        }
+        log.info(">>> [GET] /newzy - 요청 파라미터: page - {}, category - {}, keyword - {}, sort - {}, userId - {}", page, category, keyword, sort, userId);
+        NewzyListGetRequestDTO requestDTO = new NewzyListGetRequestDTO(page, category, sort, keyword);
 
-        return ResponseEntity.status(200).body(newzyListWithLastPage);
+        Map<String, Object> newzyList = newzyService.getNewzyList(requestDTO, userId);
+
+        return ResponseEntity.status(200).body(newzyList);
     }
 
     @GetMapping(value = "/{newzyId}")

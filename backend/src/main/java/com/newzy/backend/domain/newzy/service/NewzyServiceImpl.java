@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.service;
 
+import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
@@ -42,9 +43,16 @@ public class NewzyServiceImpl implements NewzyService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getNewzyListWithLastPage(int page, int category, String keyword) {
-        log.info(">>> newzyServiceImpl getNewzyList - pages: {}, category: {}, keyword: {}", page, category, keyword);
-        Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, category, keyword);
+    public Map<String, Object> getNewzyList(NewzyListGetRequestDTO requestDTO, Long userId) {
+        log.info(">>> getNewzyList - dto: {}", requestDTO);
+
+        int page = requestDTO.getPage();
+        int category = requestDTO.getCategory();
+        int sort = requestDTO.getSort();
+        String keyword = requestDTO.getKeyword();
+
+        // 내가 쓴 뉴지 목록이 아닐 경우 userId = 0
+        Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, category, keyword, sort, userId);
 
         if (newzyList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 뉴지 데이터를 조회할 수 없습니다.");

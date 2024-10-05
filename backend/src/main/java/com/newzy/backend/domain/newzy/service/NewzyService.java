@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.service;
 
+import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
@@ -13,7 +14,7 @@ public interface NewzyService {
 
     NewzyResponseDTO update(Long userId, Long newzyId, NewzyRequestDTO dto);
 
-    Map<String, Object> getNewzyListWithLastPage(int page, int category, String keyword);
+    Map<String, Object> getNewzyList(NewzyListGetRequestDTO requestDTO, Long userId);
 
     NewzyResponseDTO getNewzyDetail(Long newzyId);
 
