@@ -195,6 +195,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean checkUserNickname(String nickname) {
+        Optional<User> user = userRepository.findUserByNickname(nickname);
+        if (user.isPresent()) return true;
+        else return false;
+    }
+
+    @Override
     public UserInfoResponseDTO getUser(String token) {
         // 1. 토큰에서 사용자 ID 추출
         Long userId;

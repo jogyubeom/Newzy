@@ -2,7 +2,6 @@ package com.newzy.backend.domain.user.controller;
 
 import com.newzy.backend.domain.newzy.service.NewzyService;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
-import com.newzy.backend.domain.user.dto.response.FollowListGetResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
@@ -14,13 +13,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.engine.Engine;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -75,6 +72,23 @@ public class UserController {
         userService.userSignOut(token);
         log.info(">>> [GET] /user/logout - 로그아웃 완료");
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "로그아웃이 완료되었습니다."));
+    }
+
+    @Operation(summary = "중복 닉네임 확인", description = "사용 가능한 닉네임인지 확인합니다.")
+    @GetMapping("/check/{nickname}")
+    public ResponseEntity<BaseResponseBody> checkNickname(
+            @PathVariable("nickname") String nickname
+    ) {
+        log.info(">>> [GET] /user/check/{} - 닉네임 중복 확인 요청", nickname);
+        boolean isPresent = userService.checkUserNickname(nickname);
+
+        if (isPresent) {
+            log.warn(">>> [GET] /user/check/{} - 이미 존재하는 닉네임입니다.", nickname);
+            return ResponseEntity.status(409).body(BaseResponseBody.of(409, "이미 존재하는 닉네임입니다."));
+        } else {
+            log.info(">>> [GET] /user/check/{} - 사용 가능한 닉네임입니다.", nickname);
+            return ResponseEntity.status(200).body(BaseResponseBody.of(200, "사용 가능한 닉네임입니다."));
+        }
     }
 
     @Operation(summary = "회원 정보 조회", description = "회원 정보를 조회합니다.")
@@ -213,7 +227,7 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = false)
             @RequestHeader(value = "Authorization", required = false) String token
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
@@ -236,7 +250,7 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = false)
             @RequestHeader(value = "Authorization", required = false) String token
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
@@ -258,7 +272,7 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
@@ -278,7 +292,7 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
@@ -291,7 +305,6 @@ public class UserController {
     }
 
 
-
     // 유저가 북마크한 뉴지
     @GetMapping(value = "/newzy-bookmark")
     @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
@@ -299,7 +312,7 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
@@ -318,7 +331,7 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
@@ -341,7 +354,7 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
@@ -364,7 +377,7 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();

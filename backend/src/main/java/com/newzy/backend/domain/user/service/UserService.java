@@ -24,6 +24,8 @@ public interface UserService {
 
     NewzyResponseDTO getUserById(Long id);
 
+    boolean checkUserNickname(String nickname);
+
     UserInfoResponseDTO getUser(String token);
 
     UserInfoResponseDTO getUserByNickname(String nickname);
@@ -55,7 +57,6 @@ public interface UserService {
     Map<String, Object> getNewzyBookmarkList(int page, Long userId);
 
     Map<String, Object> getNewzyLikeList(int page, Long userId);
-
 
     Map<String, Object> getFollowerList(int page, String nickname);
 
