@@ -80,9 +80,9 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NewsCardListGetResponseDto> getCardList(Long userId) {
+    public Map<String, Object> getCardList(Long userId, int page) {
 
-        return newsCardRepositorySupport.findNewsCardList(userId);
+        return newsCardRepositorySupport.findNewsCardList(userId, page);
     }
 
 
