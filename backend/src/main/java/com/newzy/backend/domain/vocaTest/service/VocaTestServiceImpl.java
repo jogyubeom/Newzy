@@ -6,6 +6,8 @@ import com.newzy.backend.domain.vocaTest.dto.request.TestResultRequestDto;
 import com.newzy.backend.domain.vocaTest.dto.response.TestWordListResponseDto;
 import com.newzy.backend.domain.vocaTest.entity.TestWord;
 import com.newzy.backend.domain.vocaTest.repository.VocaTestRepository;
+import com.newzy.backend.global.exception.EntityIsFoundException;
+import com.newzy.backend.global.exception.NotValidRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,13 @@ public class VocaTestServiceImpl implements VocaTestService {
             }
         } catch (Exception e) {
             throw new RuntimeException("어휘력 테스트 결과 저장 중 오류가 발생하였습니다.");
+        }
+        // 닉네임 저장
+        String nickname = scoreList.getNickname();
+        if (userRepository.findUserByNickname(nickname).isPresent()) {
+            throw new EntityIsFoundException("이미 존재하는 닉네임입니다.");
+        } else {
+            user.setNickname(nickname);
         }
         // 생년월일 저장
         user.setBirth(scoreList.getBirth());
