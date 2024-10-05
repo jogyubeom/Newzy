@@ -51,7 +51,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
         // JPAQuery 객체 초기화
         JPAQuery<Newzy> query;
 
-        // userId가 0이 아닐 경우 팔로우한 사람의 뉴지를 조회하기 위해 조인 추가
+        // sort == 2 : 구독한 사람들의 뉴지 목록
         if (sort == 2) {
             query = queryFactory
                     .selectFrom(qnewzy)
@@ -59,7 +59,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
                     .leftJoin(qFollow).on(qFollow.toUser.eq(qUser))  // Follow와 Join
                     .where(qFollow.fromUser.userId.eq(userId));  // fromUser가 현재 userId와 일치하는 경우 필터링
         } else {
-            // userId가 0인 경우 기본 쿼리만 수행
+            // sort != 2인 경우 기본 쿼리만 수행
             query = queryFactory
                     .selectFrom(qnewzy)
                     .leftJoin(qnewzy.user, qUser);  // Newzy의 User와만 Join
