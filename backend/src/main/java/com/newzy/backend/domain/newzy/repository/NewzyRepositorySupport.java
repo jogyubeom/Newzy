@@ -52,7 +52,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
         JPAQuery<Newzy> query;
 
         // userId가 0이 아닐 경우 팔로우한 사람의 뉴지를 조회하기 위해 조인 추가
-        if (userId != 0) {
+        if (sort == 2) {
             query = queryFactory
                     .selectFrom(qnewzy)
                     .leftJoin(qnewzy.user, qUser)  // Newzy의 작성자와 Join
