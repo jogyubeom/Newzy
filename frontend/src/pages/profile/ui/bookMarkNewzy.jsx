@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import baseAxios from "../../../shared/utils/baseAxios";
 import PostList from "../../../shared/postList/postList";
 import Pagination from "../../../shared/postList/pagination";
+import useAuthStore, {token} from "../../../shared/store/userStore";
 
 export const BookmarkNewzy = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export const BookmarkNewzy = () => {
     const { currentPage } = state;
 
     const apiUrl = `/user/newzy-bookmark?page=${currentPage}`; // API URL
-
+    console.log(token);
     try {
       const response = await baseAxios().get(apiUrl); // baseAxios 사용
       console.log(response);
