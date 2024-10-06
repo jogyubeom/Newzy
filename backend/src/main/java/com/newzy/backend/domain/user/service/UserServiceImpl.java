@@ -6,6 +6,7 @@ import com.newzy.backend.domain.news.repository.NewsLikeRepositorySupport;
 import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.image.repository.ImageRepository;
 import com.newzy.backend.domain.image.service.ImageService;
+import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepositorySupport;
@@ -373,8 +374,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> getMyFollowersNewzyList(int page, Long userId) {
-        return followRepositorySupport.findMyFollowersNewzyList(page, userId);
+    public Map<String, Object> getFollowingsNewzyList(NewzyListGetRequestDTO requestDTO, Long userId) {
+        int page = requestDTO.getPage();
+        int category = requestDTO.getCategory();
+        int sort = requestDTO.getSort();
+        String keyword = requestDTO.getKeyword();
+
+        Map<String, Object> followingNewzyList = newzyRepositorySupport.findFollowingNewzyList(page, category, keyword, sort, userId);
+
+        if (followingNewzyList.isEmpty()) {
+            throw new EntityNotFoundException("일치하는 뉴지 데이터를 조회할 수 없습니다.");
+        }
+
+        return followingNewzyList;
     }
 
 

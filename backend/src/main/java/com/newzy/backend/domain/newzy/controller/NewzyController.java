@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.controller;
 
+import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -28,12 +30,14 @@ public class NewzyController {
     private final NewzyService newzyService;
     private final UserService userService;
 
+
     @PostMapping
     @Operation(summary = "뉴지 게시글 추가", description = "새로운 뉴지를 등록합니다.")
     public ResponseEntity<BaseResponseBody> create(
             @Parameter(description = "JWT", required = false)
             @RequestHeader(value = "Authorization", required = false) String token,
-            @RequestBody @Validated NewzyRequestDTO dto
+            @RequestBody @Validated NewzyRequestDTO dto,
+            @RequestPart(value = "images", required = false) MultipartFile[] images
     ) {
         Long userId = 0L;
         if (token != null) {
@@ -43,6 +47,7 @@ public class NewzyController {
         }
 
         log.info(">>> [POST] /newzy - 요청 파라미터: dto - {}, userId - {}", dto.toString(), userId);
+        dto.setImages(images);
         newzyService.save(userId, dto);
 
         return ResponseEntity.status(201).body(BaseResponseBody.of(201, "뉴지 등록이 완료되었습니다."));
@@ -56,13 +61,26 @@ public class NewzyController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "category (0: 시사, 1: 문화, 2: 자유)")
             @RequestParam(value = "category", required = false, defaultValue = "3") int category,
+            @Parameter(description = "정렬기준")
+            @RequestParam(value = "sort", required = false, defaultValue = "0") int sort,
             @Parameter(description = "키워드")
-            @RequestParam(value = "keyword", required = false) String keyword
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @Parameter(description = "JWT", required = false)
+            @RequestHeader(value = "Authorization", required = false) String token
     ) {
-        log.info(">>> [GET] /newzy - 요청 파라미터: page - {}, category - {}, keyword - {}", page, category, keyword);
-        Map<String, Object> newzyListWithLastPage = newzyService.getNewzyListWithLastPage(page, category, keyword);
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
 
-        return ResponseEntity.status(200).body(newzyListWithLastPage);
+        }
+        log.info(">>> [GET] /newzy - 요청 파라미터: page - {}, category - {}, keyword - {}, sort - {}, userId - {}", page, category, keyword, sort, userId);
+
+        NewzyListGetRequestDTO requestDTO = new NewzyListGetRequestDTO(page, category, sort, keyword);
+
+        Map<String, Object> newzyList = newzyService.getNewzyList(requestDTO, userId);
+
+        return ResponseEntity.status(200).body(newzyList);
     }
 
     @GetMapping(value = "/{newzyId}")

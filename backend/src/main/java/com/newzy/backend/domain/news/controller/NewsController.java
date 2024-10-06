@@ -130,9 +130,11 @@ public class NewsController {
 
     @GetMapping(value = "/news-card-list")
     @Operation(summary = "뉴스 카드 리스트", description = "뉴스 카드 리스트를 반환합니다.")
-    public ResponseEntity<List<NewsCardListGetResponseDto>> getNewsCardList(
+    public ResponseEntity<Map<String, Object>> getNewsCardList(
             @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = true) String token
+            @RequestHeader(value = "Authorization", required = true) String token,
+            @Parameter(description = "페이지 번호")
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page
     ){
         Long userId = 0L;
         if (token != null) {
@@ -142,7 +144,7 @@ public class NewsController {
         }
         log.info(">>> [GET] /news/news-card-list - 요청 파라미터 : userId - {}", userId);
 
-        List<NewsCardListGetResponseDto> cardList = newsService.getCardList(userId);
+        Map<String, Object> cardList = newsService.getCardList(userId, page);
         return ResponseEntity.status(200).body(cardList);
     }
 

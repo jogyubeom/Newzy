@@ -22,7 +22,7 @@ public interface NewsService {
     void likeNews(Long userId, Long NewsId);
     void deleteLike(Long userId, Long NewsId);
 
-    List<NewsCardListGetResponseDto> getCardList(Long userId);
+    Map<String, Object> getCardList(Long userId, int page);
     List<NewsListGetResponseDto> getHotNewsList();
     List<NewsRecommendGetResponseDTO> getRecommendedNewsList(Long userId);
 

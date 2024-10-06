@@ -1,5 +1,7 @@
 package com.newzy.backend.domain.newzy.service;
 
+import com.newzy.backend.domain.image.service.ImageService;
+import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
@@ -38,13 +40,21 @@ public class NewzyServiceImpl implements NewzyService {
     private final NewzyRepositorySupport newzyRepositorySupport;
     private final UserRepository userRepository;
     private final NewzyBookmarkRepository newzyBookmarkRepository;
+    private final ImageService imageService;
 
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getNewzyListWithLastPage(int page, int category, String keyword) {
-        log.info(">>> newzyServiceImpl getNewzyList - pages: {}, category: {}, keyword: {}", page, category, keyword);
-        Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, category, keyword);
+    public Map<String, Object> getNewzyList(NewzyListGetRequestDTO requestDTO, Long userId) {
+        log.info(">>> getNewzyList - dto: {}", requestDTO);
+
+        int page = requestDTO.getPage();
+        int category = requestDTO.getCategory();
+        int sort = requestDTO.getSort();
+        String keyword = requestDTO.getKeyword();
+
+        // 내가 쓴 뉴지 목록이 아닐 경우 userId = 0
+        Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, category, keyword, sort, userId);
 
         if (newzyList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 뉴지 데이터를 조회할 수 없습니다.");
@@ -90,6 +100,13 @@ public class NewzyServiceImpl implements NewzyService {
 
         Newzy newzy = Newzy.convertToEntity(user, dto);
         newzy.setContentText(ContentText);
+
+        // 이미지 업로드 및 뉴지와 이미지 매핑 처리
+        if (dto.getImages() != null && dto.getImages().length > 0) {
+            String[] uploadedUrls = imageService.newzyUploadImages(dto.getImages(), newzy.getNewzyId(), 0);
+            newzy.setThumbnail(uploadedUrls[0]);  // 첫 번째 이미지를 썸네일로 설정
+        }
+
         newzyRepository.save(newzy);
     }
 

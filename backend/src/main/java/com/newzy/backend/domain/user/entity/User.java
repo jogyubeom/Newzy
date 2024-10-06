@@ -71,13 +71,14 @@ public class User extends BaseTimeEntity {
 
 
     @Builder
-    public User(String nickname, String password, String email, LocalDate birth, String info) {
+    public User(String nickname, String password, String email, LocalDate birth, String info, Image image) {
         this.nickname = nickname;
         this.password = password;
         this.email = email;
         this.birth = birth;
         this.info = info;
     }
+
 
     public static User convertToEntity(UserInfoRequestDTO dto) {
         User user = new User();

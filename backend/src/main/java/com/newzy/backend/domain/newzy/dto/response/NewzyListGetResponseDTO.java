@@ -40,7 +40,7 @@ public class NewzyListGetResponseDTO {
                 .userId(newzy.getUser().getUserId())
                 .nickname(newzy.getUser().getNickname())
                 .email(newzy.getUser().getEmail())
-                .profile(newzy.getUser().getImage().getImageUrl())
+                .profile(newzy.getUser().getImage() != null ? newzy.getUser().getImage().getImageUrl() : "https://example.com/default_profile.png")  // 기본 이미지 URL 설정
                 .title(newzy.getTitle())
                 .content(newzy.getContent())
                 .contentText(newzy.getContentText())
@@ -51,6 +51,7 @@ public class NewzyListGetResponseDTO {
                 .createdAt(newzy.getCreatedAt())
                 .updatedAt(newzy.getUpdatedAt())
                 .build();
+
     }
 
 }

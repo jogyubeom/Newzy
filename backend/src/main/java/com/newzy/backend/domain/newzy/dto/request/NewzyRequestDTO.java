@@ -3,6 +3,7 @@ package com.newzy.backend.domain.newzy.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -22,5 +23,8 @@ public class NewzyRequestDTO {
     @NotNull(message = "카테고리를 입력해주세요!")
     @Schema(description = "뉴지 카테고리", example = "category")
     private int category;
+
+    @Schema(description = "이미지 파일 배열", example = "image")
+    private MultipartFile[] images;
 
 }

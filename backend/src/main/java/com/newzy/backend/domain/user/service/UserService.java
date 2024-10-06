@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.user.service;
 
+import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
@@ -62,5 +63,5 @@ public interface UserService {
 
     Map<String, Object> getMyNewzyList(int page, Long userId);
 
-    Map<String, Object> getMyFollowersNewzyList(int page, Long userId);
+    Map<String, Object> getFollowingsNewzyList(NewzyListGetRequestDTO requestDTO, Long userId);
 }
