@@ -12,6 +12,8 @@ export const Header = () => {
   const [isHovering, setIsHovering] = useState(false); // hover 상태 관리
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn()); // 로그인 상태 확인
 
+  const user = useAuthStore.getState().userInfo
+
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -29,12 +31,13 @@ export const Header = () => {
         console.error("토큰이 없습니다. 로그아웃을 처리할 수 없습니다.");
         return;
       }
+      
+      // 프론트의 토큰 및 유저 정보 삭제
+      useAuthStore.getState().clearToken(); // 토큰 삭제
+      useAuthStore.getState().clearUserInfo(); // 유저 정보 삭제
 
       // 서버에 로그아웃 요청 (GET 요청)
       await baseAxios().get("/user/logout");
-
-      // 로그아웃 성공 시 토큰 삭제
-      useAuthStore.getState().clearToken();
 
       // 로그아웃 후 메인 화면으로 리다이렉트
       nav("/"); // useNavigate를 컴포넌트 내에서 사용
@@ -78,7 +81,7 @@ export const Header = () => {
               onMouseLeave={() => setIsHovering(false)} // hover 종료
             >
               <button className="w-[40px] h-[40px] bg-gray-200 rounded-full">
-                <FaUserCircle className="w-full h-full object-cover rounded-full text-blue-400" />
+                {user.profile ? <img src={user.profile} /> : <FaUserCircle className="w-full h-full object-cover rounded-full text-blue-400" />}
               </button>
 
               {/* hover 시 로그아웃 버튼 표시 */}

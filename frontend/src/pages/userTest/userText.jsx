@@ -154,13 +154,13 @@ export const UserTest = () => {
 
       {currentCategory !== "signup" ? (
         <>
-          <h2 className="text-2xl font-bold mb-4 text-center">
+          <h2 className="text-2xl font-bold mb-10 text-center">
             {currentCategory === "economy" && "어휘 테스트 [경제]"}
             {currentCategory === "society" && "어휘 테스트 [사회]"}
             {currentCategory === "world" && "어휘 테스트 [세계]"}
           </h2>
 
-          <div className="grid grid-cols-4 gap-7 py-4 px-10 bg-gray-100 rounded-lg shadow-inner">
+          <div className="grid grid-cols-4 gap-7 py-8 px-10 mb-8 bg-gray-100 rounded-lg shadow-inner">
             {vocabularyData[currentCategory].map((word, index) => (
               <button
                 key={index}
@@ -178,7 +178,7 @@ export const UserTest = () => {
         </>
       ) : (
         <div className="px-10">
-          <h2 className="text-2xl font-bold mb-14 text-center">회원가입 정보 입력</h2>
+          <h2 className="text-2xl font-bold mb-10 text-center">회원가입 정보 입력</h2>
           <div className="mb-10">
             <label className="block font-semibold mb-2">닉네임 (필수)</label>
             <div className="flex items-center space-x-4">
