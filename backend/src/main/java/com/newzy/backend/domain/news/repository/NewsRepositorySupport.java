@@ -1,14 +1,12 @@
 package com.newzy.backend.domain.news.repository;
 
-import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
-import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
+import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDTO;
+import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDTO;
 import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.entity.QNews;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -66,8 +64,8 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                 orderSpecifier = qNews.createdAt.desc(); // 최신순
         }
         // 뉴스 목록 조회
-        List<NewsListGetResponseDto> newsList = queryFactory
-                .select(Projections.constructor(NewsListGetResponseDto.class,
+        List<NewsListGetResponseDTO> newsList = queryFactory
+                .select(Projections.constructor(NewsListGetResponseDTO.class,
                         qNews.newsId,
                         qNews.link,
                         qNews.title,
@@ -94,11 +92,11 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-    public NewsDetailGetResponseDto getNewsDetail(Long newsId) {
+    public NewsDetailGetResponseDTO getNewsDetail(Long newsId) {
         QNews qNews = QNews.news;
 
-        return (NewsDetailGetResponseDto) queryFactory
-                .select(Projections.constructor(NewsDetailGetResponseDto.class,
+        return (NewsDetailGetResponseDTO) queryFactory
+                .select(Projections.constructor(NewsDetailGetResponseDTO.class,
                         qNews.newsId,
                         qNews.link,
                         qNews.title,
@@ -119,11 +117,11 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-    public List<NewsListGetResponseDto> findTop3NewsByDayWithHighestHits(LocalDateTime startOfDay, LocalDateTime now) {
+    public List<NewsListGetResponseDTO> findTop3NewsByDayWithHighestHits(LocalDateTime startOfDay, LocalDateTime now) {
         QNews qNews = QNews.news;
 
         return queryFactory
-                .select(Projections.constructor(NewsListGetResponseDto.class,
+                .select(Projections.constructor(NewsListGetResponseDTO.class,
                         qNews.newsId,
                         qNews.link,
                         qNews.title,

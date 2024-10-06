@@ -1,14 +1,12 @@
 package com.newzy.backend.domain.user.service;
 
-import com.newzy.backend.domain.news.repository.NewsBookmarkRepository;
-import com.newzy.backend.domain.news.repository.NewsBookmarkRepositorySupport;
-import com.newzy.backend.domain.news.repository.NewsLikeRepositorySupport;
 import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.image.repository.ImageRepository;
 import com.newzy.backend.domain.image.service.ImageService;
+import com.newzy.backend.domain.news.repository.NewsBookmarkRepositorySupport;
+import com.newzy.backend.domain.news.repository.NewsLikeRepositorySupport;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
-import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyLikeRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
@@ -143,14 +141,21 @@ public class UserServiceImpl implements UserService {
                         .orElseThrow(() -> new EntityNotFoundException("회원의 수정한 대표 사진을 불러오는 데 실패하였습니다."));
                 user.setImage(userImage);
                 User updatedUser = userRepository.save(user);
-                log.info(">>> updateUser - 사용자 업데이트됨: {}", updatedUser);
+                log.info(">>> updateProfileImage - 사용자 업데이트됨: {}", updatedUser);
+                return UserInfoResponseDTO.convertToDTO(updatedUser);
+            } else {
+                Image userImage = imageRepository.findByImageUrl(
+                                "https://plogbucket.s3.ap-northeast-2.amazonaws.com/e63129aa-4855-43a4-a75b-840668687252_user.png")
+                        .orElseThrow(() -> new EntityNotFoundException("회원의 대표 사진을 불러오는 데 실패하였습니다."));
+                user.setImage(userImage);
+                User updatedUser = userRepository.save(user);
+                log.info(">>> updateProfileImage - 사용자 업데이트됨: {}", updatedUser);
                 return UserInfoResponseDTO.convertToDTO(updatedUser);
             }
         } else {
-            log.error(">>> updateUser - 사용자를 찾을 수 없음: {}", userId);
+            log.error(">>> updateProfileImage - 사용자를 찾을 수 없음: {}", userId);
             throw new EntityNotFoundException("사용자를 찾을 수 없습니다.");
         }
-        return null;
     }
 
     @Override

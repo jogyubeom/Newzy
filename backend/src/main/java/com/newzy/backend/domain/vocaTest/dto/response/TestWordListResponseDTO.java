@@ -11,18 +11,18 @@ import lombok.*;
 @Builder
 @ToString
 @Schema(title = "TEST_WORD_LIST_RESP : 어휘 테스트 DTO")
-public class TestWordListResponseDto {
+public class TestWordListResponseDTO {
 
     private int category;
     private Long wordId;
     private String word;
 
-    public static TestWordListResponseDto convertToDto(TestWord testWord) {
+    public static TestWordListResponseDTO convertToDto(TestWord testWord) {
         if (testWord == null){
             throw new IllegalArgumentException("테스트 어휘 엔티티가 없습니다.");
         }
 
-        return TestWordListResponseDto.builder()
+        return TestWordListResponseDTO.builder()
                 .category(testWord.getCategory())
                 .wordId(testWord.getWordId())
                 .word(testWord.getWord())

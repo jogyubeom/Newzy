@@ -1,8 +1,5 @@
 package com.newzy.backend.domain.newzy.repository;
 
-import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
-import com.newzy.backend.domain.news.entity.QNews;
-import com.newzy.backend.domain.news.entity.QNewsBookmark;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.entity.NewzyBookmark;
 import com.newzy.backend.domain.newzy.entity.QNewzy;

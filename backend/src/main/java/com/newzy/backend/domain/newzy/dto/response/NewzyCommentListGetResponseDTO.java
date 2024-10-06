@@ -1,6 +1,5 @@
 package com.newzy.backend.domain.newzy.dto.response;
 
-import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.newzy.entity.NewzyComment;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import lombok.*;
@@ -9,10 +8,11 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 @Builder
 @ToString
-public class NewzyCommentListGetResponseDto {
+public class NewzyCommentListGetResponseDTO {
 
     private Long userId;
     private String email;
@@ -24,12 +24,13 @@ public class NewzyCommentListGetResponseDto {
     private Long newzyId;
     private Long parentCommentId;
 
-    public static NewzyCommentListGetResponseDto convertToDTO(NewzyComment newzyComment) {
+    public static NewzyCommentListGetResponseDTO convertToDTO(NewzyComment newzyComment) {
         if (newzyComment == null) {
             throw new EntityNotFoundException("해당되는 뉴지 댓글 객체가 없습니다.");
-        };
+        }
+        ;
 
-        return NewzyCommentListGetResponseDto.builder()
+        return NewzyCommentListGetResponseDTO.builder()
                 .userId(newzyComment.getUser().getUserId())
                 .email(newzyComment.getUser().getEmail())
                 .nickname(newzyComment.getUser().getNickname())
