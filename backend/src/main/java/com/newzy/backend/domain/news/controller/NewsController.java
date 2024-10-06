@@ -53,7 +53,7 @@ public class NewsController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "카테고리")
             @RequestParam(value = "category", required = false, defaultValue = "3") int category,
-            @Parameter(description = "정렬기준")
+            @Parameter(description = "정렬기준 (0: 기사 등록시간 최신순, 1: 조회수순)")
             @RequestParam(value = "sort", required = false, defaultValue = "0") int sort,
             @Parameter(description = "키워드")
             @RequestParam(value = "keyword", required = false) String keyword) {

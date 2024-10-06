@@ -60,13 +60,10 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
         OrderSpecifier<?> orderSpecifier;
         switch (sort) {
             case 1:
-                orderSpecifier = qNews.newsId.asc(); // 오래된 순
-                break;
-            case 2:
-                orderSpecifier = qNews.hit.desc(); // 조회수 순
+                orderSpecifier = qNews.hit.asc(); // 조회수 순
                 break;
             default:
-                orderSpecifier = qNews.newsId.desc(); // 최신순
+                orderSpecifier = qNews.createdAt.desc(); // 최신순
         }
         // 뉴스 목록 조회
         List<NewsListGetResponseDto> newsList = queryFactory
