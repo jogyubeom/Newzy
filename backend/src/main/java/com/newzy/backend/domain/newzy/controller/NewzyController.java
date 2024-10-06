@@ -30,6 +30,7 @@ public class NewzyController {
     private final NewzyService newzyService;
     private final UserService userService;
 
+
     @PostMapping
     @Operation(summary = "뉴지 게시글 추가", description = "새로운 뉴지를 등록합니다.")
     public ResponseEntity<BaseResponseBody> create(
@@ -70,8 +71,11 @@ public class NewzyController {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
+        } else {
+
         }
         log.info(">>> [GET] /newzy - 요청 파라미터: page - {}, category - {}, keyword - {}, sort - {}, userId - {}", page, category, keyword, sort, userId);
+
         NewzyListGetRequestDTO requestDTO = new NewzyListGetRequestDTO(page, category, sort, keyword);
 
         Map<String, Object> newzyList = newzyService.getNewzyList(requestDTO, userId);
