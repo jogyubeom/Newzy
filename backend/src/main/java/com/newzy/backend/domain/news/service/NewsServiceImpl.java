@@ -5,11 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
-import com.newzy.backend.domain.news.dto.response.NewsDailyGetResponseDTO;
-import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
-import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
-import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
-import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
 import com.newzy.backend.domain.news.dto.response.*;
 import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.entity.NewsBookmark;
@@ -21,15 +16,12 @@ import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -70,7 +62,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NewsListGetResponseDto> getHotNewsList() {
+    public List<NewsListGetResponseDTO> getHotNewsList() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOf24HoursAgo = now.minusHours(24); // 현재 시간에서 24시간 이전 시점 계산
 
@@ -87,7 +79,7 @@ public class NewsServiceImpl implements NewsService {
 
 
     @Override
-    public NewsCardListGetResponseDto getCardInfo(Long userId, Long cardId) {
+    public NewsCardListGetResponseDTO getCardInfo(Long userId, Long cardId) {
 
         return newsCardRepositorySupport.findNewsCardInfo(cardId);
     }
@@ -231,7 +223,7 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public NewsDetailGetResponseDto getNewsDetail(Long NewsId) {    // 조회수 + 1
+    public NewsDetailGetResponseDTO getNewsDetail(Long NewsId) {    // 조회수 + 1
         News news = newsRepository.findById(NewsId)
                 .orElseThrow(() -> new EntityNotFoundException("일치하는 뉴스 데이터를 조회할 수 없습니다."));
 
