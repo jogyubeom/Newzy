@@ -100,7 +100,7 @@ const Words = () => {
           isOpen={isModalOpen}
           onClose={closeModal}
           wordList={wordList}
-          userName={user.nickname}
+          userName={user && user.nickname ? user.nickname : "사용자"}
         />
       </div>
     </>

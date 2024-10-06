@@ -81,7 +81,11 @@ export const Header = () => {
               onMouseLeave={() => setIsHovering(false)} // hover 종료
             >
               <button className="w-[40px] h-[40px] bg-gray-200 rounded-full">
-                {user.profile ? <img src={user.profile} /> : <FaUserCircle className="w-full h-full object-cover rounded-full text-blue-400" />}
+              {user && user.profile ? ( // user가 null이 아닌지 먼저 확인
+                  <img src={user.profile} alt="프로필 이미지" />
+                ) : (
+                  <FaUserCircle className="w-full h-full object-cover rounded-full text-blue-400" />
+                )}
               </button>
 
               {/* hover 시 로그아웃 버튼 표시 */}
