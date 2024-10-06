@@ -1,31 +1,47 @@
 import { FaMinusCircle } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import WordTestModal from "./wordTestModal";
+import baseAxios from "shared/utils/baseAxios";
+import useAuthStore from "shared/store/userStore";
 
 const Words = () => {
-  const wordList = [
-    {
-      name: "공천",
-      mean: [
-        "1. 명사 여러 사람이 합의하여 추천함.",
-        "2. 명사 공정하고 정당하게 추천함.",
-        "3. 명사 행정 공인된 정당에서 선거에 출마한 당원을 공식적으로 추천하는 일.",
-      ],
-    },
-    {
-      name: "등용",
-      mean: ["1. 명사 인재를 뽑아서 씀."],
-    },
-    {
-      name: "합의",
-      mean: [
-        "1. 명사 서로 의견이 일치함. 또는 그 의견.",
-        "2. 명사 법률 둘 이상의 당사자의 의사가 일치함. 또는 그런 일.",
-      ],
-    },
-  ];
 
+  const [wordList, setWordList] = useState([]); // 서버로부터 가져온 단어 리스트 상태 관리
   const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
+  const user = useAuthStore.getState().userInfo
+
+  // 단어 리스트를 서버에서 가져오는 함수
+  const fetchWordList = async () => {
+    try {
+      const response = await baseAxios().get("/word"); // 서버로 GET 요청
+      const transformedWordList = response.data.map((wordData) => ({
+        name: wordData.word,
+        mean: [wordData.definition], // 응답 구조에 맞게 데이터 변환
+      }));
+      setWordList(transformedWordList); // 서버에서 가져온 데이터로 wordList 업데이트
+    } catch (error) {
+      console.error("단어 목록을 불러오는 데 실패했습니다.", error);
+    }
+  };
+
+  // 단어 삭제 요청 함수
+  const handleDeleteWord = async (wordName) => {
+    try {
+      await baseAxios().delete("/word", {
+        params: { wordList: wordName } // wordList 값을 쿼리 파라미터로 전달
+      });
+
+      // 삭제 후 성공적으로 처리되면, 프론트에서 해당 단어를 삭제
+      setWordList((prevList) => prevList.filter((word) => word.name !== wordName));
+    } catch (error) {
+      console.error("단어 삭제에 실패했습니다.", error);
+    }
+  };
+
+  // 컴포넌트가 마운트될 때 단어 리스트 가져오기
+  useEffect(() => {
+    fetchWordList();
+  }, []);
 
   // 모달 열기 및 닫기 함수
   const openModal = () => setModalOpen(true);
@@ -61,7 +77,7 @@ const Words = () => {
           wordList.map((word, index) => (
             <div key={index} className="mb-6 pb-4 border-b border-gray-300">
               <div className="flex items-center mb-2">
-                <button className="w-[40px] h-[40px] rounded-full flex justify-center items-center mr-3">
+                <button className="w-[40px] h-[40px] rounded-full flex justify-center items-center mr-3" onClick={() => handleDeleteWord(word.name)}>
                   <FaMinusCircle className="w-5 h-5 text-red-500" />
                 </button>
                 <h2 className="text-blue-600 font-semibold text-[24px]">
@@ -84,7 +100,7 @@ const Words = () => {
           isOpen={isModalOpen}
           onClose={closeModal}
           wordList={wordList}
-          userName="정지훈"
+          userName={user.nickname}
         />
       </div>
     </>

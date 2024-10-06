@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { getGrade } from "shared/getGrade";
-import { MdAdd, MdDelete } from "react-icons/md";
 import MenuBar from "pages/profile/ui/menuBar";
 import MyNewzy from "pages/profile/ui/myNewzy";
-import BookMark from "pages/profile/ui/bookMark";
-import Words from "pages/profile/ui/words";
 import FollowIndexModal from "pages/profile/ui/followIndexModal";
-import CardListModal from "pages/profile/ui/cardListModal";
 
 import userProfile from "shared/images/user.png";
-import cards from "shared/images/cards.svg";
 import baseAxios from "shared/utils/baseAxios";
-
-import "./profile.css"
 
 const getZoomLevel = () => {
   return window.devicePixelRatio * 100;
@@ -46,19 +39,16 @@ const gradeDescriptions = {
   ),
 };
 
-export const Profile = () => {
+export const AnotherProfile = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation(); // 현재 경로를 가져오기 위해 useLocation 훅 사용
+  const { nickname } = useParams(); // 경로에서 닉네임을 가져옴
 
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
-  const [isCardListModalOpen, setIsCardListModalOpen] = useState(false); // CardListModa
   const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
-
-  // 편집 모드 관리
-  const [isEditing, setIsEditing] = useState(false);
 
   const [profileData, setProfileData] = useState({
     name: '',
@@ -66,8 +56,6 @@ export const Profile = () => {
     img: null,
     birth: '',
   });
-
-  const [newImage, setNewImage] = useState(null); // 새로 업로드할 이미지 상태
 
   const [paddingX, setPaddingX] = useState(32); // 기본 패딩
 
@@ -99,11 +87,11 @@ export const Profile = () => {
     };
   }, []);
 
-  // 유저 정보 불러오기
+  // 다른 유저 정보 불러오기
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await baseAxios().get("/user"); // 유저 정보 API 호출
+        const response = await baseAxios().get(`/user/profile/${nickname}`); // 닉네임을 URL에 포함해 요청
 
         const userData = response.data;
 
@@ -121,7 +109,7 @@ export const Profile = () => {
     };
 
     fetchUserData(); 
-  }, []);
+  }, [nickname]); // 닉네임이 변경될 때마다 다시 유저 정보를 불러옴
 
 
   // 현재 경로에 따라 메뉴를 선택 상태로 설정
@@ -142,68 +130,6 @@ export const Profile = () => {
     }
   }, [location]);
 
-  // 유저 정보 저장 (이미지 제외)
-  const handleSaveProfile = async () => {
-    if (!user) return;
-
-    try {
-      // 수정할 데이터를 서버로 전송
-      await baseAxios().patch("/user", {
-        userId: user.userId,
-        nickname: profileData.name,
-        email: user.email, // 고정된 이메일
-        password: user.password, // 비밀번호는 수정하지 않음
-        birth: profileData.birth,
-        info: profileData.introduce,
-        exp: user.exp, // 경험치도 수정하지 않음
-        economyScore: user.economyScore,
-        societyScore: user.societyScore,
-        internationalScore: user.internationalScore,
-        state: user.state,
-        socialLoginType: user.socialLoginType,
-      });
-
-    } catch (error) {
-      console.error("프로필 정보 수정 중 오류 발생:", error);
-      alert("프로필 정보를 수정하는 중 오류가 발생했습니다.");
-    }
-  };
-
-  // 프로필 이미지 업로드
-  const handleImageUpload = async () => {
-    if (!newImage) return;
-
-    const formData = new FormData();
-    formData.append("profile", newImage); // 이미지 파일 추가
-
-    try {
-      await baseAxios().post("/user/upload-profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data", // 이미지 파일 전송 시 필요
-        },
-      });
-
-    } catch (error) {
-      console.error("프로필 이미지 업로드 중 오류 발생:", error);
-      alert("프로필 이미지를 업로드하는 중 오류가 발생했습니다.");
-    }
-  };
-
-  // 이미지 변경 핸들러
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfileData({ ...profileData, img: URL.createObjectURL(file) }); // 미리보기 이미지 업데이트
-      setNewImage(file); // 새로 업로드할 이미지 설정
-    }
-  };
-
-  // 이미지 제거 핸들러
-  const handleImageRemove = () => {
-    setProfileData({ ...profileData, img: null });
-    setNewImage(null); // 업로드할 이미지도 초기화
-  };
-
   // exp 값을 기준으로 grade를 구하는 함수
   const getGradeByExp = (exp) => {
     if (exp >= 10000) return 4;
@@ -214,7 +140,7 @@ export const Profile = () => {
 
   // 유저 정보가 로드되지 않았을 때 로딩 메시지 표시
   if (!user) {
-    return <div>로딩 중...</div>;
+    return <div>해당 유저가 존재하지 않습니다.</div>;
   }
 
   // 각 grade의 최대 경험치값
@@ -235,37 +161,16 @@ export const Profile = () => {
   const circumference = 2 * Math.PI * radius;
   const progress = (expRatio / 100) * circumference; // 현재 경험치에 해당하는 원형 길이
 
-  // 글자수 제한
-  const maxIntroduceLength = 30;
-
   // 모달 열기 및 닫기 함수
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
-
-  // CardListModal 열기 및 닫기 함수
-  const openCardListModal = () => setIsCardListModalOpen(true);
-  const closeCardListModal = () => setIsCardListModalOpen(false);
-
-  // 저장 버튼 클릭 시 변경 사항 저장
-  const handleSave = () => {
-    handleImageUpload()
-    handleSaveProfile()
-    setIsEditing(false);
-  };
-
 
   // 메뉴 클릭 시 경로를 변경
   const handleMenuChange = (menuIndex) => {
     setSelectedMenu(menuIndex);
     switch (menuIndex) {
       case 0:
-        navigate("/profile/myNewzy"); // 프로필 페이지의 기본 경로로 이동
-        break;
-      case 1:
-        navigate("/profile/bookMark"); // 북마크 경로로 이동
-        break;
-      case 2:
-        navigate("/profile/words"); // 단어 페이지로 이동
+        navigate("/profile/:nickname"); 
         break;
       default:
         break;
@@ -277,10 +182,6 @@ export const Profile = () => {
     switch (selectedMenu) {
       case 0:
         return <MyNewzy />;
-      case 1:
-        return <BookMark />;
-      case 2:
-        return <Words />;
       default:
         return null;
     }
@@ -326,27 +227,9 @@ export const Profile = () => {
           <div className={"absolute top-[70px] left-[25px] w-[250px] h-[250px] rounded-full flex items-center justify-center"}>
             <img
               src={profileData.img || userProfile}
-              className={`w-full h-full object-cover rounded-full ${isEditing ? 'opacity-60' : ''}`}
+              className={"w-full h-full object-cover rounded-full"}
               alt="프로필 이미지"
             />
-            {isEditing && (
-              <div className="absolute top-[105px] right-111 flex gap-12">
-                <label htmlFor="profile-upload" className="cursor-pointer">
-                  <MdAdd className="text-white bg-blue-500 rounded-full w-7 h-7" />
-                  <input
-                    id="profile-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
-                </label>
-                <MdDelete
-                  className="text-white bg-red-500 rounded-full w-7 h-7 cursor-pointer"
-                  onClick={handleImageRemove}
-                />
-              </div>
-            )}
           </div>
 
           <div className="absolute top-[285px] left-[218px] w-[100px] h-[100px] bg-white bg-opacity-20 rounded-full flex items-center justify-center">
@@ -366,56 +249,16 @@ export const Profile = () => {
               </div>
             )}
           </div>
-
-          {isEditing && (
-            <input
-              type="date"
-              className="absolute top-[360px] left-[10px] w-[140px] px-2 py-1 rounded-md bg-gray-800 text-white"
-              value={profileData.birth}
-              onChange={(e) => setProfileData({ ...profileData, birth: e.target.value })}
-            />
-          )}
         </div>
 
         <div className="ml-[380px]">
           <div className="h-[100px] mt-[80px] text-white font-[Open Sans] text-[46px] leading-[24px] font-semibold flex items-center">
-            {isEditing ? (
-              <input
-                type="text"
-                value={profileData.name}
-                onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                className="outline-none w-full p-2 mr-5 text-white bg-gray-800 opacity-100"
-              />
-            ) : (
-              <p className="p-2">{profileData.name}</p>
-            )}
+            <p className="p-2">{profileData.name}</p>
           </div>
 
           <div className="w-[250px] h-[200px] text-white font-[Open Sans] text-[24px] leading-[36px] font-semibold flex items-center text-left break-words whitespace-pre-wrap">
-            {isEditing ? (
-              <textarea
-                value={profileData.introduce}
-                onChange={(e) => {
-                  const lines = e.target.value.split('\n');
-                  // 최대 5줄까지만 입력 가능하도록 제한
-                  if (lines.length <= 5) {
-                    setProfileData({ ...profileData, introduce: e.target.value });
-                  }
-                }}
-                rows={5} // 기본 5줄
-                maxLength={maxIntroduceLength}
-                className="outline-none w-full h-[200px] p-2 text-white bg-gray-800 opacity-100"
-                placeholder={`자기소개 문구를\n작성해주세요!`}
-              />
-            ) : (
-              <p className="p-2">{profileData.introduce}</p>
-            )}
+            <p className="p-2">{profileData.introduce}</p>
           </div>
-          {isEditing && (
-            <div className="font-semibold text-gray-200 text-left">
-              {profileData.introduce.length}/{maxIntroduceLength}
-            </div>
-          )}
         </div>
 
         {/* Followers, Followings, Newzy 요소 */}
@@ -446,50 +289,19 @@ export const Profile = () => {
               </div>
             </div>
           </div>
-
-          {/* 프로필 편집 및 저장 버튼 */}
-          {isEditing ? (
-            <div className="w-[293px] h-[103px] relative mt-10 mb-7">
-              <button
-                className="w-full h-[73px] rounded-[10px] font-[Open Sans] bg-[#3578FF] hover:bg-[#2a61cc] flex items-center justify-center text-white text-[32px] font-semibold transition-colors duration-300"
-                onClick={handleSave}
-              >
-                저장하기
-              </button>
-            </div>
-          ) : (
-            <div className="w-[293px] h-[103px] relative mt-10 mb-7">
-              <button
-                className="w-full h-[73px] rounded-[10px] font-[Open Sans] bg-[#3578FF] hover:bg-[#2a61cc] flex items-center justify-center text-white text-[32px] font-semibold transition-colors duration-300"
-                onClick={() => setIsEditing(true)}
-              >
-                프로필 편집
-              </button>
-            </div>
-          )}
+          <div className="h-[103px] mt-10 mb-7"></div>
         </div>
       </div>
 
       <MenuBar
         selectedMenu={selectedMenu}
         setSelectedMenu={handleMenuChange}
-        menus={["My Newzy", "BookMark", "Words"]}
+        menus={["Newzy"]}
       />
 
       {renderContent()}
 
       <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} />
-
-      {/* 하단에 고정된 버튼 추가 */}
-      <button
-        className="fixed bottom-5 left-0.5 bg-transparent flex items-center justify-center cursor-pointer"
-        style={{ zIndex: 1000 }}
-        onClick={openCardListModal} // 버튼 클릭 시 CardListModal 열기
-      >
-        <img src={cards} alt="카드 버튼" className="w-full h-full object-cover" />
-      </button>
-      {/* CardListModal 렌더링 */}
-      {isCardListModalOpen && <CardListModal onClose={closeCardListModal} cardNum={14}/>}
     </div>
   );
 };
