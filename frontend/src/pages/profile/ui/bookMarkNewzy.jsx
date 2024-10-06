@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import baseAxios from "../../../shared/utils/baseAxios";
 import PostList from "../../../shared/postList/postList";
 import Pagination from "../../../shared/postList/pagination";
-import useAuthStore, {token} from "../../../shared/store/userStore";
+import useAuthStore from "../../../shared/store/userStore";
 
 export const BookmarkNewzy = () => {
   const navigate = useNavigate();
@@ -12,6 +12,7 @@ export const BookmarkNewzy = () => {
     totalPages: 0,
     currentPage: 1,
   });
+  const { token } = useAuthStore();
 
   const fetchPosts = async () => {
     const { currentPage } = state;
