@@ -5,9 +5,9 @@ import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
+import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.newzy.entity.NewzyBookmark;
 import com.newzy.backend.domain.newzy.entity.NewzyLike;
-import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyLikeRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyRepository;
@@ -19,14 +19,17 @@ import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,6 +44,8 @@ public class NewzyServiceImpl implements NewzyService {
     private final UserRepository userRepository;
     private final NewzyBookmarkRepository newzyBookmarkRepository;
     private final ImageService imageService;
+
+    private final RedisTemplate<String, String> redisTemplate;
 
 
     @Override
@@ -68,8 +73,12 @@ public class NewzyServiceImpl implements NewzyService {
     public NewzyResponseDTO getNewzyDetail(Long newzyId) {  // 조회수 + 1
         log.info(">>> newzyServiceImpl getNewzyDetail - newzyId: {}", newzyId);
         Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new EntityNotFoundException("일치하는 뉴지 데이터를 찾을 수 없습니다."));
-        newzy.setHit(newzy.getHit() + 1);
-        newzyRepository.save(newzy);
+
+        // redis 조회수 증가
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+        String redisKey = "ranking:newzy:" + todayDate + ":" + newzyId;  // Redis 키
+
+        redisTemplate.opsForValue().increment(redisKey);
 
         return NewzyResponseDTO.convertToDTO(newzy);
     }
@@ -78,15 +87,24 @@ public class NewzyServiceImpl implements NewzyService {
     @Override
     @Transactional(readOnly = true)
     public List<NewzyListGetResponseDTO> getHotNewzyList() {
-        List<Newzy> hotNewzies = newzyRepository.findTop3ByIsDeletedFalseOrderByHitDesc();
-        List<NewzyListGetResponseDTO> hotNewzyList = new ArrayList<>();
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+        String pattern = "ranking:newzy:" + todayDate + ":*";  // 오늘 날짜의 모든 뉴지 조회수
 
-        for (Newzy newzy : hotNewzies) {
-            NewzyListGetResponseDTO dto = NewzyListGetResponseDTO.convertToDTO(newzy);
-            hotNewzyList.add(dto);
-        }
+        Set<String> keys = redisTemplate.keys(pattern);  // 해당 패턴에 맞는 키 가져오기
 
-        return hotNewzyList;
+        // Redis에서 조회수 정보를 가져오고 내림차순으로 정렬 후 상위 3개의 키 추출
+        List<String> topNewzyKeys = redisTemplate.opsForValue().multiGet(keys).stream()
+                .sorted((v1, v2) -> Integer.compare(Integer.parseInt(v2), Integer.parseInt(v1)))  // 내림차순 정렬
+                .limit(6)  // 상위 6개
+                .map(key -> key.split(":")[3])  // key에서 newzyId 추출
+                .toList();
+
+        // 상위 3개의 newsId에 해당하는 News 객체들을 데이터베이스에서 조회한 후 DTO로 변환
+        return topNewzyKeys.stream()
+                .map(newsId -> newzyRepository.findById(Long.parseLong(newsId))
+                        .map(NewzyListGetResponseDTO::convertToDTO)  // News 객체를 DTO로 변환
+                        .orElseThrow(() -> new EntityNotFoundException("해당 뉴스 데이터를 찾을 수 없습니다.")))
+                .collect(Collectors.toList());
     }
 
 
@@ -138,7 +156,7 @@ public class NewzyServiceImpl implements NewzyService {
         Newzy newzy = newzyRepository.findById(newzyId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 뉴스를 찾을 수 없습니다: " + newzyId));
 
-        if(newzy.isDeleted()){
+        if (newzy.isDeleted()) {
             throw new CustomIllegalStateException("이미 삭제된 뉴지 입니다.");
         }
 
@@ -175,7 +193,7 @@ public class NewzyServiceImpl implements NewzyService {
         Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new EntityNotFoundException("일치하는 뉴지 데이터가 없습니다."));
         boolean isBookmark = newzyBookmarkRepository.existsByUserAndNewzy(user, newzy);
 
-        if (! isBookmark) {
+        if (!isBookmark) {
             throw new EntityNotFoundException("해당하는 북마크 데이터가 없습니다.");
         }
 
@@ -208,7 +226,7 @@ public class NewzyServiceImpl implements NewzyService {
 
         boolean isLike = newzyLikeRepository.existsByUserAndNewzy(user, newzy);
 
-        if (! isLike) {
+        if (!isLike) {
             throw new EntityIsFoundException("해당하는 뉴지 좋아요가 없습니다.");
         }
 
