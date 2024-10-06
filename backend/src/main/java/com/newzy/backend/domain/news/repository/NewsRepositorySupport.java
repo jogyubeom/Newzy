@@ -60,7 +60,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
         OrderSpecifier<?> orderSpecifier;
         switch (sort) {
             case 1:
-                orderSpecifier = qNews.hit.asc(); // 조회수 순
+                orderSpecifier = qNews.hit.desc(); // 조회수 순
                 break;
             default:
                 orderSpecifier = qNews.createdAt.desc(); // 최신순
