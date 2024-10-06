@@ -12,7 +12,7 @@ export const Header = () => {
   const [isHovering, setIsHovering] = useState(false); // hover 상태 관리
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn()); // 로그인 상태 확인
 
-  const user = useAuthStore.getState().userInfo
+  const user = useAuthStore((state) => state.userInfo);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -74,14 +74,14 @@ export const Header = () => {
           </button>
 
           {/* 로그인 상태에 따라 FaUserCircle 또는 로그인 버튼 표시 */}
-          {isLoggedIn ? (
+          {user && isLoggedIn ? (
             <div
               className="relative"
               onMouseEnter={() => setIsHovering(true)} // hover 시작
               onMouseLeave={() => setIsHovering(false)} // hover 종료
             >
               <button className="w-[40px] h-[40px] bg-gray-200 rounded-full">
-              {user && user.profile ? ( // user가 null이 아닌지 먼저 확인
+              {user.profile ? ( // user가 null이 아닌지 먼저 확인
                   <img src={user.profile} alt="프로필 이미지" />
                 ) : (
                   <FaUserCircle className="w-full h-full object-cover rounded-full text-blue-400" />
