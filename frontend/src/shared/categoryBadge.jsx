@@ -13,6 +13,15 @@ const CategoryBadge = ({ category }) => {
     case '자유':
       backgroundColor = '#FAF4B7';
       break;
+    case '경제':
+      backgroundColor = '#E53935';
+      break;
+    case '사회':
+      backgroundColor = '#4CAF50';
+      break;
+    case '세계':
+      backgroundColor = '#1E88E5';
+      break;
     default:
       backgroundColor = '#E0E0E0'; // 기본 배경 색상
   }
