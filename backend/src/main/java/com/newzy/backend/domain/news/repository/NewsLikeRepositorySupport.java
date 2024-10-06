@@ -1,7 +1,6 @@
 package com.newzy.backend.domain.news.repository;
 
-import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
-import com.newzy.backend.domain.news.entity.NewsBookmark;
+import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDTO;
 import com.newzy.backend.domain.news.entity.NewsLike;
 import com.newzy.backend.domain.news.entity.QNews;
 import com.newzy.backend.domain.news.entity.QNewsLike;
@@ -42,8 +41,8 @@ public class NewsLikeRepositorySupport extends QuerydslRepositorySupport {
         // 총 페이지 수 계산 (마지막 페이지 번호)
         int totalPage = (int) ((totalCount + size - 1) / size);
 
-        List<NewsListGetResponseDto> newsList = queryFactory
-                .select(Projections.constructor(NewsListGetResponseDto.class,
+        List<NewsListGetResponseDTO> newsList = queryFactory
+                .select(Projections.constructor(NewsListGetResponseDTO.class,
                         qNews.newsId,
                         qNews.link,
                         qNews.title,

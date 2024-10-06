@@ -14,7 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Schema(title = "TEST_RES_REQ : 어휘 테스트 결과 DTO")
-public class TestResultRequestDto {
+public class TestResultRequestDTO {
 
     private Map<Integer, Integer> categoryScores;
     private String nickname;

@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 @ToString
-public class NewsCardListGetResponseDto {
+public class NewsCardListGetResponseDTO {
     private Long cardId;
     private Long userId;
     private String userNickname;

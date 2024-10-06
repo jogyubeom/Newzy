@@ -1,10 +1,6 @@
 package com.newzy.backend.domain.newzy.repository;
 
-import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
-import com.newzy.backend.domain.news.entity.QNews;
-import com.newzy.backend.domain.news.entity.QNewsLike;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
-import com.newzy.backend.domain.newzy.entity.NewzyBookmark;
 import com.newzy.backend.domain.newzy.entity.NewzyLike;
 import com.newzy.backend.domain.newzy.entity.QNewzy;
 import com.newzy.backend.domain.newzy.entity.QNewzyLike;
@@ -19,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class NewzyLikeRepositorySupport  extends QuerydslRepositorySupport {
+public class NewzyLikeRepositorySupport extends QuerydslRepositorySupport {
 
     private final JPAQueryFactory queryFactory;
     private final int size = 10;
