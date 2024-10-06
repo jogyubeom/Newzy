@@ -4,7 +4,7 @@ import baseAxios from "../../../shared/utils/baseAxios";
 import PostList from "../../../shared/postList/postList";
 import Pagination from "../../../shared/postList/pagination";
 
-export const MyNewzy = () => {
+export const BookmarkNews = () => {
   const navigate = useNavigate();
   const [state, setState] = useState({
     posts: [],
@@ -15,14 +15,14 @@ export const MyNewzy = () => {
   const fetchPosts = async () => {
     const { currentPage } = state;
 
-    const apiUrl = `/user/my-newzy-list?page=${currentPage}`; // API URL
+    const apiUrl = `/user/news-bookmark?page=${currentPage}`; // API URL
 
     try {
       const response = await baseAxios().get(apiUrl); // baseAxios 사용
-      const { totalPage, newzyList } = response.data;
+      const { totalPage, newsList } = response.data;
       setState((prevState) => ({
         ...prevState,
-        posts: newzyList,
+        posts: newsList,
         totalPages: totalPage,
       }));
     } catch (error) {
@@ -35,12 +35,12 @@ export const MyNewzy = () => {
     fetchPosts(); // 컴포넌트가 마운트될 때 API 호출
   }, [state.currentPage]); // 페이지 변경 시 호출
 
-  const handlePostClick = (id) => navigate(`/newzy/${id}`);
+  const handlePostClick = (id) => navigate(`/news/${id}`);
 
   return (
     <div>
       <div className="bg-white">
-        <PostList posts={state.posts} onPostClick={handlePostClick} type='newzy' />
+        <PostList posts={state.posts} onPostClick={handlePostClick} type='news' />
 
         <Pagination
           currentPage={state.currentPage}
@@ -52,4 +52,4 @@ export const MyNewzy = () => {
   );
 };
 
-export default MyNewzy;
+export default BookmarkNews;
