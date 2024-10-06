@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.user.controller;
 
+import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.service.NewzyService;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
@@ -347,10 +348,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(NewzyLikeList);
     }
 
-    /*
-        내가 작성한 뉴지 목록
-    */
 
+    //  내가 작성한 뉴지 목록
     @GetMapping(value = "/my-newzy-list")
     @Operation(summary = "내가 쓴 뉴지 목록 조회", description = "내가 작성한 뉴지 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getMyNewzyList(
@@ -373,6 +372,36 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(myNewzyList);
     }
 
+
+    // 내가 팔로잉한 사람이 쓴 뉴지 목록
+    @GetMapping(value = "/followings-newzy-list")
+    @Operation(summary = "내가 팔로잉한 사람의 뉴지 목록", description = "내가 팔로잉한 사람의 뉴지 목록을 반환합니다.")
+    public ResponseEntity<Map<String, Object>> getFollowingsNewzyList(
+            @Parameter(description = "페이지 번호")
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @Parameter(description = "category (0: 시사, 1: 문화, 2: 자유)")
+            @RequestParam(value = "category", required = false, defaultValue = "3") int category,
+            @Parameter(description = "정렬기준")
+            @RequestParam(value = "sort", required = false, defaultValue = "0") int sort,
+            @Parameter(description = "키워드")
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ) {
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+
+        }
+        log.info(">>> [GET] /followings-newzy-list - 요청 파라미터: page - {}, category - {}, keyword - {}, sort - {}, userId - {}", page, category, keyword, sort, userId);
+
+        NewzyListGetRequestDTO requestDTO = new NewzyListGetRequestDTO(page, category, sort, keyword);
+
+        Map<String, Object> followingsNewzyList = userService.getFollowingsNewzyList(requestDTO, userId);
+
+        return ResponseEntity.status(200).body(followingsNewzyList);
+    }
 
 
 

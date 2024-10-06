@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.user.repository;
 
+import com.newzy.backend.domain.image.entity.QImage;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.entity.QNewzy;
 import com.newzy.backend.domain.user.dto.response.FollowListGetResponseDTO;
@@ -7,7 +8,9 @@ import com.newzy.backend.domain.user.entity.QFollow;
 import com.newzy.backend.domain.user.entity.QUser;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+@Slf4j
 @Repository
 public class FollowRepositorySupport extends QuerydslRepositorySupport {
     private final JPAQueryFactory queryFactory;
@@ -100,6 +105,5 @@ public class FollowRepositorySupport extends QuerydslRepositorySupport {
 
         return result;
     }
-
 
 }

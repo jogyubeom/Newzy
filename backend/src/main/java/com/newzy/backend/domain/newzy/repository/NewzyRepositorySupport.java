@@ -33,12 +33,13 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
         this.queryFactory = queryFactory;
     }
 
+
     public Map<String, Object> findNewzyList(int page, int category, String keyword, int sort, Long userId) {
         QNewzy qnewzy = QNewzy.newzy;
         QUser qUser = QUser.user;
-        QFollow qFollow = QFollow.follow;
         QImage qImage = QImage.image;
 
+        // BooleanBuilder를 사용하여 필터 조건 설정
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(qnewzy.isDeleted.eq(false));  // 기본 조건: 삭제되지 않은 뉴지 필터링
 
@@ -55,10 +56,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
             builder.and(qnewzy.title.contains(keyword));
         }
 
-        if (sort == 2) {
-            builder.and(qFollow.fromUser.userId.eq(userId));
-        }
-
+        // JPAQuery 객체 생성 및 Join 설정
         JPAQuery<NewzyListGetResponseDTO> query = queryFactory
                 .select(Projections.constructor(NewzyListGetResponseDTO.class,
                         qnewzy.user.userId,
@@ -78,28 +76,37 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
                 ))
                 .from(qnewzy)
                 .leftJoin(qnewzy.user, qUser)
-                .leftJoin(qFollow).on(qFollow.toUser.eq(qUser))
                 .leftJoin(qUser.image, qImage)
-                .where(builder)  // 최종 조건 적용
-                .orderBy(qnewzy.createdAt.asc())  // 정렬 조건 설정
-                .offset((page - 1) * size)
-                .limit(size);
+                .where(builder);  // 최종 조건 적용
 
-        List<NewzyListGetResponseDTO> newzyList = query.fetch();
+        // 정렬 조건 설정
+        if (sort == 1) {
+            query.orderBy(qnewzy.hit.desc());  // 조회수 순 정렬
+            log.info(">>> 정렬 조건: 조회수 순");
+        } else {
+            query.orderBy(qnewzy.createdAt.desc());  // 기본값: 최신 순 정렬
+            log.info(">>> 정렬 조건: 최신 순");
+        }
+
+        // 페이징 및 데이터 조회
+        List<NewzyListGetResponseDTO> newzyList = query
+                .offset((page - 1) * size)
+                .limit(size)
+                .fetch();
+
         log.info(">>> findNewzyList - 조회된 Newzy 목록 개수: {}", newzyList.size());
 
+        // 전체 개수 조회 및 페이지 수 계산
         Long totalCount = query.fetchCount();
         int totalPage = (int) ((totalCount + size - 1) / size);
 
+        // 결과를 Map으로 반환
         Map<String, Object> result = new HashMap<>();
-        result.put("newzyList", newzyList);
-        result.put("totalPage", totalPage);
+        result.put("newzyList", newzyList);  // Newzy 목록
+        result.put("totalPage", totalPage);  // 총 페이지 수
 
         return result;
     }
-
-
-
 
 
     public Map<String, Object> getMyNewzyList(int page, Long userId) {
@@ -149,4 +156,81 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
 
         return result;
     }
+
+
+    public Map<String, Object> findFollowingNewzyList(int page, int category, String keyword, int sort, Long userId) {
+        QFollow qFollow = QFollow.follow;
+        QNewzy qNewzy = QNewzy.newzy;
+        QUser qUser = QUser.user;
+        QImage qImage = QImage.image;
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(qFollow.fromUser.userId.eq(userId));
+        builder.and(qNewzy.isDeleted.eq(false));
+
+        // 2. 카테고리 필터 조건 추가
+        if (category >= 0 && category <= 2) {
+            builder.and(qNewzy.category.eq(category));
+            log.info(">>> 카테고리 필터 적용: category = {}", category);
+        } else {
+            log.warn(">>> 잘못된 카테고리 값: {}", category);
+        }
+
+        // 3. 키워드 검색 조건 추가
+        if (keyword != null && !keyword.isEmpty()) {
+            builder.and(qNewzy.title.contains(keyword));
+        }
+
+        JPAQuery<NewzyListGetResponseDTO> query = queryFactory
+                .select(Projections.constructor(NewzyListGetResponseDTO.class,
+                        qNewzy.user.userId,
+                        qNewzy.user.nickname,
+                        qNewzy.user.email,
+                        qNewzy.user.image.imageUrl,
+                        qNewzy.newzyId,
+                        qNewzy.title,
+                        qNewzy.content,
+                        qNewzy.contentText,
+                        qNewzy.category,
+                        qNewzy.likeCnt,
+                        qNewzy.thumbnail,
+                        qNewzy.hit,
+                        qNewzy.createdAt,
+                        qNewzy.updatedAt
+                ))
+                .from(qFollow)
+                .leftJoin(qFollow.toUser, qUser)  // Follow 테이블에서 toUser와 Join
+                .leftJoin(qNewzy).on(qNewzy.user.eq(qUser))  // Follow의 toUser가 작성한 Newzy와 Join
+                .leftJoin(qUser.image, qImage)    // `User`와 연결된 `Image`와 Join
+                .where(builder);
+
+        if (sort == 1) {
+            query.orderBy(qNewzy.hit.desc());  // 조회수 순 정렬
+            log.info(">>> 정렬 조건: 조회수 순");
+        } else {
+            query.orderBy(qNewzy.createdAt.desc());  // 기본값: 최신 순 정렬
+            log.info(">>> 정렬 조건: 최신 순");
+        }
+
+        // 6. 페이징 및 데이터 조회
+        List<NewzyListGetResponseDTO> followerNewzyList = query
+                .offset((page - 1) * size)
+                .limit(size)
+                .fetch();
+
+        log.info(">>> findFollowingNewzyList - 조회된 Newzy 목록 개수: {}", followerNewzyList.size());
+
+        // 7. 전체 개수 조회 및 페이지 수 계산
+        Long totalCount = query.fetchCount();
+        int totalPage = (int) ((totalCount + size - 1) / size);
+
+        // 8. 결과를 Map으로 반환
+        Map<String, Object> result = new HashMap<>();
+        result.put("followerNewzyList", followerNewzyList);  // Newzy 목록
+        result.put("totalPage", totalPage);  // 총 페이지 수
+
+        return result;
+    }
+
+
 }
