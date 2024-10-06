@@ -20,7 +20,10 @@ export const AppRouter = () => {
   const routers = createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       <Route index element={<Home />} />
-      <Route path="news" element={<NewsList />} />
+      <Route path="news">
+        <Route index element={<NewsList />} />
+        <Route path=":id" element={<NewsDetail />} />
+      </Route>
       <Route path="newzy">
         <Route index element={<NewzyList />} />
         <Route path="edit" element={<NewzyEdit />} />

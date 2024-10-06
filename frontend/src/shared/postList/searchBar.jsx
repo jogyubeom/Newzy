@@ -4,16 +4,16 @@ const SearchBar = ({ selectedRange, onRangeClick, searchTerm, onSearchChange, on
   return (
     <div className="relative flex items-center">
       <button
-        className={`mr-2 px-4 py-2 rounded ${selectedRange === '전체' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-        onClick={() => onRangeClick('전체')}
+        className={`mr-2 px-4 py-2 rounded ${selectedRange === 0 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+        onClick={() => onRangeClick(0)}
       >
-        전체
+        최신
       </button>
       <button
-        className={`mr-2 px-4 py-2 rounded ${selectedRange === '구독' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-        onClick={() => onRangeClick('구독')}
+        className={`mr-2 px-4 py-2 rounded ${selectedRange === 1 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+        onClick={() => onRangeClick(1)}
       >
-        구독
+        인기
       </button>
       <input
         type="text"

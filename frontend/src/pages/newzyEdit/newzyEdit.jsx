@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TitleInput from './ui/titleInput';
 import CategorySelector from './ui/categorySelector';
 import ContentEditor from './ui/contentEditor';
+import baseAxios from 'shared/utils/baseAxios';
 
 export const NewzyEdit = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const [formData, setFormData] = useState({
     title: '',
-    category: '시사',
+    category: 0,
     content: ''
   });
 
@@ -23,13 +27,27 @@ export const NewzyEdit = () => {
     setFormData((prevData) => ({ ...prevData, category }));
   };
 
-  const handleSave = () => {
-    if (!formData.title || !formData.category || !formData.content) {
+  const handleSave = async () => {
+    if (!formData.title || formData.category === null || !formData.content) {
       alert('모든 내용을 채워주세요.');
       return;
     }
-    console.log(formData);
-  };  
+
+    try {
+      const response = await baseAxios().post('/newzy', formData, {
+      });
+
+      if (response.status === 201) {
+        alert('저장되었습니다.');
+        navigate('/newzy');
+      } else {
+        alert('저장에 실패했습니다.');
+      }
+    } catch (error) {
+      alert('오류가 발생했습니다.');
+      console.error("Error saving data:", error);
+    }
+  };
 
   return (
     <div className="bg-white">
