@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface SearchWordRepository extends MongoRepository<SearchWord, String> {
     Page<SearchWord> findByUserId(Long userId, Pageable pageable);
     void deleteByUserIdAndWord(Long userId, String word);
+    boolean existsByUserIdAndWord(Long userId, String word);
 }

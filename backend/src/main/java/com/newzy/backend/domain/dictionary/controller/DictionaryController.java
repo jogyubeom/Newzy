@@ -32,7 +32,7 @@ public class DictionaryController {
     @GetMapping("/search")
     @Operation(summary = "어휘 검색 정보 조회", description = "입력으로 주어진 word의 검색 결과를 반환합니다.")
     public ResponseEntity<List<DictionaryResponseDTO>> searchByWord(
-            @Parameter(description = "뉴스 카테고리 (0: 경제, 1: 사회, 2: 세계)", required = true)
+            @Parameter(description = "뉴스 카테고리 (0: 경제, 1: 사회, 2: 세계, 3: 뉴지)", required = true)
             @RequestParam(value = "category") int category,
             @Parameter(description = "검색 단어", required = true, example = "나무")
             @RequestParam(value = "word") String word) {
@@ -41,7 +41,7 @@ public class DictionaryController {
 
         if (word == null || word.isEmpty())
             throw new NotValidRequestException("검색 단어가 없습니다.");
-        if (category < 0 || category > 2)
+        if (category < 0 || category > 3)
             throw new NotValidRequestException("카테고리: " + category + " 값이 유효하지 않습니다.");
 
         List<DictionaryResponseDTO> dictionaryList = dictionaryService.searchByWord(word);
