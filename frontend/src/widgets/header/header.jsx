@@ -82,7 +82,7 @@ export const Header = () => {
             >
               <button className="w-[40px] h-[40px] bg-gray-200 rounded-full">
               {user.profile ? ( // user가 null이 아닌지 먼저 확인
-                  <img src={user.profile} alt="프로필 이미지" />
+                  <img src={user.profile} className="w-full h-full object-cover rounded-full" />
                 ) : (
                   <FaUserCircle className="w-full h-full object-cover rounded-full text-blue-400" />
                 )}
