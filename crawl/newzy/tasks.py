@@ -40,8 +40,8 @@ def society(driver, start_times, end_times, difficulty_distribution, start_date,
 
     yna(driver, society_article_count_by_hour, society_yna_news_link_list, start_times, end_times,
         difficulty_distribution, start_date, end_date)
-    ytn(driver, society_article_count_by_hour, society_ytn_news_link_list, start_times, end_times,
-        difficulty_distribution, start_date, end_date)
+    # ytn(driver, society_article_count_by_hour, society_ytn_news_link_list, start_times, end_times,
+    #     difficulty_distribution, start_date, end_date)
     channelA(driver, society_article_count_by_hour, society_channelA_news_link_list, start_times,
              end_times, difficulty_distribution, start_date, end_date)
 
