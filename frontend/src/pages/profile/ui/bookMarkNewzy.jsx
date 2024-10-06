@@ -4,7 +4,7 @@ import baseAxios from "../../../shared/utils/baseAxios";
 import PostList from "../../../shared/postList/postList";
 import Pagination from "../../../shared/postList/pagination";
 
-export const MyNewzy = () => {
+export const BookmarkNewzy = () => {
   const navigate = useNavigate();
   const [state, setState] = useState({
     posts: [],
@@ -15,7 +15,7 @@ export const MyNewzy = () => {
   const fetchPosts = async () => {
     const { currentPage } = state;
 
-    const apiUrl = `/user/my-newzy-list?page=${currentPage}`; // API URL
+    const apiUrl = `/user/newzy-bookmark?page=${currentPage}`; // API URL
 
     try {
       const response = await baseAxios().get(apiUrl); // baseAxios 사용
@@ -52,4 +52,4 @@ export const MyNewzy = () => {
   );
 };
 
-export default MyNewzy;
+export default BookmarkNewzy;
