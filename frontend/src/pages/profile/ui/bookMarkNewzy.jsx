@@ -19,6 +19,7 @@ export const BookmarkNewzy = () => {
 
     try {
       const response = await baseAxios().get(apiUrl); // baseAxios 사용
+      console.log(response);
       const { totalPage, newzyList } = response.data;
       setState((prevState) => ({
         ...prevState,

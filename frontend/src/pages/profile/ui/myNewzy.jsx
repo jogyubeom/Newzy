@@ -21,12 +21,12 @@ export const MyNewzy = () => {
     try {
       const response = await baseAxios().get(apiUrl); // baseAxios 사용
       console.log(response);
-      const { totalPage, newzyList } = response.data;
+      const { totalPage, myNewzyList } = response.data;
 
       // 가져온 게시글과 총 페이지 수로 상태 업데이트
       setState((prevState) => ({
         ...prevState,
-        posts: newzyList,
+        posts: myNewzyList,
         totalPages: totalPage,
         loading: false, // 데이터 가져온 후 로딩 상태 해제
       }));

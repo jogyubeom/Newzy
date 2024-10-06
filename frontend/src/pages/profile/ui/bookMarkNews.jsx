@@ -19,6 +19,7 @@ export const BookmarkNews = () => {
 
     try {
       const response = await baseAxios().get(apiUrl); // baseAxios 사용
+      console.log(response);
       const { totalPage, newsList } = response.data;
       setState((prevState) => ({
         ...prevState,
