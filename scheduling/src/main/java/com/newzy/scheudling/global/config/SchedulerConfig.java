@@ -16,8 +16,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class SchedulerConfig {
     private final NewsCardService newsCardService;
 
-//    @Scheduled(cron = "0 0 7 ? * MON")
-@Scheduled(cron = "0 4 3 * * ?")
+    @Scheduled(cron = "0 0 7 ? * MON")
+//@Scheduled(cron = "0 4 3 * * ?")
     public void scheduleNewsCard() {
         try {
             log.info("카드왕 계산 ㄱㄱ");
