@@ -67,7 +67,7 @@ const CommentContent = () => {
         />
         <button
           onClick={handleCommentSubmit}
-          className="bg-blue-500 text-white rounded-md px-2 hover:bg-blue-600 transition"
+          className="bg-purple-600 text-white rounded-md px-2 hover:bg-text-purple-500 transition"
         >
           추가
         </button>
@@ -89,7 +89,7 @@ const CommentContent = () => {
                 />
                 <button
                   onClick={() => handleReplySubmit(comment.id)}
-                  className="bg-blue-500 text-white rounded-md px-2 hover:bg-blue-600 transition"
+                  className="bg-purple-600 text-white rounded-md px-2 hover:bg-purple-700 transition"
                 >
                   추가
                 </button>

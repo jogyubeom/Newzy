@@ -63,6 +63,11 @@ const NewzyInfo = ({ category, title, date, author, newzyId, isFollowed, onFollo
     }
   };
 
+  // 새로운 핸들러를 추가하여 수정 페이지로 이동
+  const handleEdit = () => {
+    navigate(`/newzy/edit/${newzyId}`);
+  };
+
   return (
     <div className="mb-6">
       <CategoryBadge category={category} />
@@ -74,7 +79,10 @@ const NewzyInfo = ({ category, title, date, author, newzyId, isFollowed, onFollo
         {userNickname === author ? (
           // 작성자와 동일한 경우 수정/삭제 버튼을 보여줌
           <>
-            <button className="px-4 py-2 text-[#333] bg-[#F0F0F0] rounded-md text-sm">
+            <button 
+              onClick={handleEdit} // 수정 버튼 클릭 시 handleEdit 호출
+              className="px-4 py-2 text-[#333] bg-[#F0F0F0] rounded-md text-sm"
+            >
               수정
             </button>
             <button
