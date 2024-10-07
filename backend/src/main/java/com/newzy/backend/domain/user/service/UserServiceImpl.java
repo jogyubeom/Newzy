@@ -299,15 +299,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void followUser(Long userId, String nickname) {
 
-        User fromUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
-        User toUSer = userRepository.findByNickname(nickname);
-        if (toUSer == null) {
+        User toUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
+        User fromUser = userRepository.findByNickname(nickname);
+        if (toUser == null) {
             throw new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다.");
         }
 
         Follow follow = new Follow();
-        follow.setFromUser(fromUser);
-        follow.setToUser(toUSer);
+        follow.setFromUser(toUser);
+        follow.setToUser(fromUser);
         followRepository.save(follow);
     }
 
