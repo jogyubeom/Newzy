@@ -5,6 +5,7 @@ import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
+import com.newzy.backend.domain.user.dto.response.UserCardCollectorResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
@@ -64,4 +65,6 @@ public interface UserService {
     Map<String, Object> getMyNewzyList(int page, Long userId);
 
     Map<String, Object> getFollowingsNewzyList(NewzyListGetRequestDTO requestDTO, Long userId);
+
+    UserCardCollectorResponseDTO getBestCardCollector();
 }

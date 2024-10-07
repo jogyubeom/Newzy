@@ -91,11 +91,11 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
         return result;
     }
 
-
-    public Map<String, Object> getNewsDetail(Long newsId, boolean isCollected) {
+    public NewsDetailGetResponseDTO getNewsDetail(Long newsId) {
         QNews qNews = QNews.news;
 
-        NewsDetailGetResponseDTO newsDetail =  queryFactory.select(Projections.constructor(NewsDetailGetResponseDTO.class,
+        return (NewsDetailGetResponseDTO) queryFactory
+                .select(Projections.constructor(NewsDetailGetResponseDTO.class,
                         qNews.newsId,
                         qNews.link,
                         qNews.title,
@@ -113,13 +113,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                 .from(qNews)
                 .where(qNews.newsId.eq(newsId))
                 .fetchOne();
-        Map<String, Object> result = new HashMap<>();
-        result.put("newsDetail", newsDetail);
-        result.put("isCollected", isCollected);
-
-        return result;
     }
-
 
     public List<NewsListGetResponseDTO> findTop3NewsByDayWithHighestHits(LocalDateTime startOfDay, LocalDateTime now) {
         QNews qNews = QNews.news;

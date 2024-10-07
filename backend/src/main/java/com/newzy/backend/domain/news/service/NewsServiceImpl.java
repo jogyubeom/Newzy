@@ -22,6 +22,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,6 +48,8 @@ public class NewsServiceImpl implements NewsService {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 파싱을 위해 사용
     private final NewsCardRepositorySupport newsCardRepositorySupport;
+    private final NewsLikeRepositorySupport newsLikeRepositorySupport;
+    private final NewsBookmarkRepositorySupport newsBookmarkRepositorySupport;
 
 
     @Override  // branch : feature/get-news의 NewsServiceImpl 참고
@@ -54,12 +57,26 @@ public class NewsServiceImpl implements NewsService {
     public Map<String, Object> getNewsList(NewsListGetRequestDTO newsListGetRequestDTO) {
         log.info(">>> getNewsList - dto: {}", newsListGetRequestDTO);
 
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+
         int page = newsListGetRequestDTO.getPage();
         int category = newsListGetRequestDTO.getCategory();
         int sort = newsListGetRequestDTO.getSort();
         String keyword = newsListGetRequestDTO.getKeyword();
 
-        return newsRepositorySupport.findNewsList(page, sort, category, keyword);
+        Map<String, Object> map = newsRepositorySupport.findNewsList(page, sort, category, keyword);
+
+        List<NewsListGetResponseDTO> newsListGetResponseDTOs = (List<NewsListGetResponseDTO>) map.get("newsList");
+
+        for (NewsListGetResponseDTO news : newsListGetResponseDTOs) {
+            String redisKey = "ranking:news:" + todayDate + ":" + news.getNewsId();  // Redis 키
+            String redisHit = redisTemplate.opsForValue().get(redisKey);  // Redis에서 조회수 가져오기
+            if (redisHit != null) {
+                news.setHit(news.getHit() + Integer.parseInt(redisHit));  // 조회수가 있을 경우 DTO에 설정
+            }
+        }
+
+        return map;
     }
 
 
@@ -240,7 +257,7 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public Map<String, Object> getNewsDetail(Long newsId, Long userId) {    // 조회수 + 1
+    public NewsDetailGetResponseDTO getNewsDetail(Long userId, Long newsId) {
         News news = newsRepository.findById(newsId)
                 .orElseThrow(() -> new EntityNotFoundException("일치하는 뉴스 데이터를 조회할 수 없습니다."));
 
@@ -248,16 +265,32 @@ public class NewsServiceImpl implements NewsService {
         String todayDate = LocalDate.now().toString();  // 오늘 날짜
         String redisKey = "ranking:news:" + todayDate + ":" + newsId;  // Redis 키
 
-        redisTemplate.opsForValue().increment(redisKey);
+        Long hit = redisTemplate.opsForValue().increment(redisKey);
 
-        boolean isCollected = false;    // 뉴스 카드 여부 확인
-        if (userId != 0){
-            User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터가 없습니다."));
-            isCollected = newsCardRepository.existsByUserAndNews(user, news);
+        // 키가 새로 생성된 경우에만 만료 시간 설정 (24시간)
+        if (hit == 1) {
+            redisTemplate.expire(redisKey, Duration.ofDays(2));  // 24시간 만료 설정
         }
 
-        // DTO로 변환하여 반환
-        return newsRepositorySupport.getNewsDetail(news.getNewsId(), isCollected);
+        NewsDetailGetResponseDTO newsDetailGetResponseDTO =
+                newsRepositorySupport.getNewsDetail(news.getNewsId());
+
+        newsDetailGetResponseDTO.setHit((int) (newsDetailGetResponseDTO.getHit() + hit));
+
+        if (userId != 0) {
+            User user = userRepository.findByUserId(userId).orElseThrow(
+                    () -> new EntityNotFoundException("일치하는 유저를 찾을 수 없습니다.")
+            );
+            boolean isLiked = newsLikeRepositorySupport.isLikedByUser(userId, newsId);
+            if (isLiked) newsDetailGetResponseDTO.setLiked(true);
+            boolean isBookmarked = newsBookmarkRepositorySupport.isBookmarkedByUser(userId, newsId);
+            if (isBookmarked) newsDetailGetResponseDTO.setBookmarked(true);
+            boolean isCollected = newsCardRepository.existsByUserAndNews(user, news);
+            if (isCollected) newsDetailGetResponseDTO.setCollected(true);
+
+        }
+
+        return newsDetailGetResponseDTO;
     }
 
 

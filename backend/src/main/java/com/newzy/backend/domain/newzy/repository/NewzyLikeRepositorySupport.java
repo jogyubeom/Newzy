@@ -25,6 +25,17 @@ public class NewzyLikeRepositorySupport extends QuerydslRepositorySupport {
         this.queryFactory = queryFactory;
     }
 
+    public boolean isLikedByUser(Long userId, Long newzyId) {
+        QNewzyLike like = QNewzyLike.newzyLike;
+        Integer count = queryFactory
+                .selectOne()
+                .from(like)
+                .where(like.user.userId.eq(userId)
+                        .and(like.newzy.newzyId.eq(newzyId)))
+                .fetchFirst();
+        return count != null;
+    }
+
     public Map<String, Object> findNewzyListByNewzyLike(int page, Long userId) {
         QNewzyLike qNewzyLike = QNewzyLike.newzyLike;
         QNewzy qNewzy = QNewzy.newzy;

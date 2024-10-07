@@ -3,6 +3,7 @@ package com.newzy.backend.domain.user.controller;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.service.NewzyService;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
+import com.newzy.backend.domain.user.dto.response.UserCardCollectorResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
@@ -403,5 +404,11 @@ public class UserController {
         return ResponseEntity.status(200).body(followingsNewzyList);
     }
 
-
+    @GetMapping(value = "/ranking/card-collector")
+    @Operation(summary = "지난 주의 카드왕 조회", description = "주마다 갱신되는 카드왕 조회 API 입니다.")
+    public ResponseEntity<UserCardCollectorResponseDTO> getBestCardCollector() {
+        log.info(">>> [GET] /user/card-collector");
+        UserCardCollectorResponseDTO bestCardCollector = userService.getBestCardCollector();
+        return ResponseEntity.status(HttpStatus.OK).body(bestCardCollector);
+    }
 }

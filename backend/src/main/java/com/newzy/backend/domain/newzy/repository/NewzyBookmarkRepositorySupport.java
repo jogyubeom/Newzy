@@ -25,6 +25,17 @@ public class NewzyBookmarkRepositorySupport extends QuerydslRepositorySupport {
         this.queryFactory = queryFactory;
     }
 
+    public boolean isBookmarkedByUser(Long userId, Long newzyId) {
+        QNewzyBookmark bookmark = QNewzyBookmark.newzyBookmark;
+        Integer count = queryFactory
+                .selectOne()
+                .from(bookmark)
+                .where(bookmark.user.userId.eq(userId)
+                        .and(bookmark.newzy.newzyId.eq(newzyId)))
+                .fetchFirst();
+        return count != null;
+    }
+
     public Map<String, Object> findNewzyListByNewzyBookmark(int page, Long userId) {
         QNewzyBookmark qNewzyBookmark = QNewzyBookmark.newzyBookmark;
         QNewzy qNewzy = QNewzy.newzy;

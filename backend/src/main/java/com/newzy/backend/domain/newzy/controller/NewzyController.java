@@ -85,9 +85,18 @@ public class NewzyController {
 
     @GetMapping(value = "/{newzyId}")
     @Operation(summary = "뉴지 상세 조회", description = "해당 뉴지를 상세 조회합니다.")
-    public ResponseEntity<NewzyResponseDTO> getNewzy(@PathVariable Long newzyId) {
-        log.info(">>> [GET] /newzy/{} - 요청 파라미터: newzyId - {}", newzyId, newzyId);
-        NewzyResponseDTO newzyDetail = newzyService.getNewzyDetail(newzyId);
+    public ResponseEntity<NewzyResponseDTO> getNewzy(
+            @Parameter(description = "JWT", required = false)
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Long newzyId
+    ) {
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        }
+
+        log.info(">>> [GET] /newzy/{} - 요청 파라미터: userId - {}, newzyId - {}", newzyId, userId, newzyId);
+        NewzyResponseDTO newzyDetail = newzyService.getNewzyDetail(userId, newzyId);
 
         return ResponseEntity.status(200).body(newzyDetail);
     }

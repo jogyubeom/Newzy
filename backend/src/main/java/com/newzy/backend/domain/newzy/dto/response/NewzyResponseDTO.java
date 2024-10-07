@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.newzy.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -54,6 +55,14 @@ public class NewzyResponseDTO {
 
     @Schema(description = "뉴지 작성시간")
     private LocalDateTime createdAt;
+
+    @Schema(description = "좋아요 여부")
+    @JsonProperty("isLiked")
+    private boolean isLiked;
+
+    @Schema(description = "북마크 여부")
+    @JsonProperty("isBookmarked")
+    private boolean isBookmakred;
 
     // 유저 정보 추후 추가하기
     public static NewzyResponseDTO convertToDTO(Newzy newzy) {

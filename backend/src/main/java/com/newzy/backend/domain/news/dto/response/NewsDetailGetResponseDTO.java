@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.news.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -27,5 +28,26 @@ public class NewsDetailGetResponseDTO {
     @Builder.Default
     private int hit = 0;
     private String thumbnail;
+    @JsonProperty("isLiked")
+    private boolean isLiked;
+    @JsonProperty("isBookmarked")
+    private boolean isBookmarked;
+    @JsonProperty("isCollected")
+    private boolean isCollected;
 
+    public NewsDetailGetResponseDTO(Long newsId, String link, String title, String content, String contentText, int difficulty, int category, String publisher, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime crawledAt, int hit, String thumbnail) {
+        this.newsId = newsId;
+        this.link = link;
+        this.title = title;
+        this.content = content;
+        this.contentText = contentText;
+        this.difficulty = difficulty;
+        this.category = category;
+        this.publisher = publisher;
+        this.createdAt = createdAt;
+        this.crawledAt = crawledAt;
+        this.hit = hit;
+        this.thumbnail = thumbnail;
+        this.updatedAt = updatedAt;
+    }
 }

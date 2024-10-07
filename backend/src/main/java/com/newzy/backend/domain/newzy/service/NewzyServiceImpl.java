@@ -8,10 +8,7 @@ import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.newzy.entity.NewzyBookmark;
 import com.newzy.backend.domain.newzy.entity.NewzyLike;
-import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
-import com.newzy.backend.domain.newzy.repository.NewzyLikeRepository;
-import com.newzy.backend.domain.newzy.repository.NewzyRepository;
-import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
+import com.newzy.backend.domain.newzy.repository.*;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
@@ -25,6 +22,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +42,8 @@ public class NewzyServiceImpl implements NewzyService {
     private final UserRepository userRepository;
     private final NewzyBookmarkRepository newzyBookmarkRepository;
     private final ImageService imageService;
+    private final NewzyLikeRepositorySupport newzyLikeRepositorySupport;
+    private final NewzyBookmarkRepositorySupport newzyBookmarkRepositorySupport;
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -58,8 +58,20 @@ public class NewzyServiceImpl implements NewzyService {
         int sort = requestDTO.getSort();
         String keyword = requestDTO.getKeyword();
 
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+
         // 내가 쓴 뉴지 목록이 아닐 경우 userId = 0
         Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, category, keyword, sort, userId);
+
+        List<NewzyListGetResponseDTO> newzyListGetResponseDTOs = (List<NewzyListGetResponseDTO>) newzyList.get("newsList");
+
+        for (NewzyListGetResponseDTO newzy : newzyListGetResponseDTOs) {
+            String redisKey = "ranking:newzy:" + todayDate + ":" + newzy.getNewzyId();  // Redis 키
+            String redisHit = redisTemplate.opsForValue().get(redisKey);  // Redis에서 조회수 가져오기
+            if (redisHit != null) {
+                newzy.setHit(newzy.getHit() + Integer.parseInt(redisHit));  // 조회수가 있을 경우 DTO에 설정
+            }
+        }
 
         if (newzyList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 뉴지 데이터를 조회할 수 없습니다.");
@@ -70,25 +82,38 @@ public class NewzyServiceImpl implements NewzyService {
 
 
     @Override
-    public NewzyResponseDTO getNewzyDetail(Long newzyId) {  // 조회수 + 1
-        log.info(">>> newzyServiceImpl getNewzyDetail - newzyId: {}", newzyId);
-        Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new EntityNotFoundException("일치하는 뉴지 데이터를 찾을 수 없습니다."));
+    public NewzyResponseDTO getNewzyDetail(Long userId, Long newzyId) {
+        log.info(">>> newzyServiceImpl getNewzyDetail - userId: {}, newzyId: {}", userId, newzyId);
 
-        // redis 조회수 증가
-        String todayDate = LocalDate.now().toString();  // 오늘 날짜
-        String redisKey = "ranking:newzy:" + todayDate + ":" + newzyId;  // Redis 키
+        Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(
+                () -> new EntityNotFoundException("일치하는 뉴지 데이터를 찾을 수 없습니다.")
+        );
 
-        redisTemplate.opsForValue().increment(redisKey);
+        newzy.setHit(newzy.getHit() + 1);
+        newzyRepository.save(newzy);
 
-        return NewzyResponseDTO.convertToDTO(newzy);
+        NewzyResponseDTO newzyResponseDTO = NewzyResponseDTO.convertToDTO(newzy);
+
+        if (userId != 0) {
+            User user = userRepository.findByUserId(userId).orElseThrow(
+                    () -> new EntityNotFoundException("일치하는 유저를 찾을 수 없습니다.")
+            );
+
+            boolean isLiked = newzyLikeRepositorySupport.isLikedByUser(userId, newzyId);
+            if (isLiked) newzyResponseDTO.setLiked(true);
+            boolean isBookmarked = newzyBookmarkRepositorySupport.isBookmarkedByUser(userId, newzyId);
+            if (isBookmarked) newzyResponseDTO.setBookmakred(true);
+        }
+
+        return newzyResponseDTO;
     }
 
 
     @Override
     @Transactional(readOnly = true)
     public List<NewzyListGetResponseDTO> getHotNewzyList() {
-        String todayDate = LocalDate.now().toString();  // 오늘 날짜
-        String pattern = "ranking:newzy:" + todayDate + ":*";  // 오늘 날짜의 모든 뉴지 조회수
+        String yesterdayDate = LocalDate.now().minusDays(1).toString();  // 오늘 날짜
+        String pattern = "ranking:newzy:" + yesterdayDate + ":*";  // 오늘 날짜의 모든 뉴지 조회수
 
         Set<String> keys = redisTemplate.keys(pattern);  // 해당 패턴에 맞는 키 가져오기
 
