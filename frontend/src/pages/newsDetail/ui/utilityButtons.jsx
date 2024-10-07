@@ -1,17 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import baseAxios from 'shared/utils/baseAxios'; // baseAxios import
+import useAuthStore from 'shared/store/userStore'; // Zustand store import
 
-const UtilityButtons = ( { onActiveSidebar, activeSidebar } ) => {
-  const [activeButtons, setActiveButtons] = useState([false, false]);
+const UtilityButtons = ({ onActiveSidebar, activeSidebar, isLiked = false, isBookmarked = false, newsId }) => {
+  const token = useAuthStore(state => state.token);
+  const [activeButtons, setActiveButtons] = useState([isLiked, isBookmarked]);
 
-  const handleButtonClick = (index) => {
-    if (index < 2) {
+  useEffect(() => {
+    setActiveButtons([isLiked, isBookmarked]);
+  }, [isLiked, isBookmarked]);
+
+  const handleButtonClick = async (index) => {
+    if (!token) {
+      alert("로그인 후 이용해주세요.");
+      return;
+    }
+
+    try {
+      // 첫 번째 버튼 클릭 (좋아요)
+      if (index === 0) {
+        if (activeButtons[0]) {
+          // 이미 좋아요가 되어 있다면 삭제 요청
+          await baseAxios().delete(`/news/${newsId}/like`);
+        } else {
+          // 좋아요가 되어 있지 않다면 추가 요청
+          await baseAxios().post(`/news/${newsId}/like`);
+        }
+      }
+      
+      // 두 번째 버튼 클릭 (북마크)
+      else if (index === 1) {
+        if (activeButtons[1]) {
+          // 이미 북마크가 되어 있다면 삭제 요청
+          await baseAxios().delete(`/news/${newsId}/bookmark`);
+        } else {
+          // 북마크가 되어 있지 않다면 추가 요청
+          await baseAxios().post(`/news/${newsId}/bookmark`);
+        }
+      }
+      
+      // 세 번째 버튼 클릭 (사이드바 토글)
+      else if (index === 2) {
+        onActiveSidebar("검색");
+      }
+
+      // 버튼 상태 업데이트
       setActiveButtons((prev) => {
         const newActiveButtons = [...prev];
-        newActiveButtons[index] = !newActiveButtons[index];
+        newActiveButtons[index] = !newActiveButtons[index]; // 상태 반전
         return newActiveButtons;
       });
-    } else if (index === 2) {
-      onActiveSidebar("검색");
+      
+    } catch (error) {
+      console.error("Error while handling button click:", error);
+      alert("작업 중 오류가 발생했습니다. 다시 시도해 주세요.");
     }
   };
 
@@ -34,8 +76,8 @@ const UtilityButtons = ( { onActiveSidebar, activeSidebar } ) => {
             key={index}
             onClick={() => handleButtonClick(index)}
             className={`flex items-center justify-center text-gray-500 focus:outline-none mx-2 ${
-              ((index < 2 && activeButtons[index]) || (index === 2 && activeSidebar === "검색") )
-               ? 'text-purple-500' : ''
+              (activeButtons[index] || (index === 2 && activeSidebar === "검색"))
+              ? 'text-purple-500' : ''
             }`}
           >
             {icon}
