@@ -7,12 +7,13 @@ import com.newzy.backend.domain.dictionary.dto.response.VocaListResponseDTO;
 import com.newzy.backend.domain.dictionary.dto.response.WordCloudResponseDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DictionaryService {
     List<DictionaryResponseDTO> searchByWord(String word);
 
     void addVocaList(Long userId, VocaListRequestDTO vocaListRequestDTO);
-    List<VocaListResponseDTO> getVocaList(SearchWordRequestDTO searchWordRequestDTO);
+    Map<String, Object> getVocaList(SearchWordRequestDTO searchWordRequestDTO);
     void deleteSearchWordHistory(Long userId, List<String> wordList);
     List<WordCloudResponseDTO> getWordCloudHistory();
 

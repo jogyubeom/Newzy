@@ -74,6 +74,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                         qNews.publisher,
                         qNews.thumbnail,
                         qNews.hit,
+                        qNews.likeCnt,
                         qNews.createdAt
                 ))
                 .from(qNews)

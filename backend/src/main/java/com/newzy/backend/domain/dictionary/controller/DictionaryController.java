@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,7 +73,7 @@ public class DictionaryController {
     }
     @GetMapping
     @Operation(summary = "사용자의 어휘 검색 기록 조회", description = "사용자가 검색한 어휘를 조회합니다.")
-    public ResponseEntity<List<VocaListResponseDTO>> getSearchWordHistory(
+    public ResponseEntity<Map<String, Object>> getSearchWordHistory(
             @Parameter(description = "JWT")
             @RequestHeader(value = "Authorization") String token,
             @Parameter(description = "페이지 번호 (default: 0)")
@@ -89,7 +90,7 @@ public class DictionaryController {
                 .sort(sort)
                 .build();
 
-        List<VocaListResponseDTO> dictionaryResponseDTOList = dictionaryService.getVocaList(searchWordRequestDTO);
+        Map<String, Object> dictionaryResponseDTOList = dictionaryService.getVocaList(searchWordRequestDTO);
         return ResponseEntity.status(200).body(dictionaryResponseDTOList);
     }
 
