@@ -62,7 +62,7 @@ public interface UserService {
 
     Map<String, Object> getFollowerList(int page, String nickname);
 
-    Map<String, Object> getMyNewzyList(int page, Long userId);
+    Map<String, Object> getNewzyListByNickname(int page, String nickname);
 
     Map<String, Object> getFollowingsNewzyList(NewzyListGetRequestDTO requestDTO, Long userId);
 

@@ -66,7 +66,7 @@ public class NewsServiceImpl implements NewsService {
 
         Map<String, Object> map = newsRepositorySupport.findNewsList(page, sort, category, keyword);
 
-        List<NewsListGetResponseDTO> newsListGetResponseDTOs = (List<NewsListGetResponseDTO>) map.get("newzyList");
+        List<NewsListGetResponseDTO> newsListGetResponseDTOs = (List<NewsListGetResponseDTO>) map.get("newsList");
 
         for (NewsListGetResponseDTO news : newsListGetResponseDTOs) {
             String redisKey = "ranking:news:" + todayDate + ":" + news.getNewsId();  // Redis 키
@@ -91,7 +91,6 @@ public class NewsServiceImpl implements NewsService {
         // Redis에서 조회수 정보를 가져오고 내림차순으로 정렬 후 상위 3개의 키 추출
         List<String> topNewsKeys = redisTemplate.opsForValue().multiGet(keys).stream()
                 .sorted((v1, v2) -> Integer.compare(Integer.parseInt(v2), Integer.parseInt(v1)))  // 내림차순 정렬
-                .limit(3)  // 상위 3개
                 .map(key -> key.split(":")[3])  // key에서 newsId 추출
                 .toList();
 

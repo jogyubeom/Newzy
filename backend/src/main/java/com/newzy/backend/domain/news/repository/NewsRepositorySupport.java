@@ -116,28 +116,6 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                 .fetchOne();
     }
 
-
-    public List<NewsListGetResponseDTO> findTop3NewsByDayWithHighestHits(LocalDateTime startOfDay, LocalDateTime now) {
-        QNews qNews = QNews.news;
-
-        return queryFactory
-                .select(Projections.constructor(NewsListGetResponseDTO.class,
-                        qNews.newsId,
-                        qNews.link,
-                        qNews.title,
-                        qNews.contentText,
-                        qNews.category,
-                        qNews.publisher,
-                        qNews.thumbnail,
-                        qNews.hit,
-                        qNews.createdAt
-                ))
-                .from(qNews)
-                .where(qNews.createdAt.goe(startOfDay)) // 하루 시작 시점부터 현재 시간까지
-                .orderBy(qNews.hit.desc()) // 조회수 내림차순
-                .limit(3) // 상위 3개만
-                .fetch();
-    }
 }
 
 

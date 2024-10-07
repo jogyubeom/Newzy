@@ -380,8 +380,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> getMyNewzyList(int page, Long userId) {
-        return newzyRepositorySupport.getMyNewzyList(page, userId);
+    public Map<String, Object> getNewzyListByNickname(int page, String nickname) {
+        return newzyRepositorySupport.getNewzyListByNickname(page, nickname);
     }
 
     @Override
