@@ -135,7 +135,7 @@ export const Profile = () => {
     };
 
     fetchUserData();
-  }, [setUserInfo, user.nickname]);
+  }, []);
 
   // 현재 경로에 따라 메뉴를 선택 상태로 설정
   useEffect(() => {
@@ -176,6 +176,11 @@ export const Profile = () => {
       fetchStatusData(); 
     }
   }, [user]);
+
+  // 유저 정보가 로드되지 않았을 때 로딩 메시지 표시
+  if (!user || !user.nickname) {
+    return <div>로딩 중...</div>; // 유저 정보가 없으면 로딩 메시지 표시
+  }
 
   // 유저 정보 저장 (이미지 제외)
   const handleSaveProfile = async () => {
@@ -262,11 +267,6 @@ export const Profile = () => {
     if (exp >= 1000) return 2;
     return 1;
   };
-
-  // 유저 정보가 로드되지 않았을 때 로딩 메시지 표시
-  if (!user) {
-    return <div>로딩 중...</div>;
-  }
 
   // 각 grade의 최대 경험치값
   const maxExpByGrade = {
