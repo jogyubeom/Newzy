@@ -3,13 +3,14 @@ package com.newzy.backend.domain.user.entity;
 import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
 
 @Entity(name = "follow")
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "follow")
+@ToString
 @Builder
 public class Follow extends BaseTimeEntity {
 

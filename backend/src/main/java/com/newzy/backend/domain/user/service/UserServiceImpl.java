@@ -7,7 +7,6 @@ import com.newzy.backend.domain.image.service.ImageService;
 import com.newzy.backend.domain.news.repository.NewsBookmarkRepositorySupport;
 import com.newzy.backend.domain.news.repository.NewsLikeRepositorySupport;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
-import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyLikeRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
@@ -15,8 +14,10 @@ import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
 import com.newzy.backend.domain.user.dto.response.*;
+import com.newzy.backend.domain.user.entity.Cluster;
 import com.newzy.backend.domain.user.entity.Follow;
 import com.newzy.backend.domain.user.entity.User;
+import com.newzy.backend.domain.user.repository.ClusterRepository;
 import com.newzy.backend.domain.user.repository.FollowRepository;
 import com.newzy.backend.domain.user.repository.FollowRepositorySupport;
 import com.newzy.backend.domain.user.repository.UserRepository;
@@ -58,6 +59,7 @@ public class UserServiceImpl implements UserService {
     private final NewzyBookmarkRepositorySupport newzyBookmarkRepositorySupport;
     private final NewzyLikeRepositorySupport newzyLikeRepositorySupport;
     private final NewzyRepositorySupport newzyRepositorySupport;
+    private final ClusterRepository clusterRepository;
 
 
     @Override
@@ -282,6 +284,8 @@ public class UserServiceImpl implements UserService {
     public UserInfoResponseDTO oauthSignup(AuthRequestDTO authRequestDTO) {
         // 새로운 사용자 등록
         Optional<Image> image = imageRepository.findByImageUrl("https://plogbucket.s3.ap-northeast-2.amazonaws.com/e63129aa-4855-43a4-a75b-840668687252_user.png");
+        Cluster cluster = clusterRepository.findById(1L).orElseThrow(
+                () -> new EntityNotFoundException("해당하는 군집을 찾을 수 없습니다."));
 
         User user = User.builder()
                 .email(authRequestDTO.getEmail())
@@ -289,7 +293,9 @@ public class UserServiceImpl implements UserService {
                 .password(authRequestDTO.getPassword())
                 .socialLoginType(authRequestDTO.getType())
                 .image(image.get())
+                .cluster(cluster)
                 .build();
+
         log.info("새로운 사용자 등록: {}", authRequestDTO.getEmail());
         userRepository.save(user); // 새 사용자 저장
         return UserInfoResponseDTO.convertToDTO(user);
@@ -299,15 +305,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void followUser(Long userId, String nickname) {
 
-        User toUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
-        User fromUser = userRepository.findByNickname(nickname);
+        User fromUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
+        User toUser = userRepository.findByNickname(nickname);
         if (toUser == null) {
             throw new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다.");
         }
 
         Follow follow = new Follow();
-        follow.setFromUser(toUser);
-        follow.setToUser(fromUser);
+        follow.setFromUser(fromUser);
+        follow.setToUser(toUser);
         followRepository.save(follow);
     }
 
@@ -329,18 +335,19 @@ public class UserServiceImpl implements UserService {
 
     @Override       // 팔로잉 목록
     public Map<String, Object> getFollowingList(int page, String nickname) {
-        int size = 20;
+        int size = 7;
         User fromUser = userRepository.findUserByNickname(nickname)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
 
         List<Follow> followings = followRepository.findAllByFromUser(fromUser);
+        log.info(followings.toString());
 
         return paginateFollowList(followings, page, size);
     }
 
     @Override       // 팔로워 목록
     public Map<String, Object> getFollowerList(int page, String nickname) {
-        int size = 20;
+        int size = 7;
         User toUser = userRepository.findUserByNickname(nickname)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
 
@@ -359,9 +366,11 @@ public class UserServiceImpl implements UserService {
         List<FollowListGetResponseDTO> paginatedList = new ArrayList<>();
         if (startIndex < followList.size()) {
             paginatedList = followList.subList(startIndex, endIndex).stream()
-                    .map(follow -> new FollowListGetResponseDTO(follow.getFollowId(),
-                            follow.getFromUser().getNickname(),
-                            follow.getToUser().getNickname()))
+                    .map(follow -> FollowListGetResponseDTO.builder()
+                            .followId(follow.getFollowId())
+                            .fromUserNickname(follow.getFromUser().getNickname())
+                            .toUserNickname(follow.getToUser().getNickname())
+                            .build())
                     .distinct()
                     .collect(Collectors.toList());
         }
@@ -401,7 +410,6 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> getMyNewzyList(int page, Long userId) {
         return newzyRepositorySupport.getMyNewzyList(page, userId);
     }
-
 
 
     @Override
@@ -456,7 +464,6 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> getNewzyListByNickname(int page, String nickname) {
         return newzyRepositorySupport.getNewzyListByNickname(page, nickname);
     }
-
 
 
 }
