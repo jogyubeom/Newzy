@@ -26,7 +26,10 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -63,7 +66,7 @@ public class NewsServiceImpl implements NewsService {
 
         List<NewsListGetResponseDTO> newsListGetResponseDTOs = (List<NewsListGetResponseDTO>) map.get("newzyList");
 
-        for(NewsListGetResponseDTO news : newsListGetResponseDTOs){
+        for (NewsListGetResponseDTO news : newsListGetResponseDTOs) {
             String redisKey = "ranking:news:" + todayDate + ":" + news.getNewsId();  // Redis 키
             String redisHit = redisTemplate.opsForValue().get(redisKey);  // Redis에서 조회수 가져오기
             if (redisHit != null) {

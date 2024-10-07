@@ -1,8 +1,6 @@
 package com.newzy.backend.domain.newzy.service;
 
 import com.newzy.backend.domain.image.service.ImageService;
-import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDTO;
-import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
@@ -68,7 +66,7 @@ public class NewzyServiceImpl implements NewzyService {
 
         List<NewzyListGetResponseDTO> newzyListGetResponseDTOs = (List<NewzyListGetResponseDTO>) newzyList.get("newsList");
 
-        for(NewzyListGetResponseDTO newzy : newzyListGetResponseDTOs){
+        for (NewzyListGetResponseDTO newzy : newzyListGetResponseDTOs) {
             String redisKey = "ranking:newzy:" + todayDate + ":" + newzy.getNewzyId();  // Redis 키
             String redisHit = redisTemplate.opsForValue().get(redisKey);  // Redis에서 조회수 가져오기
             if (redisHit != null) {
@@ -99,7 +97,7 @@ public class NewzyServiceImpl implements NewzyService {
         if (hit == 1) {
             redisTemplate.expire(redisKey, Duration.ofDays(2));  // 24시간 만료 설정
         }
-        
+
         NewzyResponseDTO newzyResponseDTO = NewzyResponseDTO.convertToDTO(newzy);
 
         // 조회수 새로이 계산해서 넣기
