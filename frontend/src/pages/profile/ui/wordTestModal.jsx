@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import cross from "shared/images/cross.png";
 import { RiCheckboxMultipleFill } from "react-icons/ri";
 import { FaFrown, FaSmile, FaMeh } from "react-icons/fa";
@@ -14,6 +15,8 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
   const [shuffledWordList, setShuffledWordList] = useState([]);
   const [correctWords, setCorrectWords] = useState([]); // 맞힌 단어 리스트
   const [removeCorrectWords, setRemoveCorrectWords] = useState(false); // 체크박스 상태
+
+  const nav = useNavigate();
 
   // 단어 리스트를 랜덤으로 섞기 위한 함수
   const shuffleArray = (array) => {
@@ -101,6 +104,8 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
       await baseAxios().delete(`/word?wordList=${encodeURIComponent(wordsToRemove)}`);
 
       alert("맞힌 단어들이 성공적으로 삭제되었습니다.");
+      nav('/profile/words')
+
     } catch (error) {
       console.error("단어 삭제에 실패했습니다.", error);
       alert("단어 삭제에 실패했습니다.");

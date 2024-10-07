@@ -7,7 +7,9 @@ import useAuthStore from "shared/store/userStore";
 const Words = () => {
 
   const [wordList, setWordList] = useState([]); // 단어 리스트 상태
+  const [allWords, setAllWords] = useState([]); // 모든 단어 리스트 상태 (단어 테스트용)
   const [isModalOpen, setModalOpen] = useState(false); // 모달 상태
+  const [isLoadingWords, setIsLoadingWords] = useState(false); // 모든 단어 로딩 상태
   const [page, setPage] = useState(0); // 현재 페이지
   const [sort, setSort] = useState(0); // 정렬 기준 (0: 최신순, 1: 오래된 순)
   const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수
@@ -44,6 +46,36 @@ const Words = () => {
     }
   };
 
+  // 모든 단어 리스트를 서버에서 가져오는 함수 (단어 테스트용)
+  const fetchAllWords = async () => {
+    setIsLoadingWords(true); // 로딩 시작
+    let allWordsFetched = [];
+    let currentPage = 0;
+
+    try {
+      while (currentPage < totalPages) {
+        const response = await baseAxios().get(`https://j11b305.p.ssafy.io/api/word`, {
+          params: { page: currentPage, sort },
+        });
+
+        const { vocaList } = response.data;
+        const fetchedWords = vocaList.map((wordData) => ({
+          name: wordData.word,
+          mean: [wordData.definition],
+        }));
+
+        allWordsFetched = [...allWordsFetched, ...fetchedWords];
+        currentPage += 1;
+      }
+
+      setAllWords(allWordsFetched); // 모든 단어를 저장
+      setIsLoadingWords(false); // 로딩 완료
+    } catch (error) {
+      console.error("모든 단어를 불러오는 데 실패했습니다.", error);
+      setIsLoadingWords(false); // 에러 발생 시에도 로딩 종료
+    }
+  };
+
   // 정렬 방식 변경 핸들러
   const handleSortChange = (e) => {
     setSort(parseInt(e.target.value));
@@ -73,7 +105,13 @@ const Words = () => {
   };
 
   // 모달 열기 및 닫기 함수
-  const openModal = () => setModalOpen(true);
+  const openModal = async () => {
+    // 단어 테스트를 열기 전에 모든 단어 리스트 불러오기
+    await fetchAllWords();
+    if (!isLoadingWords) {
+      setModalOpen(true); // 모든 단어 로딩이 완료된 후에만 모달을 염
+    }
+  };
   const closeModal = () => setModalOpen(false);
 
   // 페이지, 정렬 기준이 변경될 때마다 단어 리스트 가져오기
@@ -100,7 +138,7 @@ const Words = () => {
           onClick={openModal}
           className="w-[220px] h-[50px] rounded-[10px] font-['Open_Sans'] bg-[#BF2EF0] hover:bg-[#A229CC] opacity-100 text-white text-[24px] font-semibold transition-colors duration-300 shadow-md"
         >
-          단어 테스트
+          {isLoadingWords ? '로딩 중...' : '단어 테스트'}
         </button>
       </div>
       <div className="py-3 px-10 mx-auto font-sans mb-10">
@@ -155,7 +193,7 @@ const Words = () => {
          <WordTestModal
           isOpen={isModalOpen}
           onClose={closeModal}
-          wordList={wordList}
+          wordList={allWords}
           userName={user && user.nickname ? user.nickname : "사용자"}
         />
       </div>
