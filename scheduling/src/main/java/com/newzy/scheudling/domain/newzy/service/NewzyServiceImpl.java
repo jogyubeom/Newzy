@@ -1,18 +1,25 @@
 package com.newzy.scheudling.domain.newzy.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.newzy.scheudling.domain.card.dto.CardCountDTO;
 import com.newzy.scheudling.domain.newzy.entity.Newzy;
 import com.newzy.scheudling.domain.newzy.repository.NewzyRepository;
+import com.newzy.scheudling.domain.newzy.repository.NewzyRepositorySupport;
 import com.newzy.scheudling.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -21,8 +28,9 @@ import java.util.stream.Collectors;
 public class NewzyServiceImpl implements NewzyService {
     private final RedisTemplate<String, String> redisTemplate;
     private final NewzyRepository newzyRepository;
+    private final NewzyRepositorySupport newzyRepositorySupport;
 
-
+    @Override
     public void processNewzyRanking() {
         String yesterdayDate = LocalDate.now().minusDays(1).toString();  // 어제 날짜
         String redisPattern = "ranking:newzy:" + yesterdayDate + ":*";  // ex: ranking:newzy:어제날짜:* 형식의 키
@@ -60,6 +68,32 @@ public class NewzyServiceImpl implements NewzyService {
         keys.stream()
                 .filter(key -> !topNKeys.contains(key))
                 .forEach(redisTemplate::delete);
+    }
+
+    @Override
+    public void calculateNewporter(){
+        // 특정 기간 정의 (월-금 : 일주일)
+        LocalDateTime startDate = LocalDateTime.of(LocalDate.now().minusWeeks(1), LocalTime.MIDNIGHT);
+        LocalDateTime endDate = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(23, 59, 59));
+
+        // 해당 기간 동안 좋아요가 가장 많이 달린 상위 3개의 뉴지 찾기
+        List<Newzy> topNewzies = newzyRepositorySupport.findTop3ByLikesBetweenDates(startDate, endDate);
+
+        // Redis에서 ranking:newporter 아래 모든 데이터를 삭제
+        Set<String> keys = redisTemplate.keys("ranking:newporter:*");
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
+
+        // 새롭게 상위 3개의 뉴지 데이터를 Redis에 저장
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        for (int i = 0; i < topNewzies.size(); i++) {
+            String key = "ranking:newporter:" + topNewzies.get(i).getUser().getUserId();  // ranking:newporter:1, ranking:newporter:2 형식으로 저장
+            int value = topNewzies.get(i).getLikeCnt();
+            valueOperations.set(key, String.valueOf(value), 691200, TimeUnit.SECONDS);  // 691200초 = 8일 동안 유지
+            log.info("key = " + key + ", value = " + value);
+        }
+        log.info("뉴포터 랭킹이 성공적으로 Redis에 저장되었습니다.");
     }
 
 }

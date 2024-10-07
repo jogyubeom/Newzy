@@ -3,10 +3,7 @@ package com.newzy.backend.domain.user.controller;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.service.NewzyService;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
-import com.newzy.backend.domain.user.dto.response.UserCardCollectorResponseDTO;
-import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
-import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
-import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
+import com.newzy.backend.domain.user.dto.response.*;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.NoTokenRequestException;
 import com.newzy.backend.global.exception.NotValidRequestException;
@@ -20,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -384,5 +382,13 @@ public class UserController {
         log.info(">>> [GET] /user/card-collector");
         UserCardCollectorResponseDTO bestCardCollector = userService.getBestCardCollector();
         return ResponseEntity.status(HttpStatus.OK).body(bestCardCollector);
+    }
+
+    @GetMapping(value = "/ranking/newporter")
+    @Operation(summary = "지난 주의 뉴포터 조회", description = "주마다 갱신되는 뉴포터 조회 API 입니다.")
+    public ResponseEntity<List<UserNewporterResponseDTO>> getNewporter() {
+        log.info(">>> [GET] /user/ranking/newporter");
+        List<UserNewporterResponseDTO> newporters = userService.getNewporter();
+        return ResponseEntity.status(HttpStatus.OK).body(newporters);
     }
 }
