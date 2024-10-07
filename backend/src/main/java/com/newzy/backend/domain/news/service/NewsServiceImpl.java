@@ -155,7 +155,11 @@ public class NewsServiceImpl implements NewsService {
             // 1. 오늘 날짜 계산
             String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             // 2. Redis 키 생성
-            String clusterId = String.valueOf(userService.getClusterId(userId));
+            String clusterId;
+            if (userId == 0) // 비회원은 1번 군집으로 설정
+                clusterId = "1";
+            else
+                clusterId = String.valueOf(userService.getClusterId(userId));
             String redisKey = String.format(":1:recommended_news:%s:cluster_%s", today, clusterId);
 
             // 3. Redis에서 키 조회

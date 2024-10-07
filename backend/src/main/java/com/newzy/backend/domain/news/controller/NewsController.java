@@ -82,11 +82,13 @@ public class NewsController {
     @Operation(summary = "추천 뉴스 조회", description = "사용자에 맞는 추천 뉴스를 조회합니다.")
     public ResponseEntity<List<NewsRecommendGetResponseDTO>> getRecommendedNewsList(
             @Parameter(description = "JWT")
-            @RequestHeader(value = "Authorization") String token) {
+            @RequestHeader(value = "Authorization", required = false) String token) {
         log.info(">>> [GET] /news/recommend - 요청 파라미터");
+        Long userId;
         if (token == null || token.isEmpty())
-            throw new NoTokenRequestException("token이 비어있습니다");
-        Long userId = userService.getUser(token).getUserId();
+            userId = 0L;
+        else
+            userId = userService.getUser(token).getUserId();
         List<NewsRecommendGetResponseDTO> newsRecommendGetResponseDTOList = newsService.getRecommendedNewsList(userId);
 
         return ResponseEntity.status(200).body(newsRecommendGetResponseDTOList);
