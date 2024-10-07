@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import baseAxios from '../../shared/utils/baseAxios'; // baseAxios import
+import baseAxios from '../../shared/utils/baseAxios';
 import NewzyInfo from './ui/newzyInfo';
 import Content from '../../shared/postDetail/content';
 import UtilityButtons from './ui/utilityButtons';
@@ -9,6 +9,7 @@ import Sidebar from '../../shared/postDetail/sidebar';
 export const NewzyDetail = () => {
   const [activeSidebar, setActiveSidebar] = useState(null);
   const [newzy, setNewzy] = useState(null);
+  const [isFollowed, setIsFollowed] = useState(false); // 구독 상태 관리
   const { id } = useParams();
 
   const handleSidebarToggle = (type) => {
@@ -28,11 +29,17 @@ export const NewzyDetail = () => {
 
   const fetchNewzy = async () => {
     try {
-      const response = await baseAxios().get(`/newzy/${id}`); // baseAxios 사용
+      const response = await baseAxios().get(`/newzy/${id}`);
       setNewzy(response.data);
+      setIsFollowed(response.data.isFollowed); // 서버에서 받아온 구독 상태로 설정
     } catch (error) {
       console.error("Error fetching newzy details:", error);
     }
+  };
+
+  // 구독/구독 취소 후 상태 변경을 위한 핸들러
+  const handleFollowChange = (newFollowState) => {
+    setIsFollowed(newFollowState); // 구독/구독 취소 후 상태를 업데이트
   };
 
   const htmlContent = newzy ? newzy.content : "";
@@ -48,6 +55,9 @@ export const NewzyDetail = () => {
             title={newzy.title} 
             date={new Date(newzy.createdAt).toLocaleString('ko-KR')}
             author={newzy.nickname}
+            newzyId={newzy.newzyId}
+            isFollowed={isFollowed} // 구독 상태 전달
+            onFollowChange={handleFollowChange} // 구독 상태 변경 핸들러 전달
           />
         )}
         <Content htmlContent={htmlContent} />
@@ -55,16 +65,16 @@ export const NewzyDetail = () => {
 
       <div className="w-[17%]"></div>
 
-      {newzy && ( // newzy가 존재할 때만 UtilityButtons 렌더링
+      {newzy && (
         <UtilityButtons 
           onActiveSidebar={handleSidebarToggle} 
           activeSidebar={activeSidebar} 
           isLiked={newzy.isLiked}
           isBookmarked={newzy.isBookmarked}
-          newzyId={newzy.newzyId} // newzy ID를 전달
+          newzyId={newzy.newzyId}
         />
       )}
-      {newzy && ( // newzy가 존재하는 경우에만 Sidebar를 렌더링
+      {newzy && (
         <Sidebar 
           activeSidebar={activeSidebar} 
           onActiveSidebar={handleSidebarToggle} 
