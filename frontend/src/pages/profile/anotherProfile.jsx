@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { getGrade } from "shared/getGrade";
 import MenuBar from "pages/profile/ui/menuBar";
-import MyNewzy from "pages/profile/ui/myNewzy";
+import Newzy from "./ui/newzy";
 import FollowIndexModal from "pages/profile/ui/followIndexModal";
 
 import userProfile from "shared/images/user.png";
@@ -181,7 +181,7 @@ export const AnotherProfile = () => {
   const renderContent = () => {
     switch (selectedMenu) {
       case 0:
-        return <MyNewzy />;
+        return <Newzy nickname={nickname} />;
       default:
         return null;
     }
