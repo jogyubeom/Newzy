@@ -91,6 +91,7 @@ pipeline {
                         docker-compose up -d scheduling &&
                         docker container prune -f &&
                         docker image prune -a -f
+                        docker system prune -a
                         "
                     """
                 }
