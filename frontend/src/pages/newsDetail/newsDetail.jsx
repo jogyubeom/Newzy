@@ -60,8 +60,8 @@ export const NewsDetail = () => {
         <UtilityButtons 
           onActiveSidebar={handleSidebarToggle} 
           activeSidebar={activeSidebar} 
-          isLiked={news?.isLiked || false} // news가 null일 경우 false
-          isBookmarked={news?.isBookmarked || false} // news가 null일 경우 false
+          isLiked={news.isLiked}
+          isBookmarked={news.isBookmarked}
           newsId={news.newsId}
         />
       }

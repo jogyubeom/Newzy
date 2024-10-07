@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import baseAxios from 'shared/utils/baseAxios'; // baseAxios import
 import useAuthStore from 'shared/store/userStore'; // Zustand store import
 
-const UtilityButtons = ({ onActiveSidebar, activeSidebar, isLiked = false, isBookmarked = false, newsId }) => {
+const UtilityButtons = ({ onActiveSidebar, activeSidebar, isLiked, isBookmarked, newsId }) => {
   const token = useAuthStore(state => state.token);
   const [activeButtons, setActiveButtons] = useState([isLiked, isBookmarked]);
 
