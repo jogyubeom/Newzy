@@ -53,7 +53,7 @@ public class NewzyLikeRepositorySupport extends QuerydslRepositorySupport {
         int totalPage = (int) ((totalCount + size - 1) / size);
 
         List<NewzyListGetResponseDTO> newzyList = queryFactory
-                .select(Projections.constructor(NewzyListGetResponseDTO.class,
+                .select(Projections.fields(NewzyListGetResponseDTO.class,
                         qNewzy.newzyId,
                         qNewzy.user.nickname,
                         qNewzy.user.userId,

@@ -3,6 +3,10 @@ package com.newzy.backend.domain.news.service;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
 import com.newzy.backend.domain.news.dto.response.*;
+import com.newzy.backend.domain.news.dto.response.NewsDailyGetResponseDTO;
+import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDTO;
+import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDTO;
+import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
 
 import java.util.List;
 import java.util.Map;

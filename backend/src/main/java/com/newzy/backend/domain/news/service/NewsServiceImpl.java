@@ -22,11 +22,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -53,22 +57,50 @@ public class NewsServiceImpl implements NewsService {
     public Map<String, Object> getNewsList(NewsListGetRequestDTO newsListGetRequestDTO) {
         log.info(">>> getNewsList - dto: {}", newsListGetRequestDTO);
 
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+
         int page = newsListGetRequestDTO.getPage();
         int category = newsListGetRequestDTO.getCategory();
         int sort = newsListGetRequestDTO.getSort();
         String keyword = newsListGetRequestDTO.getKeyword();
 
-        return newsRepositorySupport.findNewsList(page, sort, category, keyword);
+        Map<String, Object> map = newsRepositorySupport.findNewsList(page, sort, category, keyword);
+
+        List<NewsListGetResponseDTO> newsListGetResponseDTOs = (List<NewsListGetResponseDTO>) map.get("newzyList");
+
+        for (NewsListGetResponseDTO news : newsListGetResponseDTOs) {
+            String redisKey = "ranking:news:" + todayDate + ":" + news.getNewsId();  // Redis 키
+            String redisHit = redisTemplate.opsForValue().get(redisKey);  // Redis에서 조회수 가져오기
+            if (redisHit != null) {
+                news.setHit(news.getHit() + Integer.parseInt(redisHit));  // 조회수가 있을 경우 DTO에 설정
+            }
+        }
+
+        return map;
     }
 
 
     @Override
     @Transactional(readOnly = true)
     public List<NewsListGetResponseDTO> getHotNewsList() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOf24HoursAgo = now.minusHours(24); // 현재 시간에서 24시간 이전 시점 계산
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+        String pattern = "ranking:news:" + todayDate + ":*";  // 오늘 날짜의 모든 뉴스 조회수
 
-        return newsRepositorySupport.findTop3NewsByDayWithHighestHits(startOf24HoursAgo, now);
+        Set<String> keys = redisTemplate.keys(pattern);  // 해당 패턴에 맞는 키 가져오기
+
+        // Redis에서 조회수 정보를 가져오고 내림차순으로 정렬 후 상위 3개의 키 추출
+        List<String> topNewsKeys = redisTemplate.opsForValue().multiGet(keys).stream()
+                .sorted((v1, v2) -> Integer.compare(Integer.parseInt(v2), Integer.parseInt(v1)))  // 내림차순 정렬
+                .limit(3)  // 상위 3개
+                .map(key -> key.split(":")[3])  // key에서 newsId 추출
+                .toList();
+
+        // 상위 3개의 newsId에 해당하는 News 객체들을 데이터베이스에서 조회한 후 DTO로 변환
+        return topNewsKeys.stream()
+                .map(newsId -> newsRepository.findById(Long.parseLong(newsId))
+                        .map(NewsListGetResponseDTO::convertToDTO)  // News 객체를 DTO로 변환
+                        .orElseThrow(() -> new EntityNotFoundException("해당 뉴스 데이터를 찾을 수 없습니다.")))
+                .collect(Collectors.toList());
     }
 
 
@@ -229,9 +261,21 @@ public class NewsServiceImpl implements NewsService {
         News news = newsRepository.findById(newsId)
                 .orElseThrow(() -> new EntityNotFoundException("일치하는 뉴스 데이터를 조회할 수 없습니다."));
 
-        // 조회수 + 1 로직 추가
-        news.setHit(news.getHit() + 1);
-        newsRepository.save(news);
+        // redis 조회수 증가
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+        String redisKey = "ranking:news:" + todayDate + ":" + newsId;  // Redis 키
+
+        Long hit = redisTemplate.opsForValue().increment(redisKey);
+
+        // 키가 새로 생성된 경우에만 만료 시간 설정 (24시간)
+        if (hit == 1) {
+            redisTemplate.expire(redisKey, Duration.ofDays(2));  // 24시간 만료 설정
+        }
+
+        NewsDetailGetResponseDTO newsDetailGetResponseDTO =
+                newsRepositorySupport.getNewsDetail(news.getNewsId());
+
+        newsDetailGetResponseDTO.setHit((int) (newsDetailGetResponseDTO.getHit() + hit));
 
         NewsDetailGetResponseDTO newsDetailGetResponseDTO = newsRepositorySupport.getNewsDetail(news.getNewsId());
 

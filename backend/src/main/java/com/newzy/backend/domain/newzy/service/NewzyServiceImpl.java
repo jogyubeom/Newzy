@@ -18,12 +18,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,6 +45,8 @@ public class NewzyServiceImpl implements NewzyService {
     private final NewzyLikeRepositorySupport newzyLikeRepositorySupport;
     private final NewzyBookmarkRepositorySupport newzyBookmarkRepositorySupport;
 
+    private final RedisTemplate<String, String> redisTemplate;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -52,8 +58,20 @@ public class NewzyServiceImpl implements NewzyService {
         int sort = requestDTO.getSort();
         String keyword = requestDTO.getKeyword();
 
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+
         // 내가 쓴 뉴지 목록이 아닐 경우 userId = 0
         Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, category, keyword, sort, userId);
+
+        List<NewzyListGetResponseDTO> newzyListGetResponseDTOs = (List<NewzyListGetResponseDTO>) newzyList.get("newsList");
+
+        for (NewzyListGetResponseDTO newzy : newzyListGetResponseDTOs) {
+            String redisKey = "ranking:newzy:" + todayDate + ":" + newzy.getNewzyId();  // Redis 키
+            String redisHit = redisTemplate.opsForValue().get(redisKey);  // Redis에서 조회수 가져오기
+            if (redisHit != null) {
+                newzy.setHit(newzy.getHit() + Integer.parseInt(redisHit));  // 조회수가 있을 경우 DTO에 설정
+            }
+        }
 
         if (newzyList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 뉴지 데이터를 조회할 수 없습니다.");
@@ -94,15 +112,24 @@ public class NewzyServiceImpl implements NewzyService {
     @Override
     @Transactional(readOnly = true)
     public List<NewzyListGetResponseDTO> getHotNewzyList() {
-        List<Newzy> hotNewzies = newzyRepository.findTop3ByIsDeletedFalseOrderByHitDesc();
-        List<NewzyListGetResponseDTO> hotNewzyList = new ArrayList<>();
+        String yesterdayDate = LocalDate.now().minusDays(1).toString();  // 오늘 날짜
+        String pattern = "ranking:newzy:" + yesterdayDate + ":*";  // 오늘 날짜의 모든 뉴지 조회수
 
-        for (Newzy newzy : hotNewzies) {
-            NewzyListGetResponseDTO dto = NewzyListGetResponseDTO.convertToDTO(newzy);
-            hotNewzyList.add(dto);
-        }
+        Set<String> keys = redisTemplate.keys(pattern);  // 해당 패턴에 맞는 키 가져오기
 
-        return hotNewzyList;
+        // Redis에서 조회수 정보를 가져오고 내림차순으로 정렬 후 상위 3개의 키 추출
+        List<String> topNewzyKeys = redisTemplate.opsForValue().multiGet(keys).stream()
+                .sorted((v1, v2) -> Integer.compare(Integer.parseInt(v2), Integer.parseInt(v1)))  // 내림차순 정렬
+                .limit(6)  // 상위 6개
+                .map(key -> key.split(":")[3])  // key에서 newzyId 추출
+                .toList();
+
+        // 상위 3개의 newsId에 해당하는 News 객체들을 데이터베이스에서 조회한 후 DTO로 변환
+        return topNewzyKeys.stream()
+                .map(newsId -> newzyRepository.findById(Long.parseLong(newsId))
+                        .map(NewzyListGetResponseDTO::convertToDTO)  // News 객체를 DTO로 변환
+                        .orElseThrow(() -> new EntityNotFoundException("해당 뉴스 데이터를 찾을 수 없습니다.")))
+                .collect(Collectors.toList());
     }
 
 
@@ -168,7 +195,7 @@ public class NewzyServiceImpl implements NewzyService {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
 
         Newzy newzy = newzyRepository.findById(newzyId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 뉴스를 찾을 수 없습니다: " + newzyId));
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 뉴지를 찾을 수 없습니다: " + newzyId));
 
         boolean isBookmark = newzyBookmarkRepository.existsByUserAndNewzy(user, newzy);
 

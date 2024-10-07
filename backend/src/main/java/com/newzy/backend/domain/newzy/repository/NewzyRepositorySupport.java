@@ -126,7 +126,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
         int totalPage = (int) ((totalCount + size - 1) / size);
 
         List<NewzyListGetResponseDTO> myNewzyList = queryFactory
-                .select(Projections.constructor(NewzyListGetResponseDTO.class,
+                .select(Projections.fields(NewzyListGetResponseDTO.class,
                         qnewzy.user.userId,
                         qnewzy.user.nickname,
                         qnewzy.user.email,
@@ -182,7 +182,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
         }
 
         JPAQuery<NewzyListGetResponseDTO> query = queryFactory
-                .select(Projections.constructor(NewzyListGetResponseDTO.class,
+                .select(Projections.fields(NewzyListGetResponseDTO.class,
                         qNewzy.user.userId,
                         qNewzy.user.nickname,
                         qNewzy.user.email,
