@@ -1,6 +1,8 @@
 package com.newzy.backend.domain.newzy.service;
 
 import com.newzy.backend.domain.image.service.ImageService;
+import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDTO;
+import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
@@ -25,6 +27,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +61,20 @@ public class NewzyServiceImpl implements NewzyService {
         int sort = requestDTO.getSort();
         String keyword = requestDTO.getKeyword();
 
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+
         // 내가 쓴 뉴지 목록이 아닐 경우 userId = 0
         Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, category, keyword, sort, userId);
+
+        List<NewzyListGetResponseDTO> newzyListGetResponseDTOs = (List<NewzyListGetResponseDTO>) newzyList.get("newsList");
+
+        for(NewzyListGetResponseDTO newzy : newzyListGetResponseDTOs){
+            String redisKey = "ranking:newzy:" + todayDate + ":" + newzy.getNewzyId();  // Redis 키
+            String redisHit = redisTemplate.opsForValue().get(redisKey);  // Redis에서 조회수 가져오기
+            if (redisHit != null) {
+                newzy.setHit(newzy.getHit() + Integer.parseInt(redisHit));  // 조회수가 있을 경우 DTO에 설정
+            }
+        }
 
         if (newzyList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 뉴지 데이터를 조회할 수 없습니다.");
@@ -78,17 +93,27 @@ public class NewzyServiceImpl implements NewzyService {
         String todayDate = LocalDate.now().toString();  // 오늘 날짜
         String redisKey = "ranking:newzy:" + todayDate + ":" + newzyId;  // Redis 키
 
-        redisTemplate.opsForValue().increment(redisKey);
+        Long hit = redisTemplate.opsForValue().increment(redisKey);
 
-        return NewzyResponseDTO.convertToDTO(newzy);
+        // 키가 새로 생성된 경우에만 만료 시간 설정 (24시간)
+        if (hit == 1) {
+            redisTemplate.expire(redisKey, Duration.ofDays(2));  // 24시간 만료 설정
+        }
+        
+        NewzyResponseDTO newzyResponseDTO = NewzyResponseDTO.convertToDTO(newzy);
+
+        // 조회수 새로이 계산해서 넣기
+        newzyResponseDTO.setHit((int) (newzyResponseDTO.getHit() + hit));
+
+        return newzyResponseDTO;
     }
 
 
     @Override
     @Transactional(readOnly = true)
     public List<NewzyListGetResponseDTO> getHotNewzyList() {
-        String todayDate = LocalDate.now().toString();  // 오늘 날짜
-        String pattern = "ranking:newzy:" + todayDate + ":*";  // 오늘 날짜의 모든 뉴지 조회수
+        String yesterdayDate = LocalDate.now().minusDays(1).toString();  // 오늘 날짜
+        String pattern = "ranking:newzy:" + yesterdayDate + ":*";  // 오늘 날짜의 모든 뉴지 조회수
 
         Set<String> keys = redisTemplate.keys(pattern);  // 해당 패턴에 맞는 키 가져오기
 

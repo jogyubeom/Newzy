@@ -22,13 +22,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -54,12 +52,26 @@ public class NewsServiceImpl implements NewsService {
     public Map<String, Object> getNewsList(NewsListGetRequestDTO newsListGetRequestDTO) {
         log.info(">>> getNewsList - dto: {}", newsListGetRequestDTO);
 
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+
         int page = newsListGetRequestDTO.getPage();
         int category = newsListGetRequestDTO.getCategory();
         int sort = newsListGetRequestDTO.getSort();
         String keyword = newsListGetRequestDTO.getKeyword();
 
-        return newsRepositorySupport.findNewsList(page, sort, category, keyword);
+        Map<String, Object> map = newsRepositorySupport.findNewsList(page, sort, category, keyword);
+
+        List<NewsListGetResponseDTO> newsListGetResponseDTOs = (List<NewsListGetResponseDTO>) map.get("newzyList");
+
+        for(NewsListGetResponseDTO news : newsListGetResponseDTOs){
+            String redisKey = "ranking:news:" + todayDate + ":" + news.getNewsId();  // Redis 키
+            String redisHit = redisTemplate.opsForValue().get(redisKey);  // Redis에서 조회수 가져오기
+            if (redisHit != null) {
+                news.setHit(news.getHit() + Integer.parseInt(redisHit));  // 조회수가 있을 경우 DTO에 설정
+            }
+        }
+
+        return map;
     }
 
 
@@ -248,10 +260,20 @@ public class NewsServiceImpl implements NewsService {
         String todayDate = LocalDate.now().toString();  // 오늘 날짜
         String redisKey = "ranking:news:" + todayDate + ":" + newsId;  // Redis 키
 
-        redisTemplate.opsForValue().increment(redisKey);
+        Long hit = redisTemplate.opsForValue().increment(redisKey);
+
+        // 키가 새로 생성된 경우에만 만료 시간 설정 (24시간)
+        if (hit == 1) {
+            redisTemplate.expire(redisKey, Duration.ofDays(2));  // 24시간 만료 설정
+        }
+
+        NewsDetailGetResponseDTO newsDetailGetResponseDTO =
+                newsRepositorySupport.getNewsDetail(news.getNewsId());
+
+        newsDetailGetResponseDTO.setHit((int) (newsDetailGetResponseDTO.getHit() + hit));
 
         // DTO로 변환하여 반환
-        return newsRepositorySupport.getNewsDetail(news.getNewsId());
+        return newsDetailGetResponseDTO;
     }
 
 
