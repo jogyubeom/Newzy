@@ -1,7 +1,5 @@
 package com.newzy.backend.domain.news.dto.response;
 
-import com.newzy.backend.domain.news.entity.News;
-import jakarta.persistence.Column;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @ToString
-public class NewsDetailGetResponseDto {
+public class NewsDetailGetResponseDTO {
 
     private Long newsId;
     private String link;

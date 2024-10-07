@@ -1,6 +1,6 @@
 package com.newzy.backend.domain.news.repository;
 
-import com.newzy.backend.domain.news.dto.response.NewsCardListGetResponseDto;
+import com.newzy.backend.domain.news.dto.response.NewsCardListGetResponseDTO;
 import com.newzy.backend.domain.news.entity.NewsCard;
 import com.newzy.backend.domain.news.entity.QNews;
 import com.newzy.backend.domain.news.entity.QNewsCard;
@@ -43,8 +43,8 @@ public class NewsCardRepositorySupport extends QuerydslRepositorySupport {
         int totalPage = (int) ((totalCount + size - 1) / size);
 
         // NewsCard 목록 조회 - 페이지네이션 적용
-        List<NewsCardListGetResponseDto> newsCardList = queryFactory
-                .select(Projections.constructor(NewsCardListGetResponseDto.class,
+        List<NewsCardListGetResponseDTO> newsCardList = queryFactory
+                .select(Projections.constructor(NewsCardListGetResponseDTO.class,
                         newsCard.newsCardId,
                         newsCard.user.userId,
                         newsCard.user.nickname,
@@ -71,13 +71,13 @@ public class NewsCardRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-    public NewsCardListGetResponseDto findNewsCardInfo(Long cardId) {
+    public NewsCardListGetResponseDTO findNewsCardInfo(Long cardId) {
         QNewsCard newsCard = QNewsCard.newsCard;
         QUser user = QUser.user;
         QNews news = QNews.news;
 
         return queryFactory
-                .select(Projections.constructor(NewsCardListGetResponseDto.class,
+                .select(Projections.constructor(NewsCardListGetResponseDTO.class,
                         newsCard.newsCardId,
                         newsCard.user.userId,
                         newsCard.user.nickname,

@@ -5,11 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
-import com.newzy.backend.domain.news.dto.response.NewsDailyGetResponseDTO;
-import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
-import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
-import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
-import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
 import com.newzy.backend.domain.news.dto.response.*;
 import com.newzy.backend.domain.news.entity.News;
 import com.newzy.backend.domain.news.entity.NewsBookmark;
@@ -21,8 +16,6 @@ import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -35,6 +28,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -70,11 +65,25 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NewsListGetResponseDto> getHotNewsList() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOf24HoursAgo = now.minusHours(24); // 현재 시간에서 24시간 이전 시점 계산
+    public List<NewsListGetResponseDTO> getHotNewsList() {
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+        String pattern = "ranking:news:" + todayDate + ":*";  // 오늘 날짜의 모든 뉴스 조회수
 
-        return newsRepositorySupport.findTop3NewsByDayWithHighestHits(startOf24HoursAgo, now);
+        Set<String> keys = redisTemplate.keys(pattern);  // 해당 패턴에 맞는 키 가져오기
+
+        // Redis에서 조회수 정보를 가져오고 내림차순으로 정렬 후 상위 3개의 키 추출
+        List<String> topNewsKeys = redisTemplate.opsForValue().multiGet(keys).stream()
+                .sorted((v1, v2) -> Integer.compare(Integer.parseInt(v2), Integer.parseInt(v1)))  // 내림차순 정렬
+                .limit(3)  // 상위 3개
+                .map(key -> key.split(":")[3])  // key에서 newsId 추출
+                .toList();
+
+        // 상위 3개의 newsId에 해당하는 News 객체들을 데이터베이스에서 조회한 후 DTO로 변환
+        return topNewsKeys.stream()
+                .map(newsId -> newsRepository.findById(Long.parseLong(newsId))
+                        .map(NewsListGetResponseDTO::convertToDTO)  // News 객체를 DTO로 변환
+                        .orElseThrow(() -> new EntityNotFoundException("해당 뉴스 데이터를 찾을 수 없습니다.")))
+                .collect(Collectors.toList());
     }
 
 
@@ -87,7 +96,7 @@ public class NewsServiceImpl implements NewsService {
 
 
     @Override
-    public NewsCardListGetResponseDto getCardInfo(Long userId, Long cardId) {
+    public NewsCardListGetResponseDTO getCardInfo(Long userId, Long cardId) {
 
         return newsCardRepositorySupport.findNewsCardInfo(cardId);
     }
@@ -231,13 +240,15 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public NewsDetailGetResponseDto getNewsDetail(Long NewsId) {    // 조회수 + 1
-        News news = newsRepository.findById(NewsId)
+    public NewsDetailGetResponseDTO getNewsDetail(Long newsId) {    // 조회수 + 1
+        News news = newsRepository.findById(newsId)
                 .orElseThrow(() -> new EntityNotFoundException("일치하는 뉴스 데이터를 조회할 수 없습니다."));
 
-        // 조회수 + 1 로직 추가
-        news.setHit(news.getHit() + 1);
-        newsRepository.save(news);
+        // redis 조회수 증가
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+        String redisKey = "ranking:news:" + todayDate + ":" + newsId;  // Redis 키
+
+        redisTemplate.opsForValue().increment(redisKey);
 
         // DTO로 변환하여 반환
         return newsRepositorySupport.getNewsDetail(news.getNewsId());

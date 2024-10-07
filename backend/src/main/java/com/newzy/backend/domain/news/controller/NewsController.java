@@ -3,11 +3,6 @@ package com.newzy.backend.domain.news.controller;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
 import com.newzy.backend.domain.news.dto.response.*;
-import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
-import com.newzy.backend.domain.news.dto.response.NewsDailyGetResponseDTO;
-import com.newzy.backend.domain.news.dto.response.NewsDetailGetResponseDto;
-import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDto;
-import com.newzy.backend.domain.news.dto.response.NewsRecommendGetResponseDTO;
 import com.newzy.backend.domain.news.service.NewsService;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
@@ -36,11 +31,11 @@ public class NewsController {
 
     @GetMapping("/{newsId}")
     @Operation(summary = "뉴스 정보 조회", description = "뉴스 ID로 뉴스의 상세 정보를 조회합니다.")
-    public ResponseEntity<NewsDetailGetResponseDto> getNews(
+    public ResponseEntity<NewsDetailGetResponseDTO> getNews(
             @Parameter(description = "뉴스 ID", required = true)
             @PathVariable Long newsId) {
         log.info(">>> [GET] /news/{} - 요청 ID: {}", newsId, newsId);
-        NewsDetailGetResponseDto newsDetailGetResponseDto = newsService.getNewsDetail(newsId);
+        NewsDetailGetResponseDTO newsDetailGetResponseDto = newsService.getNewsDetail(newsId);
 
         return ResponseEntity.status(200).body(newsDetailGetResponseDto);
     }
@@ -53,7 +48,7 @@ public class NewsController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @Parameter(description = "카테고리")
             @RequestParam(value = "category", required = false, defaultValue = "3") int category,
-            @Parameter(description = "정렬기준")
+            @Parameter(description = "정렬기준 (0: 기사 등록시간 최신순, 1: 조회수순)")
             @RequestParam(value = "sort", required = false, defaultValue = "0") int sort,
             @Parameter(description = "키워드")
             @RequestParam(value = "keyword", required = false) String keyword) {
@@ -67,9 +62,9 @@ public class NewsController {
 
     @GetMapping(value = "/hot")
     @Operation(summary = "많이 본 뉴스 조회", description = "조회수가 많은 뉴스를 조회합니다.")
-    public ResponseEntity<List<NewsListGetResponseDto>> getHotNewsList() {
+    public ResponseEntity<List<NewsListGetResponseDTO>> getHotNewsList() {
         log.info(">>> [GET] /news/hot - 요청 파라미터");
-        List<NewsListGetResponseDto> hotNewsList = newsService.getHotNewsList();
+        List<NewsListGetResponseDTO> hotNewsList = newsService.getHotNewsList();
 
         return ResponseEntity.status(200).body(hotNewsList);
     }
@@ -109,12 +104,12 @@ public class NewsController {
             @RequestBody NewsCardRequestDTO requestDto,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         } else {
-            throw new NoTokenRequestException ("유효한 유저 토큰이 없습니다.");
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
 
         log.info(">>> [POST] /news/{}/collect-news-card - 요청 파라미터 : newsId - {}, userId - {}", requestDto.getNewsId(), requestDto.getNewsId(), userId);
@@ -135,7 +130,7 @@ public class NewsController {
             @RequestHeader(value = "Authorization", required = true) String token,
             @Parameter(description = "페이지 번호")
             @RequestParam(value = "page", required = false, defaultValue = "1") int page
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
@@ -151,11 +146,11 @@ public class NewsController {
 
     @GetMapping(value = "/news-card-list/{cardId}")
     @Operation(summary = "뉴스 카드", description = "뉴스 카드의 상세 정보를 반환합니다.")
-    public ResponseEntity<NewsCardListGetResponseDto> getNewsCardDetail(
+    public ResponseEntity<NewsCardListGetResponseDTO> getNewsCardDetail(
             @PathVariable("cardId") Long cardId,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
@@ -164,18 +159,18 @@ public class NewsController {
         }
         log.info(">>> [GET] /news/news-card-list - 요청 파라미터 : userId - {}, cardId - {}", userId, cardId);
 
-        NewsCardListGetResponseDto cardInfo = newsService.getCardInfo(userId, cardId);
+        NewsCardListGetResponseDTO cardInfo = newsService.getCardInfo(userId, cardId);
         return ResponseEntity.status(200).body(cardInfo);
     }
 
 
     @PostMapping(value = "/{newsId}/bookmark")
     @Operation(summary = "뉴스 북마크 등록", description = "해당 뉴스를 북마크합니다.")
-    public ResponseEntity<BaseResponseBody> bookmarkNews (
+    public ResponseEntity<BaseResponseBody> bookmarkNews(
             @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         if (newsId == null) {
             throw new CustomIllegalStateException("해당 아이디의 뉴스를 찾을 수 없습니다.: " + newsId);
         }
@@ -200,7 +195,7 @@ public class NewsController {
             @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         if (newsId == null) {
             throw new CustomIllegalStateException("해당 아이디의 뉴스를 찾을 수 없습니다.: " + newsId);
         }
@@ -221,11 +216,11 @@ public class NewsController {
 
     @PostMapping("/{newsId}/like")
     @Operation(summary = "뉴스 좋아요 등록", description = "해당 뉴스가 좋습니다.")
-    public ResponseEntity<BaseResponseBody> likeNews (
+    public ResponseEntity<BaseResponseBody> likeNews(
             @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         if (newsId == null) {
             throw new CustomIllegalStateException("해당 아이디의 뉴스를 찾을 수 없습니다." + newsId);
         }
@@ -250,7 +245,7 @@ public class NewsController {
             @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
-    ){
+    ) {
         if (newsId == null) {
             throw new CustomIllegalStateException("해당 아이디의 뉴스를 찾을 수 없습니다." + newsId);
         }
@@ -261,7 +256,7 @@ public class NewsController {
         } else {
             throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
-        log.info(">>> [DELETE] /news/{}/like - 요청 파라미터: newsId - {}, userId - {}", newsId, newsId, userId );
+        log.info(">>> [DELETE] /news/{}/like - 요청 파라미터: newsId - {}, userId - {}", newsId, newsId, userId);
 
         newsService.deleteLike(userId, newsId);
 

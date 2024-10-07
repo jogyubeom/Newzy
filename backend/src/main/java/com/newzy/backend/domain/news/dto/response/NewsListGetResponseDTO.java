@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @ToString
-public class NewsListGetResponseDto {
+public class NewsListGetResponseDTO {
     private Long newsId;
     private String link;
     private String title;
@@ -22,11 +22,11 @@ public class NewsListGetResponseDto {
     private int hit;
     private LocalDateTime createdAt;
 
-    public static NewsListGetResponseDto convertToDTO(News news){
+    public static NewsListGetResponseDTO convertToDTO(News news){
         if (news == null){
             throw new IllegalArgumentException("뉴스 엔티티가 없습니다.");
         }
-        return NewsListGetResponseDto.builder()
+        return NewsListGetResponseDTO.builder()
                 .newsId(news.getNewsId())
                 .link(news.getLink())
                 .title(news.getTitle())

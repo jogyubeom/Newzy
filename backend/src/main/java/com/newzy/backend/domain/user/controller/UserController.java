@@ -160,18 +160,18 @@ public class UserController {
     }
 
 
-    @PostMapping("/uploadProfileImage")
+    @PostMapping("/upload-profile")
     public ResponseEntity<BaseResponseBody> uploadProfileImage(@RequestPart(value = "profile", required = false) MultipartFile[] profile,
                                                                @RequestHeader(value = "Authorization", required = false) String token) {
-        log.info(">>> [POST] /api/users/uploadProfileImage - 프로필 사진 업로드 요청");
+        log.info(">>> [POST] /api/users/upload-profile - 프로필 사진 업로드 요청");
 
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
-            log.info(">>> [GET] /user/first/login - Bearer 제거 후 토큰: {}", token);
+            log.info(">>> [GET] /api/users/upload-profile - Bearer 제거 후 토큰: {}", token);
         }
 
         UserInfoResponseDTO user = userService.updateProfileImage(token, profile);
-        log.info(">>> [PATCH] /user - 회원 수정 완료: {}", user);
+        log.info(">>> [PATCH] /api/users/upload-profile - 회원 수정 완료: {}", user);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(BaseResponseBody.of(204, "프로필 사진 업데이트가 완료되었습니다."));
     }
 
@@ -402,7 +402,6 @@ public class UserController {
 
         return ResponseEntity.status(200).body(followingsNewzyList);
     }
-
 
 
 }

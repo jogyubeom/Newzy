@@ -1,11 +1,9 @@
 package com.newzy.backend.domain.newzy.repository;
-import com.newzy.backend.domain.newzy.dto.response.NewzyCommentListGetResponseDto;
+
 import com.newzy.backend.domain.newzy.entity.NewzyComment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 public interface NewzyCommentRepository extends JpaRepository<NewzyComment, Long> {
 
@@ -14,23 +12,23 @@ public interface NewzyCommentRepository extends JpaRepository<NewzyComment, Long
     Page<NewzyComment> findAllByNewzy_NewzyIdAndIsDeletedFalse(Long newzyId, Pageable pageable);
 
     default NewzyComment updateNewzyCommentById(NewzyComment newzyComment) {
-       NewzyComment updatedComment = findById(newzyComment.getNewzyCommentId()).orElse(null);
+        NewzyComment updatedComment = findById(newzyComment.getNewzyCommentId()).orElse(null);
 
-       if (updatedComment == null) {
-           new IllegalArgumentException("Newzy comment not found with ID");
-       }
+        if (updatedComment == null) {
+            new IllegalArgumentException("Newzy comment not found with ID");
+        }
 
-       updatedComment.setNewzyComment(newzyComment.getNewzyComment());
+        updatedComment.setNewzyComment(newzyComment.getNewzyComment());
 
-       return save(updatedComment);
-   }
+        return save(updatedComment);
+    }
 
-   default void deleteNewzyCommentById(Long newzyCommentId) {
-       NewzyComment newzyComment = findById(newzyCommentId).orElse(null);
+    default void deleteNewzyCommentById(Long newzyCommentId) {
+        NewzyComment newzyComment = findById(newzyCommentId).orElse(null);
         if (newzyComment == null) {
             new IllegalArgumentException("Newzy comment not found with ID");
         }
         newzyComment.setIsDeleted(true);
         save(newzyComment);
-   }
+    }
 }

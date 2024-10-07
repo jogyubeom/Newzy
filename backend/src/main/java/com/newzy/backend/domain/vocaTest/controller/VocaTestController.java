@@ -1,10 +1,9 @@
 package com.newzy.backend.domain.vocaTest.controller;
 
 import com.newzy.backend.domain.user.service.UserService;
-import com.newzy.backend.domain.vocaTest.dto.request.TestResultRequestDto;
-import com.newzy.backend.domain.vocaTest.dto.response.TestWordListResponseDto;
+import com.newzy.backend.domain.vocaTest.dto.request.TestResultRequestDTO;
+import com.newzy.backend.domain.vocaTest.dto.response.TestWordListResponseDTO;
 import com.newzy.backend.domain.vocaTest.service.VocaTestService;
-import com.newzy.backend.domain.vocaTest.service.VocaTestServiceImpl;
 import com.newzy.backend.global.exception.NotValidRequestException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,9 +27,9 @@ public class VocaTestController {
 
     @GetMapping
     @Operation(summary = "어휘 테스트 목록", description = "어휘 테스트 목록을 조회합니다.")
-    public ResponseEntity<List<TestWordListResponseDto>> getTestPage(){
+    public ResponseEntity<List<TestWordListResponseDTO>> getTestPage(){
         log.info(">>> [GET] /user/vocabulary-test");
-        List<TestWordListResponseDto>  testWordList = vocaTestService.getWordList();
+        List<TestWordListResponseDTO>  testWordList = vocaTestService.getWordList();
 
         return ResponseEntity.status(200).body(testWordList);
     }
@@ -41,7 +40,7 @@ public class VocaTestController {
     public ResponseEntity<BaseResponseBody> gradeUserScore(
             @Parameter(description = "JWT")
             @RequestHeader(value = "Authorization") String token,
-            @RequestBody @Valid TestResultRequestDto scoreList
+            @RequestBody @Valid TestResultRequestDTO scoreList
     ){
         Long userId = 0L;
         if (token != null) {

@@ -1,7 +1,7 @@
 package com.newzy.backend.domain.newzy.service;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyCommentRequestDTO;
-import com.newzy.backend.domain.newzy.dto.response.NewzyCommentListGetResponseDto;
+import com.newzy.backend.domain.newzy.dto.response.NewzyCommentListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyCommentResponseDTO;
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.newzy.entity.NewzyComment;
@@ -18,9 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -35,10 +33,10 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
     private final UserRepository userRepository;
 
     @Override
-    public List<NewzyCommentListGetResponseDto> getNewzyCommentList(Long newzyId) {
+    public List<NewzyCommentListGetResponseDTO> getNewzyCommentList(Long newzyId) {
 
         int size = 10;
-        List<NewzyCommentListGetResponseDto> commentList = newzyCommentRepositorySupport.findCommentList(newzyId);
+        List<NewzyCommentListGetResponseDTO> commentList = newzyCommentRepositorySupport.findCommentList(newzyId);
 
         if (commentList.isEmpty()) {
             throw new EntityNotFoundException("일치하는 댓글 데이터를 조회할 수 없습니다.");
@@ -48,8 +46,8 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
 
 
     @Override
-    public void saveComment(Long userId, Long newzyId, NewzyCommentRequestDTO dto){
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다. : " + userId ));
+    public void saveComment(Long userId, Long newzyId, NewzyCommentRequestDTO dto) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다. : " + userId));
         Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴지 엔티티를 찾을 수 없습니다.: " + newzyId));
 
         NewzyComment newzyComment = NewzyComment.convertToEntityByNewzyId(dto, user, newzy);
@@ -61,7 +59,7 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
     @Override
     public NewzyCommentResponseDTO updateComment(Long userId, Long newzyCommentId, NewzyCommentRequestDTO dto) {
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다. : " + userId ));
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다. : " + userId));
 
         NewzyComment comment = newzyCommentRepository.findById(newzyCommentId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴지 댓글 데이터를 찾을 수 없습니다. : " + newzyCommentId));
 
@@ -78,11 +76,11 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
 
         NewzyComment comment = newzyCommentRepository.findById(newzyCommentId).orElseThrow(() -> new EntityNotFoundException("해당하는  댓글 엔티티를 찾을 수 없습니다.: " + newzyCommentId));
 
-        if (comment.getIsDeleted()){
+        if (comment.getIsDeleted()) {
             throw new CustomIllegalStateException("이미 삭제된 뉴지 댓글 입니다.");
         }
 
-        if (userId.equals(comment.getUser().getUserId())){
+        if (userId.equals(comment.getUser().getUserId())) {
             newzyCommentRepository.deleteById(newzyCommentId);
         }
     }
