@@ -31,7 +31,6 @@ export const NewzyDetail = () => {
     try {
       const response = await axios.get(`https://j11b305.p.ssafy.io/api/newzy/${id}`);
       setNewzy(response.data);
-      console.log("정보 가져옴")
     } catch (error) {
       console.error("Error fetching newzy details:", error);
     }
@@ -58,7 +57,7 @@ export const NewzyDetail = () => {
       <div className="w-[17%]"></div>
 
       <UtilityButtons onActiveSidebar={handleSidebarToggle} activeSidebar={activeSidebar} />
-      <Sidebar activeSidebar={activeSidebar} onActiveSidebar={handleSidebarToggle} />
+      <Sidebar activeSidebar={activeSidebar} onActiveSidebar={handleSidebarToggle} category={3} />
     </div>
   );
 };

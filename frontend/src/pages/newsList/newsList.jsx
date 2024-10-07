@@ -92,6 +92,7 @@ export const NewsList = () => {
       <div className="bg-white">
         <div className="flex justify-between items-center mb-4 px-4 py-2">
           <SearchBar
+            type='news'
             selectedRange={state.sort.selectedRange}
             onRangeClick={(range) =>
               handleCategoryOrRangeClick("selectedRange", range)

@@ -57,7 +57,7 @@ export const NewsDetail = () => {
       <div className="w-[17%]"></div>
 
       <UtilityButtons onActiveSidebar={handleSidebarToggle} activeSidebar={activeSidebar} />
-      <Sidebar activeSidebar={activeSidebar} onActiveSidebar={handleSidebarToggle} />
+      <Sidebar activeSidebar={activeSidebar} onActiveSidebar={handleSidebarToggle} category={news.category}/>
     </div>
   );
 };
