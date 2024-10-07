@@ -4,7 +4,7 @@ import CategoryBadge from '../../../shared/categoryBadge';
 import useAuthStore from 'shared/store/userStore'; // Zustand store import
 import baseAxios from '../../../shared/utils/baseAxios';
 
-const NewzyInfo = ({ category, title, date, author, newzyId }) => {
+const NewzyInfo = ({ category, title, date, author, newzyId, isFollowed, onFollowChange }) => {
   const navigate = useNavigate(); // useNavigate 사용
   const { token, userInfo } = useAuthStore(state => ({
     token: state.token,
@@ -14,22 +14,35 @@ const NewzyInfo = ({ category, title, date, author, newzyId }) => {
 
   const handleSubscribe = async () => {
     if (!token) {
-      // 토큰이 없으면 로그인 요청
       alert("로그인이 필요합니다.");
       return; // 동작 중단
     }
 
     try {
-      // POST 요청으로 구독하기
       await baseAxios(token).post(`/user/${author}/follower`);
-      console.log(`${author}님을 구독했습니다.`);
+      alert(`${author}님을 구독했습니다.`);
+      onFollowChange(true); // 구독 후 상태 업데이트
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        // 409 에러인 경우 이미 구독 중이라는 메시지 표시
         alert("이미 구독한 사용자입니다.");
       } else {
         console.error("Error subscribing to author:", error);
       }
+    }
+  };
+
+  const handleUnsubscribe = async () => {
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      await baseAxios(token).delete(`/user/${author}/follower`);
+      alert(`${author}님의 구독을 취소했습니다.`);
+      onFollowChange(false); // 구독 취소 후 상태 업데이트
+    } catch (error) {
+      console.error("Error unsubscribing from author:", error);
     }
   };
 
@@ -39,14 +52,10 @@ const NewzyInfo = ({ category, title, date, author, newzyId }) => {
       return;
     }
 
-    // 삭제 확인을 위한 확인창을 띄움
     const confirmed = window.confirm("정말 삭제하시겠습니까?");
-    if (!confirmed) {
-      return; // 사용자가 '취소'를 누른 경우 동작 중단
-    }
+    if (!confirmed) return;
 
     try {
-      // 삭제 요청 전송
       await baseAxios(token).delete(`/newzy/${newzyId}`);
       navigate('/newzy'); // 성공 시 newzyList 페이지로 이동
     } catch (error) {
@@ -68,7 +77,7 @@ const NewzyInfo = ({ category, title, date, author, newzyId }) => {
             <button className="px-4 py-2 text-[#333] bg-[#F0F0F0] rounded-md text-sm">
               수정
             </button>
-            <button 
+            <button
               onClick={handleDelete} // 삭제 버튼 클릭 시 handleDelete 호출
               className="ml-2 px-4 py-2 text-[#333] bg-[#F0F0F0] rounded-md text-sm"
             >
@@ -76,13 +85,22 @@ const NewzyInfo = ({ category, title, date, author, newzyId }) => {
             </button>
           </>
         ) : (
-          // 작성자가 아닐 경우 구독 버튼을 보여줌
-          <button 
-            onClick={handleSubscribe} // 구독 버튼 클릭 시 handleSubscribe 호출
-            className="px-4 py-2 text-[#333] bg-[#F0F0F0] rounded-md text-sm"
-          >
-            구독 +
-          </button>
+          // 작성자가 아닐 경우 구독 또는 구독 취소 버튼을 보여줌
+          isFollowed ? (
+            <button
+              onClick={handleUnsubscribe} // 구독 취소 버튼 클릭 시 handleUnsubscribe 호출
+              className="px-4 py-2 text-[#333] bg-[#F0F0F0] rounded-md text-sm"
+            >
+              구독 취소
+            </button>
+          ) : (
+            <button
+              onClick={handleSubscribe} // 구독 버튼 클릭 시 handleSubscribe 호출
+              className="px-4 py-2 text-[#333] bg-[#F0F0F0] rounded-md text-sm"
+            >
+              구독 +
+            </button>
+          )
         )}
       </div>
     </div>
