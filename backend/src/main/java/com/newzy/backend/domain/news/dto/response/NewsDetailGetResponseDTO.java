@@ -27,6 +27,7 @@ public class NewsDetailGetResponseDTO {
     private LocalDateTime crawledAt = LocalDateTime.now();
     @Builder.Default
     private int hit = 0;
+    private int likeCnt;
     private String thumbnail;
     @JsonProperty("isLiked")
     private boolean isLiked;
@@ -35,7 +36,7 @@ public class NewsDetailGetResponseDTO {
     @JsonProperty("isCollected")
     private boolean isCollected;
 
-    public NewsDetailGetResponseDTO(Long newsId, String link, String title, String content, String contentText, int difficulty, int category, String publisher, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime crawledAt, int hit, String thumbnail) {
+    public NewsDetailGetResponseDTO(Long newsId, String link, String title, String content, String contentText, int difficulty, int category, String publisher, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime crawledAt, int hit, int likeCnt, String thumbnail) {
         this.newsId = newsId;
         this.link = link;
         this.title = title;
@@ -47,6 +48,7 @@ public class NewsDetailGetResponseDTO {
         this.createdAt = createdAt;
         this.crawledAt = crawledAt;
         this.hit = hit;
+        this.likeCnt = likeCnt;
         this.thumbnail = thumbnail;
         this.updatedAt = updatedAt;
     }
