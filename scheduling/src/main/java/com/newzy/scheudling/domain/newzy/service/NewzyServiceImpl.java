@@ -1,8 +1,6 @@
 package com.newzy.scheudling.domain.newzy.service;
 
 
-import com.newzy.scheudling.domain.news.entity.News;
-import com.newzy.scheudling.domain.news.repository.NewsRepository;
 import com.newzy.scheudling.domain.newzy.entity.Newzy;
 import com.newzy.scheudling.domain.newzy.repository.NewzyRepository;
 import com.newzy.scheudling.global.exception.EntityNotFoundException;
@@ -54,7 +52,7 @@ public class NewzyServiceImpl implements NewzyService {
 
         // 상위 N개의 조회수 데이터만 Redis에 남기고 나머지는 삭제
         List<String> topNKeys = sortedNewzyData.stream()
-                .limit(3)  // 상위 3개의 키만 남김
+                .limit(6)  // 상위 6개의 키만 남김
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
