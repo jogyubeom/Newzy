@@ -278,7 +278,7 @@ def crawl_news_detail(driver, url: str,
         logging.warning(f">>> {url} : 본문 길이가 {min_length} 이하입니다. 건너뜁니다.")
         return False  # 실패 반환
 
-    content = remove_ad_divs(content)
+    content = remove_ad_divs(str(content))
 
     article = {
         'link': url,
