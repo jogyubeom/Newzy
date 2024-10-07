@@ -5,13 +5,10 @@ import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
+import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.newzy.entity.NewzyBookmark;
 import com.newzy.backend.domain.newzy.entity.NewzyLike;
-import com.newzy.backend.domain.newzy.entity.Newzy;
-import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
-import com.newzy.backend.domain.newzy.repository.NewzyLikeRepository;
-import com.newzy.backend.domain.newzy.repository.NewzyRepository;
-import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
+import com.newzy.backend.domain.newzy.repository.*;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
@@ -19,14 +16,14 @@ import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 @Slf4j
 @Service
@@ -41,6 +38,8 @@ public class NewzyServiceImpl implements NewzyService {
     private final UserRepository userRepository;
     private final NewzyBookmarkRepository newzyBookmarkRepository;
     private final ImageService imageService;
+    private final NewzyLikeRepositorySupport newzyLikeRepositorySupport;
+    private final NewzyBookmarkRepositorySupport newzyBookmarkRepositorySupport;
 
 
     @Override
@@ -65,13 +64,30 @@ public class NewzyServiceImpl implements NewzyService {
 
 
     @Override
-    public NewzyResponseDTO getNewzyDetail(Long newzyId) {  // 조회수 + 1
-        log.info(">>> newzyServiceImpl getNewzyDetail - newzyId: {}", newzyId);
-        Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new EntityNotFoundException("일치하는 뉴지 데이터를 찾을 수 없습니다."));
+    public NewzyResponseDTO getNewzyDetail(Long userId, Long newzyId) {
+        log.info(">>> newzyServiceImpl getNewzyDetail - userId: {}, newzyId: {}", userId, newzyId);
+
+        Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(
+                () -> new EntityNotFoundException("일치하는 뉴지 데이터를 찾을 수 없습니다.")
+        );
+
         newzy.setHit(newzy.getHit() + 1);
         newzyRepository.save(newzy);
 
-        return NewzyResponseDTO.convertToDTO(newzy);
+        NewzyResponseDTO newzyResponseDTO = NewzyResponseDTO.convertToDTO(newzy);
+
+        if (userId != 0) {
+            User user = userRepository.findByUserId(userId).orElseThrow(
+                    () -> new EntityNotFoundException("일치하는 유저를 찾을 수 없습니다.")
+            );
+
+            boolean isLiked = newzyLikeRepositorySupport.isLikedByUser(userId, newzyId);
+            if (isLiked) newzyResponseDTO.setLiked(true);
+            boolean isBookmarked = newzyBookmarkRepositorySupport.isBookmarkedByUser(userId, newzyId);
+            if (isBookmarked) newzyResponseDTO.setBookmakred(true);
+        }
+
+        return newzyResponseDTO;
     }
 
 
@@ -138,7 +154,7 @@ public class NewzyServiceImpl implements NewzyService {
         Newzy newzy = newzyRepository.findById(newzyId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 뉴스를 찾을 수 없습니다: " + newzyId));
 
-        if(newzy.isDeleted()){
+        if (newzy.isDeleted()) {
             throw new CustomIllegalStateException("이미 삭제된 뉴지 입니다.");
         }
 
@@ -175,7 +191,7 @@ public class NewzyServiceImpl implements NewzyService {
         Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new EntityNotFoundException("일치하는 뉴지 데이터가 없습니다."));
         boolean isBookmark = newzyBookmarkRepository.existsByUserAndNewzy(user, newzy);
 
-        if (! isBookmark) {
+        if (!isBookmark) {
             throw new EntityNotFoundException("해당하는 북마크 데이터가 없습니다.");
         }
 
@@ -208,7 +224,7 @@ public class NewzyServiceImpl implements NewzyService {
 
         boolean isLike = newzyLikeRepository.existsByUserAndNewzy(user, newzy);
 
-        if (! isLike) {
+        if (!isLike) {
             throw new EntityIsFoundException("해당하는 뉴지 좋아요가 없습니다.");
         }
 

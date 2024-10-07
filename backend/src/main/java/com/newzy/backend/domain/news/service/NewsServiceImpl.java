@@ -44,6 +44,8 @@ public class NewsServiceImpl implements NewsService {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 파싱을 위해 사용
     private final NewsCardRepositorySupport newsCardRepositorySupport;
+    private final NewsLikeRepositorySupport newsLikeRepositorySupport;
+    private final NewsBookmarkRepositorySupport newsBookmarkRepositorySupport;
 
 
     @Override  // branch : feature/get-news의 NewsServiceImpl 참고
@@ -223,16 +225,28 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public NewsDetailGetResponseDTO getNewsDetail(Long NewsId) {    // 조회수 + 1
-        News news = newsRepository.findById(NewsId)
+    public NewsDetailGetResponseDTO getNewsDetail(Long userId, Long newsId) {
+        News news = newsRepository.findById(newsId)
                 .orElseThrow(() -> new EntityNotFoundException("일치하는 뉴스 데이터를 조회할 수 없습니다."));
 
         // 조회수 + 1 로직 추가
         news.setHit(news.getHit() + 1);
         newsRepository.save(news);
 
-        // DTO로 변환하여 반환
-        return newsRepositorySupport.getNewsDetail(news.getNewsId());
+        NewsDetailGetResponseDTO newsDetailGetResponseDTO = newsRepositorySupport.getNewsDetail(news.getNewsId());
+
+        if (userId != 0) {
+            User user = userRepository.findByUserId(userId).orElseThrow(
+                    () -> new EntityNotFoundException("일치하는 유저를 찾을 수 없습니다.")
+            );
+            boolean isLiked = newsLikeRepositorySupport.isLikedByUser(userId, newsId);
+            if (isLiked) newsDetailGetResponseDTO.setLiked(true);
+            boolean isBookmarked = newsBookmarkRepositorySupport.isBookmarkedByUser(userId, newsId);
+            if (isBookmarked) newsDetailGetResponseDTO.setBookmarked(true);
+
+        }
+
+        return newsDetailGetResponseDTO;
     }
 
 

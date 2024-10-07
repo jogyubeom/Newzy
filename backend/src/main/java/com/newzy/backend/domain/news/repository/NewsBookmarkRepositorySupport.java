@@ -4,6 +4,7 @@ import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDTO;
 import com.newzy.backend.domain.news.entity.NewsBookmark;
 import com.newzy.backend.domain.news.entity.QNews;
 import com.newzy.backend.domain.news.entity.QNewsBookmark;
+import com.newzy.backend.domain.newzy.entity.QNewzyBookmark;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,6 +23,17 @@ public class NewsBookmarkRepositorySupport extends QuerydslRepositorySupport {
     public NewsBookmarkRepositorySupport(JPAQueryFactory queryFactory) {
         super(NewsBookmark.class);
         this.queryFactory = queryFactory;
+    }
+
+    public boolean isBookmarkedByUser(Long userId, Long newsId) {
+        QNewsBookmark bookmark = QNewsBookmark.newsBookmark;
+        Integer count = queryFactory
+                .selectOne()
+                .from(bookmark)
+                .where(bookmark.user.userId.eq(userId)
+                        .and(bookmark.news.newsId.eq(newsId)))
+                .fetchFirst();
+        return count != null;
     }
 
     public Map<String, Object> findNewsListByNewsBookmark(int page, Long userId) {
