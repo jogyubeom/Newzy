@@ -9,7 +9,6 @@ import Sidebar from '../../shared/postDetail/sidebar';
 export const NewsDetail = () => {
   const [activeSidebar, setActiveSidebar] = useState(null);
   const [news, setNews] = useState(null);
-
   const { id } = useParams();
 
   const handleSidebarToggle = (type) => {
@@ -56,9 +55,22 @@ export const NewsDetail = () => {
 
       <div className="w-[17%]"></div>
 
-      <UtilityButtons onActiveSidebar={handleSidebarToggle} activeSidebar={activeSidebar} />
+      {/* 안전하게 news가 존재할 때만 isLiked와 isBookmarked를 전달 */}
+      {news &&
+        <UtilityButtons 
+          onActiveSidebar={handleSidebarToggle} 
+          activeSidebar={activeSidebar} 
+          isLiked={news?.isLiked || false} // news가 null일 경우 false
+          isBookmarked={news?.isBookmarked || false} // news가 null일 경우 false
+          newsId={news.newsId}
+        />
+      }
       {news && ( // news가 존재하는 경우에만 Sidebar를 렌더링
-        <Sidebar activeSidebar={activeSidebar} onActiveSidebar={handleSidebarToggle} category={news.category} />
+        <Sidebar 
+          activeSidebar={activeSidebar} 
+          onActiveSidebar={handleSidebarToggle} 
+          category={news.category}
+        />
       )}
     </div>
   );
