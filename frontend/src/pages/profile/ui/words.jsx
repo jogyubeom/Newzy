@@ -3,25 +3,26 @@ import { useState, useEffect } from "react";
 import WordTestModal from "./wordTestModal";
 import baseAxios from "shared/utils/baseAxios";
 import useAuthStore from "shared/store/userStore";
-import Pagination from "../../../shared/postList/pagination";
 
 const Words = () => {
 
-  const [wordList, setWordList] = useState([]); // 서버로부터 가져온 단어 리스트 상태 관리
-  const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
-  const [page, setPage] = useState(0); // 현재 페이지 상태
+  const [wordList, setWordList] = useState([]); // 단어 리스트 상태
+  const [isModalOpen, setModalOpen] = useState(false); // 모달 상태
+  const [page, setPage] = useState(0); // 현재 페이지
   const [sort, setSort] = useState(0); // 정렬 기준 (0: 최신순, 1: 오래된 순)
   const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수
   const [loading, setLoading] = useState(false); // 로딩 상태
+  const [hasMore, setHasMore] = useState(true); // 더 가져올 데이터가 있는지 여부
   const user = useAuthStore.getState().userInfo;
 
   // 단어 리스트를 서버에서 가져오는 함수
-  const fetchWordList = async () => {
+  const fetchWordList = async (reset = false) => {
+    if (!hasMore) return; // 더 이상 가져올 데이터가 없으면 요청 중단
     setLoading(true);
 
     try {
       const response = await baseAxios().get(`https://j11b305.p.ssafy.io/api/word`, {
-        params: { page, sort }, 
+        params: { page, sort }, // 페이지와 정렬 기준을 쿼리 파라미터로 전달
       });
 
       const { totalPage, vocaList } = response.data; // 응답 데이터에서 필요한 값 추출
@@ -30,8 +31,12 @@ const Words = () => {
         mean: [wordData.definition], // 단어 의미 리스트
       }));
 
-      setWordList(fetchedWords); // 단어 리스트 업데이트
-      setTotalPages(totalPage); // 전체 페이지 수 설정
+      if (fetchedWords.length === 0) {
+        setHasMore(false); // 빈 리스트가 반환되면 더 이상 가져올 데이터가 없다고 설정
+      } else {
+        setWordList((prevList) => (reset ? fetchedWords : [...prevList, ...fetchedWords])); // 단어 리스트 업데이트
+        setTotalPages(totalPage); // 전체 페이지 수 설정
+      }
     } catch (error) {
       console.error("단어 목록을 불러오는 데 실패했습니다.", error);
     } finally {
@@ -42,13 +47,17 @@ const Words = () => {
   // 정렬 방식 변경 핸들러
   const handleSortChange = (e) => {
     setSort(parseInt(e.target.value));
-    setPage(0); // 정렬 변경 시 페이지를 1로 초기화
+    setPage(0); // 페이지를 0으로 초기화
+    setWordList([]); // 기존 단어 리스트 초기화
+    setHasMore(true); // 더 가져올 데이터가 있는지 여부 초기화
   };
 
-  // 페이지가 변경될 때마다 단어 리스트 다시 요청
-  useEffect(() => {
-    fetchWordList();
-  }, [page, sort]);
+  // 페이지 변경 시 더 많은 단어를 가져오는 함수
+  const loadMoreWords = () => {
+    if (hasMore && page < totalPages - 1) {
+      setPage((prevPage) => prevPage + 1); // 페이지 증가
+    }
+  };
 
   // 단어 삭제 요청 함수
   const handleDeleteWord = async (wordName) => {
@@ -56,7 +65,6 @@ const Words = () => {
       await baseAxios().delete("/word", {
         params: { wordList: wordName } // wordList 값을 쿼리 파라미터로 전달
       });
-
       // 삭제 후 성공적으로 처리되면, 프론트에서 해당 단어를 삭제
       setWordList((prevList) => prevList.filter((word) => word.name !== wordName));
     } catch (error) {
@@ -67,6 +75,11 @@ const Words = () => {
   // 모달 열기 및 닫기 함수
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
+
+  // 페이지, 정렬 기준이 변경될 때마다 단어 리스트 가져오기
+  useEffect(() => {
+    fetchWordList();
+  }, [page, sort]);
 
   return (
     <>
@@ -125,13 +138,18 @@ const Words = () => {
             </div>
           ))
         )}
-
-        {/* 페이지네이션 컴포넌트 */}
-        <Pagination
-          currentPage={page + 1}
-          totalPages={totalPages}
-          onPageChange={(newPage) => setPage(newPage)} // 페이지 변경 함수
-        />
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-5">
+            {page < totalPages - 1 && (
+              <button
+                onClick={loadMoreWords}
+                className="px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-700"
+              >
+                더 보기
+              </button>
+            )}
+          </div>
+        )}
 
          {/* 모달 컴포넌트 렌더링 */}
          <WordTestModal
