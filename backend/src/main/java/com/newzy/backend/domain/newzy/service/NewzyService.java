@@ -16,7 +16,7 @@ public interface NewzyService {
 
     Map<String, Object> getNewzyList(NewzyListGetRequestDTO requestDTO, Long userId);
 
-    NewzyResponseDTO getNewzyDetail(Long newzyId);
+    NewzyResponseDTO getNewzyDetail(Long userId, Long newzyId);
 
     void delete(Long userId, Long newzyId);
 

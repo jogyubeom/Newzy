@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.user.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzy.backend.domain.image.entity.Image;
 import com.newzy.backend.domain.image.repository.ImageRepository;
 import com.newzy.backend.domain.image.service.ImageService;
@@ -13,6 +14,7 @@ import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
 import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
+import com.newzy.backend.domain.user.dto.response.UserCardCollectorResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
 import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
@@ -27,6 +29,8 @@ import com.newzy.backend.global.exception.NotValidRequestException;
 import com.newzy.backend.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -34,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,6 +52,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final RedisUtil redisUtil;
+    private final RedisTemplate<String, String> redisTemplate;
     private final ImageService imageService;
     private final ImageRepository imageRepository;
     private final FollowRepository followRepository;
@@ -392,6 +398,38 @@ public class UserServiceImpl implements UserService {
         }
 
         return followingNewzyList;
+    }
+
+    @Override
+    public UserCardCollectorResponseDTO getBestCardCollector() {
+        // Redis에서 ranking:card-collector 키로 값 조회
+        String key = "ranking:card-collector";
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+            String value = valueOperations.get(key);
+
+            // JSON 파싱
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                Map<String, Object> resultMap = objectMapper.readValue(value, Map.class);
+                Long userId = Long.valueOf((Integer) resultMap.get("userId"));
+                Long count = Long.valueOf((Integer) resultMap.get("count"));
+
+                // UserRepository를 통해 User 정보 조회
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new EntityNotFoundException("해당 유저를 찾을 수 없습니다."));
+
+                // DTO 생성 및 반환
+                return new UserCardCollectorResponseDTO(user.getNickname(), user.getImage().getImageUrl(), count);
+
+            } catch (IOException e) {
+                log.error("Redis 값 파싱 중 오류 발생", e);
+                throw new RuntimeException("Redis 값 파싱 중 오류 발생", e);
+            }
+        } else {
+            throw new EntityNotFoundException("지난 주의 카드왕을 조회할 수 없습니다.");
+        }
     }
 
 

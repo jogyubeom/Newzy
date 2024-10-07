@@ -8,10 +8,7 @@ import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.newzy.entity.Newzy;
 import com.newzy.backend.domain.newzy.entity.NewzyBookmark;
 import com.newzy.backend.domain.newzy.entity.NewzyLike;
-import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepository;
-import com.newzy.backend.domain.newzy.repository.NewzyLikeRepository;
-import com.newzy.backend.domain.newzy.repository.NewzyRepository;
-import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
+import com.newzy.backend.domain.newzy.repository.*;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
@@ -45,6 +42,8 @@ public class NewzyServiceImpl implements NewzyService {
     private final UserRepository userRepository;
     private final NewzyBookmarkRepository newzyBookmarkRepository;
     private final ImageService imageService;
+    private final NewzyLikeRepositorySupport newzyLikeRepositorySupport;
+    private final NewzyBookmarkRepositorySupport newzyBookmarkRepositorySupport;
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -83,25 +82,28 @@ public class NewzyServiceImpl implements NewzyService {
 
 
     @Override
-    public NewzyResponseDTO getNewzyDetail(Long newzyId) {  // 조회수 + 1
-        log.info(">>> newzyServiceImpl getNewzyDetail - newzyId: {}", newzyId);
-        Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new EntityNotFoundException("일치하는 뉴지 데이터를 찾을 수 없습니다."));
+    public NewzyResponseDTO getNewzyDetail(Long userId, Long newzyId) {
+        log.info(">>> newzyServiceImpl getNewzyDetail - userId: {}, newzyId: {}", userId, newzyId);
 
-        // redis 조회수 증가
-        String todayDate = LocalDate.now().toString();  // 오늘 날짜
-        String redisKey = "ranking:newzy:" + todayDate + ":" + newzyId;  // Redis 키
+        Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(
+                () -> new EntityNotFoundException("일치하는 뉴지 데이터를 찾을 수 없습니다.")
+        );
 
-        Long hit = redisTemplate.opsForValue().increment(redisKey);
-
-        // 키가 새로 생성된 경우에만 만료 시간 설정 (24시간)
-        if (hit == 1) {
-            redisTemplate.expire(redisKey, Duration.ofDays(2));  // 24시간 만료 설정
-        }
+        newzy.setHit(newzy.getHit() + 1);
+        newzyRepository.save(newzy);
 
         NewzyResponseDTO newzyResponseDTO = NewzyResponseDTO.convertToDTO(newzy);
 
-        // 조회수 새로이 계산해서 넣기
-        newzyResponseDTO.setHit((int) (newzyResponseDTO.getHit() + hit));
+        if (userId != 0) {
+            User user = userRepository.findByUserId(userId).orElseThrow(
+                    () -> new EntityNotFoundException("일치하는 유저를 찾을 수 없습니다.")
+            );
+
+            boolean isLiked = newzyLikeRepositorySupport.isLikedByUser(userId, newzyId);
+            if (isLiked) newzyResponseDTO.setLiked(true);
+            boolean isBookmarked = newzyBookmarkRepositorySupport.isBookmarkedByUser(userId, newzyId);
+            if (isBookmarked) newzyResponseDTO.setBookmakred(true);
+        }
 
         return newzyResponseDTO;
     }

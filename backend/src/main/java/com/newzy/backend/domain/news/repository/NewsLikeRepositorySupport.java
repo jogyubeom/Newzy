@@ -3,6 +3,7 @@ package com.newzy.backend.domain.news.repository;
 import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDTO;
 import com.newzy.backend.domain.news.entity.NewsLike;
 import com.newzy.backend.domain.news.entity.QNews;
+import com.newzy.backend.domain.news.entity.QNewsBookmark;
 import com.newzy.backend.domain.news.entity.QNewsLike;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
@@ -23,6 +24,17 @@ public class NewsLikeRepositorySupport extends QuerydslRepositorySupport {
     public NewsLikeRepositorySupport(JPAQueryFactory queryFactory) {
         super(NewsLike.class);
         this.queryFactory = queryFactory;
+    }
+
+    public boolean isLikedByUser(Long userId, Long newsId) {
+        QNewsLike like = QNewsLike.newsLike;
+        Integer count = queryFactory
+                .selectOne()
+                .from(like)
+                .where(like.user.userId.eq(userId)
+                        .and(like.news.newsId.eq(newsId)))
+                .fetchFirst();
+        return count != null;
     }
 
     public Map<String, Object> findNewsListByNewsLike(int page, Long userId) {

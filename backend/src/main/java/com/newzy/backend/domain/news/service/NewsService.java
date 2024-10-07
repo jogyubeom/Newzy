@@ -14,7 +14,7 @@ import java.util.Map;
 public interface NewsService {
     Map<String, Object> getNewsList(NewsListGetRequestDTO newsListGetRequestDTO);
 
-    NewsDetailGetResponseDTO getNewsDetail(Long NewsId);
+    NewsDetailGetResponseDTO getNewsDetail(Long userId, Long NewsId);
 
     void bookmark(Long userId, Long NewsId);
 

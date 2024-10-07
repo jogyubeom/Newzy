@@ -32,10 +32,16 @@ public class NewsController {
     @GetMapping("/{newsId}")
     @Operation(summary = "뉴스 정보 조회", description = "뉴스 ID로 뉴스의 상세 정보를 조회합니다.")
     public ResponseEntity<NewsDetailGetResponseDTO> getNews(
+            @Parameter(description = "JWT", required = false)
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "뉴스 ID", required = true)
             @PathVariable Long newsId) {
-        log.info(">>> [GET] /news/{} - 요청 ID: {}", newsId, newsId);
-        NewsDetailGetResponseDTO newsDetailGetResponseDto = newsService.getNewsDetail(newsId);
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        }
+        log.info(">>> [GET] /news/{} - 요청 파라미터 userId: {}, newsId: {}", newsId, userId, newsId);
+        NewsDetailGetResponseDTO newsDetailGetResponseDto = newsService.getNewsDetail(userId, newsId);
 
         return ResponseEntity.status(200).body(newsDetailGetResponseDto);
     }
