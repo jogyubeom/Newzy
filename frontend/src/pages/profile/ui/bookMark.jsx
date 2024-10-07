@@ -6,7 +6,7 @@ const BookMark = () => {
   const [showNews, setShowNews] = useState(true); // 기본적으로 BookmarkNews를 보여줌
 
   return (
-    <div className="mx-20">
+    <div className="px-10 py-5">
       <h1 className="text-2xl font-bold mb-4">Bookmark Page</h1>
       <div className="mb-4">
         <button 
