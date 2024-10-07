@@ -92,21 +92,20 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
   };
 
   // 맞힌 단어들을 서버에서 삭제하는 함수
-const removeWordsFromList = async () => {
-  try {
-    // correctWords 배열을 콤마로 구분된 문자열로 변환
-    const wordsToRemove = correctWords.join(","); 
+  const removeWordsFromList = async () => {
+    try {
+      // correctWords 배열을 콤마로 구분된 문자열로 변환
+      const wordsToRemove = correctWords.join(","); 
 
-    await baseAxios().delete("/word", {
-      params: { wordList: wordsToRemove }, // 콤마로 연결된 단어 리스트 전달
-    });
+      // 직접 쿼리 문자열을 URL에 추가하여 요청
+      await baseAxios().delete(`/word?wordList=${encodeURIComponent(wordsToRemove)}`);
 
-    alert("맞힌 단어들이 성공적으로 삭제되었습니다.");
-  } catch (error) {
-    console.error("단어 삭제에 실패했습니다.", error);
-    alert("단어 삭제에 실패했습니다.");
-  }
-};
+      alert("맞힌 단어들이 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error("단어 삭제에 실패했습니다.", error);
+      alert("단어 삭제에 실패했습니다.");
+    }
+  };
 
   // 테스트 종료 함수
   const handleTestEnd = () => {
