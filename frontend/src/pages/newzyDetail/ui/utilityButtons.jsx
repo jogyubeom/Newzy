@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import baseAxios from 'shared/utils/baseAxios'; // baseAxios import
 import useAuthStore from 'shared/store/userStore'; // Zustand store import
 
 const UtilityButtons = ({ onActiveSidebar, activeSidebar, isLiked, isBookmarked, newzyId }) => {
   const token = useAuthStore(state => state.token);
   const [activeButtons, setActiveButtons] = useState([isLiked, isBookmarked]);
+
+  useEffect(() => {
+    // 부모 컴포넌트에서 props로 전달된 상태가 변경되면 버튼 상태 업데이트
+    setActiveButtons([isLiked, isBookmarked]);
+  }, [isLiked, isBookmarked]);
 
   const handleButtonClick = async (index) => {
     if (index < 2) {
@@ -15,14 +20,16 @@ const UtilityButtons = ({ onActiveSidebar, activeSidebar, isLiked, isBookmarked,
       }
 
       try {
+        let response;
+        
         // 첫 번째 버튼 클릭 (좋아요)
         if (index === 0) {
           if (activeButtons[0]) {
             // 이미 좋아요가 되어 있다면 삭제 요청
-            await baseAxios().delete(`/newzy/${newzyId}/like`);
+            response = await baseAxios().delete(`/newzy/${newzyId}/like`);
           } else {
             // 좋아요가 되어 있지 않다면 추가 요청
-            await baseAxios().post(`/newzy/${newzyId}/like`);
+            response = await baseAxios().post(`/newzy/${newzyId}/like`);
           }
         }
         
@@ -30,10 +37,10 @@ const UtilityButtons = ({ onActiveSidebar, activeSidebar, isLiked, isBookmarked,
         else if (index === 1) {
           if (activeButtons[1]) {
             // 이미 북마크가 되어 있다면 삭제 요청
-            await baseAxios().delete(`/newzy/${newzyId}/bookmark`);
+            response = await baseAxios().delete(`/newzy/${newzyId}/bookmark`);
           } else {
             // 북마크가 되어 있지 않다면 추가 요청
-            await baseAxios().post(`/newzy/${newzyId}/bookmark`);
+            response = await baseAxios().post(`/newzy/${newzyId}/bookmark`);
           }
         }
 
