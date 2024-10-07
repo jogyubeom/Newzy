@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import cross from "shared/images/cross.png";
 import { RiCheckboxMultipleFill } from "react-icons/ri";
 import { FaFrown, FaSmile, FaMeh } from "react-icons/fa";
+import baseAxios from "shared/utils/baseAxios";
 
 const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -11,6 +12,8 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
   const [incorrectCount, setIncorrectCount] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [shuffledWordList, setShuffledWordList] = useState([]);
+  const [correctWords, setCorrectWords] = useState([]); // 맞힌 단어 리스트
+  const [removeCorrectWords, setRemoveCorrectWords] = useState(false); // 체크박스 상태
 
   // 단어 리스트를 랜덤으로 섞기 위한 함수
   const shuffleArray = (array) => {
@@ -30,6 +33,8 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
       setCorrectCount(0);
       setIncorrectCount(0);
       setShowResult(false);
+      setCorrectWords([]);
+      setRemoveCorrectWords(false);
 
       // 스크롤을 맨 위로 이동
       window.scrollTo(0, 0);
@@ -69,6 +74,7 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
     if (userAnswer.trim() === currentWord.name) {
       alert("정답입니다! 다음 문제로 넘어갑니다.");
       setCorrectCount((prev) => prev + 1);
+      setCorrectWords((prev) => [...prev, currentWord.name]); // 맞힌 단어 리스트에 추가
     } else {
       alert(
         `틀렸습니다. 정답은 "${currentWord.name}"입니다. 다음 문제로 넘어갑니다.`
@@ -83,6 +89,28 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
     }
 
     setUserAnswer("");
+  };
+
+  // 맞힌 단어들을 서버에서 삭제하는 함수
+  const removeWordsFromList = async () => {
+    try {
+      await baseAxios().delete("/word", {
+        params: { wordList: correctWords }, // 맞힌 단어 리스트를 쿼리 파라미터로 전달
+      });
+
+      alert("맞힌 단어들이 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error("단어 삭제에 실패했습니다.", error);
+      alert("단어 삭제에 실패했습니다.");
+    }
+  };
+
+  // 테스트 종료 함수
+  const handleTestEnd = () => {
+    if (removeCorrectWords && correctWords.length > 0) {
+      removeWordsFromList(); // 체크박스가 선택되었고 맞힌 단어가 있을 경우 삭제 요청
+    }
+    onClose(); // 모달 닫기
   };
 
   return (
@@ -152,11 +180,13 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
               <input
                 className="w-5 h-5 text-purple-600 border-gray-300 rounded focus:ring-purple-500 transition duration-300"
                 type="checkbox"
+                checked={removeCorrectWords}
+                onChange={(e) => setRemoveCorrectWords(e.target.checked)}
               />
             </label>
             <button
               className="mt-5 w-[150px] py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full shadow-lg hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-500 transition duration-300"
-              onClick={onClose}
+              onClick={handleTestEnd}
             >
               테스트 종료
             </button>

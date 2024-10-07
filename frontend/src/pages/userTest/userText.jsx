@@ -231,7 +231,6 @@ export const UserTest = () => {
         </div>
       )}
 
-
       <div className="flex justify-between mt-6">
         <button
           onClick={() => setCurrentCategoryIndex(currentCategoryIndex - 1)}
