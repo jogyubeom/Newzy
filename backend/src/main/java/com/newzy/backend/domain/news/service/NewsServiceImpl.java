@@ -66,7 +66,7 @@ public class NewsServiceImpl implements NewsService {
 
         Map<String, Object> map = newsRepositorySupport.findNewsList(page, sort, category, keyword);
 
-        List<NewsListGetResponseDTO> newsListGetResponseDTOs = (List<NewsListGetResponseDTO>) map.get("newzyList");
+        List<NewsListGetResponseDTO> newsListGetResponseDTOs = (List<NewsListGetResponseDTO>) map.get("newsList");
 
         for (NewsListGetResponseDTO news : newsListGetResponseDTOs) {
             String redisKey = "ranking:news:" + todayDate + ":" + news.getNewsId();  // Redis 키

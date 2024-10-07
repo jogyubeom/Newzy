@@ -63,7 +63,7 @@ public class NewzyServiceImpl implements NewzyService {
         // 내가 쓴 뉴지 목록이 아닐 경우 userId = 0
         Map<String, Object> newzyList = newzyRepositorySupport.findNewzyList(page, category, keyword, sort, userId);
 
-        List<NewzyListGetResponseDTO> newzyListGetResponseDTOs = (List<NewzyListGetResponseDTO>) newzyList.get("newsList");
+        List<NewzyListGetResponseDTO> newzyListGetResponseDTOs = (List<NewzyListGetResponseDTO>) newzyList.get("newzyList");
 
         for (NewzyListGetResponseDTO newzy : newzyListGetResponseDTOs) {
             String redisKey = "ranking:newzy:" + todayDate + ":" + newzy.getNewzyId();  // Redis 키
