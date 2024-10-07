@@ -22,7 +22,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -240,7 +239,7 @@ public class NewzyServiceImpl implements NewzyService {
         like.setUser(user);
         like.setNewzy(newzy);
 
-        newzy.setLikeCnt(newzy.getLikeCnt()+1);
+        newzy.setLikeCnt(newzy.getLikeCnt() + 1);
         newzyRepository.save(newzy);
         newzyLikeRepository.save(like);
     }
@@ -257,7 +256,7 @@ public class NewzyServiceImpl implements NewzyService {
             throw new EntityIsFoundException("해당하는 뉴지 좋아요가 없습니다.");
         }
 
-        newzy.setLikeCnt(newzy.getLikeCnt()-1);
+        newzy.setLikeCnt(newzy.getLikeCnt() - 1);
         newzyRepository.save(newzy);
         newzyLikeRepository.deleteByUserAndNewzy(user, newzy);
     }

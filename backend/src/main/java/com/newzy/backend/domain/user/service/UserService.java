@@ -1,7 +1,6 @@
 package com.newzy.backend.domain.user.service;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
-import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;

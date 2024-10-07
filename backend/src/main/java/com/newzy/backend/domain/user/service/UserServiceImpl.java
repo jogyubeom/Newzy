@@ -7,7 +7,6 @@ import com.newzy.backend.domain.image.service.ImageService;
 import com.newzy.backend.domain.news.repository.NewsBookmarkRepositorySupport;
 import com.newzy.backend.domain.news.repository.NewsLikeRepositorySupport;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
-import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyLikeRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
