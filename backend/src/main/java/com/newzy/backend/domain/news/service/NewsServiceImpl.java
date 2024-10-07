@@ -284,6 +284,8 @@ public class NewsServiceImpl implements NewsService {
             if (isLiked) newsDetailGetResponseDTO.setLiked(true);
             boolean isBookmarked = newsBookmarkRepositorySupport.isBookmarkedByUser(userId, newsId);
             if (isBookmarked) newsDetailGetResponseDTO.setBookmarked(true);
+            boolean isCollected = newsCardRepository.existsByUserAndNews(user, news);
+            if (isCollected) newsDetailGetResponseDTO.setCollected(true);
 
         }
 

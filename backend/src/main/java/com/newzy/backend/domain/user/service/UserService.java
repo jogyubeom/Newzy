@@ -46,6 +46,8 @@ public interface UserService {
     void deleteFollower(Long userId, String nickname);
 
     Map<String, Object> getFollowingList(int page, String nickname);
+    Map<String, Object> getFollowerList(int page, String nickname);
+
 
     Map<String, Object> getNewsBookmarkList(int page, Long userId);
 
@@ -55,11 +57,11 @@ public interface UserService {
 
     Map<String, Object> getNewzyLikeList(int page, Long userId);
 
-    Map<String, Object> getFollowerList(int page, String nickname);
-
-    Map<String, Object> getNewzyListByNickname(int page, String nickname);
+    Map<String, Object> getMyNewzyList(int page, Long userId);
 
     Map<String, Object> getFollowingsNewzyList(NewzyListGetRequestDTO requestDTO, Long userId);
 
     UserCardCollectorResponseDTO getBestCardCollector();
+
+    Map<String, Object> getNewzyListByNickname(int page, String nickname);
 }
