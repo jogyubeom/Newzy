@@ -32,6 +32,8 @@ public class NewsDetailGetResponseDTO {
     private boolean isLiked;
     @JsonProperty("isBookmarked")
     private boolean isBookmarked;
+    @JsonProperty("isCollected")
+    private boolean isCollected;
 
     public NewsDetailGetResponseDTO(Long newsId, String link, String title, String content, String contentText, int difficulty, int category, String publisher, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime crawledAt, int hit, String thumbnail) {
         this.newsId = newsId;
@@ -43,7 +45,6 @@ public class NewsDetailGetResponseDTO {
         this.category = category;
         this.publisher = publisher;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.crawledAt = crawledAt;
         this.hit = hit;
         this.thumbnail = thumbnail;

@@ -32,15 +32,18 @@ public class NewsController {
     @GetMapping("/{newsId}")
     @Operation(summary = "뉴스 정보 조회", description = "뉴스 ID로 뉴스의 상세 정보를 조회합니다.")
     public ResponseEntity<NewsDetailGetResponseDTO> getNews(
-            @Parameter(description = "JWT", required = false)
-            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "뉴스 ID", required = true)
-            @PathVariable Long newsId) {
+            @PathVariable Long newsId,
+            @Parameter(description = "JWT", required = false)
+            @RequestHeader(value = "Authorization", required = false) String token
+    ) {
         Long userId = 0L;
         if (token != null) {
             userId = userService.getUser(token).getUserId();
         }
-        log.info(">>> [GET] /news/{} - 요청 파라미터 userId: {}, newsId: {}", newsId, userId, newsId);
+
+        log.info(">>> [GET] /news/{} - 요청 ID: {}, userId - {}", newsId, newsId, userId);
+
         NewsDetailGetResponseDTO newsDetailGetResponseDto = newsService.getNewsDetail(userId, newsId);
 
         return ResponseEntity.status(200).body(newsDetailGetResponseDto);
@@ -189,7 +192,7 @@ public class NewsController {
         }
 
         log.info(">>> [POST] /news/{}/bookmark - 요청 파라미터: newsId - {}, userId - {}", newsId, newsId, userId);
-        newsService.bookmark(newsId, userId);
+        newsService.bookmark(userId, newsId);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴스를 북마크했습니다."));
     }

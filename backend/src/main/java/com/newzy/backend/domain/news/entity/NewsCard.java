@@ -37,6 +37,7 @@ public class NewsCard extends BaseTimeEntity {
     @Column(name = "score") // 2: 쉽다, 1: 보통이다, 0: 어렵다
     private int score;
 
+
     public static NewsCard convertToEntity(User user, News news, NewsCardRequestDTO requestDto){
         if (requestDto == null){
             throw new IllegalStateException("요청 DTO가 없습니다.");

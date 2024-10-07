@@ -36,6 +36,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -297,15 +298,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void followUser(Long userId, String nickname) {
 
-        User fromUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
-        User toUSer = userRepository.findByNickname(nickname);
-        if (toUSer == null) {
+        User toUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
+        User fromUser = userRepository.findByNickname(nickname);
+        if (toUser == null) {
             throw new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다.");
         }
 
         Follow follow = new Follow();
-        follow.setFromUser(fromUser);
-        follow.setToUser(toUSer);
+        follow.setFromUser(toUser);
+        follow.setToUser(fromUser);
         followRepository.save(follow);
     }
 
@@ -327,13 +328,48 @@ public class UserServiceImpl implements UserService {
 
     @Override       // 팔로잉 목록
     public Map<String, Object> getFollowingList(int page, String nickname) {
-        return followRepositorySupport.findFollowingList(page, nickname);
-    }
+        int size = 20;
+        User fromUser = userRepository.findUserByNickname(nickname)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
 
+        List<Follow> followings = followRepository.findAllByFromUser(fromUser);
+
+        return paginateFollowList(followings, page, size);
+    }
 
     @Override       // 팔로워 목록
     public Map<String, Object> getFollowerList(int page, String nickname) {
-        return followRepositorySupport.findFollowerList(page, nickname);
+        int size = 20;
+        User toUser = userRepository.findUserByNickname(nickname)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
+
+        List<Follow> followers = followRepository.findAllByToUser(toUser);
+
+        return paginateFollowList(followers, page, size);
+    }
+
+    // 페이징을 직접 구현하는 메서드
+    private Map<String, Object> paginateFollowList(List<Follow> followList, int page, int size) {
+        int totalPage = (int) Math.ceil((double) followList.size() / size);
+        int startIndex = (page - 1) * size;
+        int endIndex = Math.min(startIndex + size, followList.size());
+
+        // 페이지 범위를 벗어나는 경우 빈 리스트 반환
+        List<FollowListGetResponseDTO> paginatedList = new ArrayList<>();
+        if (startIndex < followList.size()) {
+            paginatedList = followList.subList(startIndex, endIndex).stream()
+                    .map(follow -> new FollowListGetResponseDTO(follow.getFollowId(),
+                            follow.getFromUser().getNickname(),
+                            follow.getToUser().getNickname()))
+                    .distinct()
+                    .collect(Collectors.toList());
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("followingList", paginatedList);
+        result.put("totalPage", totalPage);
+
+        return result;
     }
 
 
@@ -361,9 +397,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> getNewzyListByNickname(int page, String nickname) {
-        return newzyRepositorySupport.getNewzyListByNickname(page, nickname);
+    public Map<String, Object> getMyNewzyList(int page, Long userId) {
+        return newzyRepositorySupport.getMyNewzyList(page, userId);
     }
+
+
 
     @Override
     public Map<String, Object> getFollowingsNewzyList(NewzyListGetRequestDTO requestDTO, Long userId) {
@@ -449,4 +487,11 @@ public class UserServiceImpl implements UserService {
 
         return responseList;
     }
+
+    public Map<String, Object> getNewzyListByNickname(int page, String nickname) {
+        return newzyRepositorySupport.getNewzyListByNickname(page, nickname);
+    }
+
+
+
 }

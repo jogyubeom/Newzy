@@ -18,4 +18,5 @@ public class NewsCardListGetResponseDTO {
     private int category;
     private String thumbnailUrl;
 
+
 }

@@ -91,7 +91,6 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
         return result;
     }
 
-
     public NewsDetailGetResponseDTO getNewsDetail(Long newsId) {
         QNews qNews = QNews.news;
 
