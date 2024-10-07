@@ -34,7 +34,7 @@ export const MyNewzy = () => {
       console.log('nickname : ' + user.nickname); // 수정된 부분
       const response = await axios.get('https://j11b305.p.ssafy.io/api/user/newzy-list', {
         params: {
-            nickname: user.nickname,
+          nickname: encodeURIComponent(user.nickname),
             page: currentPage
         }
     });
