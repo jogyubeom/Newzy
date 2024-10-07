@@ -64,6 +64,10 @@ public class NewzyResponseDTO {
     @JsonProperty("isBookmarked")
     private boolean isBookmakred;
 
+    @Schema(description = "작성자 팔로우 여부")
+    @JsonProperty("isFollowed")
+    private boolean isFollowed;
+
     // 유저 정보 추후 추가하기
     public static NewzyResponseDTO convertToDTO(Newzy newzy) {
         if (newzy == null) {

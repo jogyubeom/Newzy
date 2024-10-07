@@ -10,6 +10,7 @@ import com.newzy.backend.domain.newzy.entity.NewzyBookmark;
 import com.newzy.backend.domain.newzy.entity.NewzyLike;
 import com.newzy.backend.domain.newzy.repository.*;
 import com.newzy.backend.domain.user.entity.User;
+import com.newzy.backend.domain.user.repository.FollowRepository;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
 import com.newzy.backend.global.exception.EntityIsFoundException;
@@ -45,6 +46,7 @@ public class NewzyServiceImpl implements NewzyService {
     private final NewzyBookmarkRepositorySupport newzyBookmarkRepositorySupport;
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final FollowRepository followRepository;
 
 
     @Override
@@ -102,6 +104,8 @@ public class NewzyServiceImpl implements NewzyService {
             if (isLiked) newzyResponseDTO.setLiked(true);
             boolean isBookmarked = newzyBookmarkRepositorySupport.isBookmarkedByUser(userId, newzyId);
             if (isBookmarked) newzyResponseDTO.setBookmakred(true);
+            boolean isFollowed = followRepository.existsByFromUserAndToUser(user, newzy.getUser());
+            if (isFollowed) newzyResponseDTO.setFollowed(true);
         }
 
         return newzyResponseDTO;
