@@ -57,6 +57,7 @@ export const Profile = () => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
+  const [status, setStatus] = useState({newzyCnt: 0, followerCnt: 0, followingCnt: 0}); // 유저 데이터 상태
 
   // 편집 모드 관리
   const [isEditing, setIsEditing] = useState(false);
@@ -123,13 +124,22 @@ export const Profile = () => {
         // 유저 정보를 Zustand 스토어에 저장
         setUserInfo(userData);
 
+        const res = await baseAxios().get(`/user/profile/${user.nickname}`); // 닉네임을 URL에 포함해 요청
+        const Data = res.data;
+
+        setStatus({
+          newzyCnt: Data.newzyCnt,
+          followerCnt: Data.followerCnt,
+          followingCnt: Data.followingCnt,
+        });
+
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류 발생:", error);
       }
     };
 
     fetchUserData(); 
-  }, [setUserInfo]);
+  }, [setUserInfo, user.nickname]);
 
 
   // 현재 경로에 따라 메뉴를 선택 상태로 설정
@@ -453,7 +463,7 @@ export const Profile = () => {
                 Newzy
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                7
+                {status.newzyCnt}
               </div>
             </div>
             <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
@@ -461,7 +471,7 @@ export const Profile = () => {
                 Followers
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                42
+                {status.followerCnt}
               </div>
             </div>
             <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
@@ -469,7 +479,7 @@ export const Profile = () => {
                 Followings
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                25
+                {status.followingCnt}
               </div>
             </div>
           </div>
