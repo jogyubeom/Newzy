@@ -104,6 +104,12 @@ const Words = () => {
     }
   };
 
+  // 단어 테스트에서 맞힌 단어를 제거하고 리스트 갱신하는 함수
+  const handleWordsRemoved = (removedWords) => {
+    // 맞힌 단어를 wordList와 allWords에서 제거
+    setWordList((prevList) => prevList.filter((word) => !removedWords.includes(word.name)));
+  };
+
   // 모달 열기 및 닫기 함수
   const openModal = async () => {
     // 단어 테스트를 열기 전에 모든 단어 리스트 불러오기
@@ -195,6 +201,7 @@ const Words = () => {
           onClose={closeModal}
           wordList={allWords}
           userName={user && user.nickname ? user.nickname : "사용자"}
+          onWordsRemoved={handleWordsRemoved} // 맞힌 단어 제거 콜백 전달
         />
       </div>
     </>

@@ -104,7 +104,6 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
       await baseAxios().delete(`/word?wordList=${encodeURIComponent(wordsToRemove)}`);
 
       alert("맞힌 단어들이 성공적으로 삭제되었습니다.");
-      nav('/profile/words')
 
     } catch (error) {
       console.error("단어 삭제에 실패했습니다.", error);
@@ -116,6 +115,8 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
   const handleTestEnd = () => {
     if (removeCorrectWords && correctWords.length > 0) {
       removeWordsFromList(); // 체크박스가 선택되었고 맞힌 단어가 있을 경우 삭제 요청
+      // 프론트엔드에서 맞힌 단어들을 제거하도록 Words 컴포넌트에 전달
+      onWordsRemoved(correctWords);
     }
     onClose(); // 모달 닫기
   };
