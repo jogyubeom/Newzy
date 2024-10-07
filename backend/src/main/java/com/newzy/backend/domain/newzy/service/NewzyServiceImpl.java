@@ -193,7 +193,7 @@ public class NewzyServiceImpl implements NewzyService {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
 
         Newzy newzy = newzyRepository.findById(newzyId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 뉴스를 찾을 수 없습니다: " + newzyId));
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 뉴지를 찾을 수 없습니다: " + newzyId));
 
         boolean isBookmark = newzyBookmarkRepository.existsByUserAndNewzy(user, newzy);
 
