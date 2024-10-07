@@ -12,6 +12,7 @@ import CardListModal from "pages/profile/ui/cardListModal";
 import userProfile from "shared/images/user.png";
 import cards from "shared/images/cards.svg";
 import baseAxios from "shared/utils/baseAxios";
+import useAuthStore from "shared/store/userStore";
 
 import "./profile.css"
 
@@ -71,6 +72,9 @@ export const Profile = () => {
 
   const [paddingX, setPaddingX] = useState(32); // 기본 패딩
 
+  // Zustand 스토어에서 유저 정보와 설정 함수 가져오기
+  const { setUserInfo } = useAuthStore();
+
   // 패딩 업데이트 로직을 추가합니다.
   useEffect(() => {
     const updatePaddingBasedOnZoom = () => {
@@ -115,13 +119,17 @@ export const Profile = () => {
           img: userData.profile,
           birth: userData.birth || "",
         });
+
+        // 유저 정보를 Zustand 스토어에 저장
+        setUserInfo(userData);
+
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류 발생:", error);
       }
     };
 
     fetchUserData(); 
-  }, []);
+  }, [setUserInfo]);
 
 
   // 현재 경로에 따라 메뉴를 선택 상태로 설정
@@ -163,6 +171,10 @@ export const Profile = () => {
         socialLoginType: user.socialLoginType,
       });
 
+      // 유저 정보가 수정된 후 다시 유저 정보를 불러오고 스토어에 저장
+      const updatedUser = (await baseAxios().get("/user")).data;
+      setUser(updatedUser);
+      setUserInfo(updatedUser); // 스토어에 업데이트된 유저 정보 저장
     } catch (error) {
       console.error("프로필 정보 수정 중 오류 발생:", error);
       alert("프로필 정보를 수정하는 중 오류가 발생했습니다.");
