@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import NewzyListHeader from "./ui/newzyListHeader";
 import PostList from "../../shared/postList/postList";
 import Pagination from "../../shared/postList/pagination";
 import SearchBar from "../../shared/postList/searchBar";
+import baseAxios from "shared/utils/baseAxios"; // baseAxios import
 import useAuthStore from "shared/store/userStore"; // zustand 스토어 import
 
 export const NewzyList = () => {
@@ -16,13 +16,14 @@ export const NewzyList = () => {
     currentPage: 1,
     sort: {
       selectedCategory: "전체",
-      selectedRange: "전체",
+      selectedRange: 0, // default: 0 (기본 API)
       searchTerm: "",
     },
   });
 
+  // 게시글 불러오는 함수
   const fetchPosts = async () => {
-    const { currentPage, sort: { selectedCategory } } = state;
+    const { currentPage, sort: { selectedCategory, selectedRange } } = state;
 
     const categoryMap = {
       전체: "",
@@ -32,10 +33,14 @@ export const NewzyList = () => {
     };
 
     const categoryParam = categoryMap[selectedCategory] !== undefined ? categoryMap[selectedCategory] : "";
-    const apiUrl = `https://j11b305.p.ssafy.io/api/newzy?page=${currentPage}`;
+
+    // selectedRange가 0일 때는 기존 API, 1일 때는 구독 API 호출
+    const apiUrl = selectedRange === 0
+      ? `/newzy?page=${currentPage}&category=${categoryParam}` // 기본 API
+      : `/user/followings-newzy-list?page=${currentPage}&category=${categoryParam}`; // 구독 API
 
     try {
-      const response = await axios.get(apiUrl);
+      const response = await baseAxios().get(apiUrl); // baseAxios 사용
       const { totalPage, newzyList } = response.data;
       setState((prevState) => ({
         ...prevState,
@@ -50,14 +55,14 @@ export const NewzyList = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchPosts(); // 컴포넌트가 마운트될 때 API 호출
-  }, [state.currentPage, state.sort.selectedCategory]); // 페이지와 카테고리 변경 시 호출
+  }, [state.currentPage, state.sort.selectedCategory, state.sort.selectedRange]); // 페이지, 카테고리, 구독 범위 변경 시 호출
 
   const handlePostClick = (id) => navigate(`/newzy/${id}`);
 
   const handleCategoryOrRangeClick = (key, value) => {
     setState((prevState) => ({
       ...prevState,
-      sort: { ...prevState.sort, [key]: value },
+      sort: { ...prevState.sort, [key]: value, searchTerm: "", },
       currentPage: 1, // 카테고리나 범위 클릭 시 첫 페이지로 초기화
     }));
   };
@@ -103,6 +108,7 @@ export const NewzyList = () => {
       <div className="bg-white">
         <div className="flex justify-between items-center mb-4 px-4 py-2">
           <SearchBar
+            type='newzy'
             selectedRange={state.sort.selectedRange}
             onRangeClick={(range) =>
               handleCategoryOrRangeClick("selectedRange", range)

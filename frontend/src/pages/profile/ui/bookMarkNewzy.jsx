@@ -17,11 +17,9 @@ export const BookmarkNewzy = () => {
   const fetchPosts = async () => {
     const { currentPage } = state;
 
-    const apiUrl = `/user/newzy-bookmark?page=${currentPage}`; // API URL
-    console.log(token);
+    const apiUrl = `/user/newzy-bookmark?page=${currentPage}`;
     try {
-      const response = await baseAxios().get(apiUrl); // baseAxios 사용
-      console.log(response);
+      const response = await baseAxios().get(apiUrl);
       const { totalPage, newzyList } = response.data;
       setState((prevState) => ({
         ...prevState,
@@ -35,8 +33,8 @@ export const BookmarkNewzy = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    fetchPosts(); // 컴포넌트가 마운트될 때 API 호출
-  }, [state.currentPage]); // 페이지 변경 시 호출
+    fetchPosts();
+  }, [state.currentPage]);
 
   const handlePostClick = (id) => navigate(`/newzy/${id}`);
 
