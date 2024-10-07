@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import baseAxios from "../../../shared/utils/baseAxios";
 import PostList from "../../../shared/postList/postList";
 import Pagination from "../../../shared/postList/pagination";
+import useAuthStore from "shared/store/userStore"; // zustand 스토어 import
 
 export const MyNewzy = () => {
   const navigate = useNavigate();
+  const { userInfo } = useAuthStore(); // 사용자 정보 가져오기
   const [state, setState] = useState({
     posts: [], // 초기 상태를 빈 배열로 설정
     totalPages: 0,
@@ -16,17 +18,28 @@ export const MyNewzy = () => {
 
   const fetchPosts = async () => {
     const { currentPage } = state;
-    const apiUrl = `/user/my-newzy-list?page=${currentPage}`; // API URL
+
+    // 닉네임이 있는 경우 API URL을 생성
+    if (!userInfo || !userInfo.nickname) {
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        error: "사용자 정보를 찾을 수 없습니다.", // 사용자 정보가 없을 경우 오류 처리
+      }));
+      return;
+    }
+
+    const apiUrl = `/user/newzy-list?nickname=${userInfo.nickname}&page=${currentPage}`; // API URL
 
     try {
       const response = await baseAxios().get(apiUrl); // baseAxios 사용
       console.log(response);
-      const { totalPage, myNewzyList } = response.data;
+      const { totalPage, newzyList } = response.data;
 
       // 가져온 게시글과 총 페이지 수로 상태 업데이트
       setState((prevState) => ({
         ...prevState,
-        posts: myNewzyList,
+        posts: newzyList, // 수정된 부분: myNewzyList -> newzyList
         totalPages: totalPage,
         loading: false, // 데이터 가져온 후 로딩 상태 해제
       }));

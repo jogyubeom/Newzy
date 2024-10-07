@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import baseAxios from '../../shared/utils/baseAxios';
 import NewsInfo from './ui/newsInfo';
 import Content from '../../shared/postDetail/content';
 import UtilityButtons from './ui/utilityButtons';
@@ -29,7 +29,7 @@ export const NewsDetail = () => {
 
   const fetchNews = async () => {
     try {
-      const response = await axios.get(`https://j11b305.p.ssafy.io/api/news/${id}`);
+      const response = await baseAxios().get(`/news/${id}`);
       setNews(response.data);
     } catch (error) {
       console.error("Error fetching news details:", error);
@@ -57,7 +57,9 @@ export const NewsDetail = () => {
       <div className="w-[17%]"></div>
 
       <UtilityButtons onActiveSidebar={handleSidebarToggle} activeSidebar={activeSidebar} />
-      <Sidebar activeSidebar={activeSidebar} onActiveSidebar={handleSidebarToggle} category={news.category}/>
+      {news && ( // news가 존재하는 경우에만 Sidebar를 렌더링
+        <Sidebar activeSidebar={activeSidebar} onActiveSidebar={handleSidebarToggle} category={news.category} />
+      )}
     </div>
   );
 };
