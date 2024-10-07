@@ -5,10 +5,7 @@ import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserUpdateRequestDTO;
-import com.newzy.backend.domain.user.dto.response.UserCardCollectorResponseDTO;
-import com.newzy.backend.domain.user.dto.response.UserFirstLoginResponseDTO;
-import com.newzy.backend.domain.user.dto.response.UserInfoResponseDTO;
-import com.newzy.backend.domain.user.dto.response.UserUpdateResponseDTO;
+import com.newzy.backend.domain.user.dto.response.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -62,4 +59,6 @@ public interface UserService {
     Map<String, Object> getFollowingsNewzyList(NewzyListGetRequestDTO requestDTO, Long userId);
 
     UserCardCollectorResponseDTO getBestCardCollector();
+
+    List<UserNewporterResponseDTO> getNewporter();
 }

@@ -338,6 +338,7 @@ public class NewsServiceImpl implements NewsService {
         NewsLike newsLike = new NewsLike();
         newsLike.setNews(news);
         newsLike.setUser(user);
+
         newsLikeRepository.save(newsLike);
     }
 

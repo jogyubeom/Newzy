@@ -22,7 +22,7 @@ public class NewsServiceImpl implements NewsService {
     private final RedisTemplate<String, String> redisTemplate;
     private final NewsRepository newsRepository;
 
-
+    @Override
     public void processNewsRanking() {
         String yesterdayDate = LocalDate.now().minusDays(1).toString();  // 어제 날짜
         String redisPattern = "ranking:news:" + yesterdayDate + ":*";  // ex: ranking:newzy:어제날짜:* 형식의 키

@@ -239,6 +239,9 @@ public class NewzyServiceImpl implements NewzyService {
         NewzyLike like = new NewzyLike();
         like.setUser(user);
         like.setNewzy(newzy);
+
+        newzy.setLikeCnt(newzy.getLikeCnt()+1);
+        newzyRepository.save(newzy);
         newzyLikeRepository.save(like);
     }
 
@@ -254,6 +257,8 @@ public class NewzyServiceImpl implements NewzyService {
             throw new EntityIsFoundException("해당하는 뉴지 좋아요가 없습니다.");
         }
 
+        newzy.setLikeCnt(newzy.getLikeCnt()-1);
+        newzyRepository.save(newzy);
         newzyLikeRepository.deleteByUserAndNewzy(user, newzy);
     }
 
