@@ -31,11 +31,22 @@ public class NewsController {
 
     @GetMapping("/{newsId}")
     @Operation(summary = "뉴스 정보 조회", description = "뉴스 ID로 뉴스의 상세 정보를 조회합니다.")
-    public ResponseEntity<NewsDetailGetResponseDTO> getNews(
+    public ResponseEntity<Map<String, Object>> getNews(
             @Parameter(description = "뉴스 ID", required = true)
-            @PathVariable Long newsId) {
-        log.info(">>> [GET] /news/{} - 요청 ID: {}", newsId, newsId);
-        NewsDetailGetResponseDTO newsDetailGetResponseDto = newsService.getNewsDetail(newsId);
+            @PathVariable Long newsId,
+            @Parameter(description = "JWT", required = true)
+            @RequestHeader(value = "Authorization", required = true) String token
+    ) {
+        Long userId = 0L;
+        if (token != null) {
+            userId = userService.getUser(token).getUserId();
+        } else {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
+
+        log.info(">>> [GET] /news/{} - 요청 ID: {}, userId - {}", newsId, newsId, userId);
+
+        Map<String, Object> newsDetailGetResponseDto = newsService.getNewsDetail(newsId, userId);
 
         return ResponseEntity.status(200).body(newsDetailGetResponseDto);
     }

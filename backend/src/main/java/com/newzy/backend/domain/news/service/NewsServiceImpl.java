@@ -240,7 +240,7 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public NewsDetailGetResponseDTO getNewsDetail(Long newsId) {    // 조회수 + 1
+    public Map<String, Object> getNewsDetail(Long newsId, Long userId) {    // 조회수 + 1
         News news = newsRepository.findById(newsId)
                 .orElseThrow(() -> new EntityNotFoundException("일치하는 뉴스 데이터를 조회할 수 없습니다."));
 
@@ -250,8 +250,14 @@ public class NewsServiceImpl implements NewsService {
 
         redisTemplate.opsForValue().increment(redisKey);
 
+        boolean isCollected = false;    // 뉴스 카드 여부 확인
+        if (userId != 0){
+            User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터가 없습니다."));
+            isCollected = newsCardRepository.existsByUserAndNews(user, news);
+        }
+
         // DTO로 변환하여 반환
-        return newsRepositorySupport.getNewsDetail(news.getNewsId());
+        return newsRepositorySupport.getNewsDetail(news.getNewsId(), isCollected);
     }
 
 

@@ -86,6 +86,7 @@ public class NewsCardRepositorySupport extends QuerydslRepositorySupport {
                         newsCard.summary,
                         newsCard.news.category,
                         newsCard.news.thumbnail
+
                 ))
                 .from(newsCard)
                 .join(newsCard.user, user)
