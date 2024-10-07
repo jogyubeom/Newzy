@@ -461,6 +461,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserNewporterResponseDTO> getNewporter() {
+        // Redis에서 모든 뉴포터 랭킹 데이터를 조회
+        Set<String> keys = redisTemplate.keys("ranking:newporter:*");
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        List<UserNewporterResponseDTO> responseList = new ArrayList<>();
+
+        if (keys == null || keys.isEmpty()) {
+            throw new EntityNotFoundException("지난 주의 뉴포터를 조회할 수 없습니다.");
+        }
+
+        for (String key : keys) {
+            try {
+                // userId 추출 (키 형식: ranking:newporter:{userId})
+                String[] keyParts = key.split(":");
+                Long userId = Long.valueOf(keyParts[2]);  // userId 추출
+
+                // Redis에서 likeCnt 값 조회
+                String value = valueOperations.get(key);
+                Long likeCnt = Long.valueOf(value);  // likeCnt 추출
+
+                // UserRepository를 통해 User 정보 조회
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new EntityNotFoundException("해당 유저를 찾을 수 없습니다."));
+
+                // DTO 생성 및 리스트에 추가
+                responseList.add(new UserNewporterResponseDTO(user.getNickname(), user.getImage().getImageUrl(), likeCnt));
+
+            } catch (NumberFormatException e) {
+                log.error("Redis에서 값 파싱 중 오류 발생", e);
+                throw new RuntimeException("Redis 값 파싱 중 오류 발생", e);
+            }
+        }
+
+        return responseList;
+    }
+
     public Map<String, Object> getNewzyListByNickname(int page, String nickname) {
         return newzyRepositorySupport.getNewzyListByNickname(page, nickname);
     }
