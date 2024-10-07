@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import NewsInfo from './ui/newsInfo';
-import Content from '../../shared/postDetail/content';
-import UtilityButtons from './ui/utilityButtons';
-import Sidebar from '../../shared/postDetail/sidebar';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import NewsInfo from "./ui/newsInfo";
+import Content from "../../shared/postDetail/content";
+import UtilityButtons from "./ui/utilityButtons";
+import Sidebar from "../../shared/postDetail/sidebar";
+import { CardGauge } from "entities/card/cardGauge";
+// import { useNewsDetailStore } from "entities/card/store/cardStore";
 
 export const NewsDetail = () => {
+  // const { setNewsData } = useNewsDetailStore();
   const [activeSidebar, setActiveSidebar] = useState(null);
   const [news, setNews] = useState(null);
 
@@ -29,8 +32,12 @@ export const NewsDetail = () => {
 
   const fetchNews = async () => {
     try {
-      const response = await axios.get(`https://j11b305.p.ssafy.io/api/news/${id}`);
+      const response = await axios.get(
+        `https://j11b305.p.ssafy.io/api/news/${id}`
+      );
       setNews(response.data);
+      // setNewsData(response.data);
+      // console.log(response.data);
     } catch (error) {
       console.error("Error fetching news details:", error);
     }
@@ -40,14 +47,15 @@ export const NewsDetail = () => {
 
   return (
     <div className="relative flex h-screen bg-white">
+      <CardGauge news={news} />
       <div className="w-[17%]"></div>
 
       <div className="flex-1 p-6">
         {news && (
-          <NewsInfo 
+          <NewsInfo
             category={getCategoryName(news.category)}
-            title={news.title} 
-            date={new Date(news.createdAt).toLocaleString('ko-KR')}
+            title={news.title}
+            date={new Date(news.createdAt).toLocaleString("ko-KR")}
             publisher={news.publisher}
           />
         )}
@@ -56,8 +64,14 @@ export const NewsDetail = () => {
 
       <div className="w-[17%]"></div>
 
-      <UtilityButtons onActiveSidebar={handleSidebarToggle} activeSidebar={activeSidebar} />
-      <Sidebar activeSidebar={activeSidebar} onActiveSidebar={handleSidebarToggle} />
+      <UtilityButtons
+        onActiveSidebar={handleSidebarToggle}
+        activeSidebar={activeSidebar}
+      />
+      <Sidebar
+        activeSidebar={activeSidebar}
+        onActiveSidebar={handleSidebarToggle}
+      />
     </div>
   );
 };

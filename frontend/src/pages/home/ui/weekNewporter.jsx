@@ -1,5 +1,4 @@
 import { FaRegHeart } from "react-icons/fa6";
-
 const dummyData = [
   {
     newporterid: 1,

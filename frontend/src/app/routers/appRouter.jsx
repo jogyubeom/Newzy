@@ -23,6 +23,9 @@ export const AppRouter = () => {
       <Route path="news">
         <Route index element={<NewsList />} />
         <Route path=":id" element={<NewsDetail />} />
+        <Route path="economy" element={<NewsList category="economy" />} />
+        <Route path="social" element={<NewsList category="social" />} />
+        <Route path="global" element={<NewsList category="global" />} />
       </Route>
       <Route path="newzy">
         <Route index element={<NewzyList />} />
@@ -30,10 +33,10 @@ export const AppRouter = () => {
         <Route path=":id" element={<NewzyDetail />} />
       </Route>
       <Route path="profile">
-        <Route index element={<Navigate to="myNewzy" replace />} /> 
-        <Route path="myNewzy" element={<Profile />}/>
-        <Route path="bookMark" element={<Profile />}/>
-        <Route path="words" element={<Profile />}/>
+        <Route index element={<Navigate to="myNewzy" replace />} />
+        <Route path="myNewzy" element={<Profile />} />
+        <Route path="bookMark" element={<Profile />} />
+        <Route path="words" element={<Profile />} />
       </Route>
       <Route path="usertest" element={<UserTest />} />
     </Route>

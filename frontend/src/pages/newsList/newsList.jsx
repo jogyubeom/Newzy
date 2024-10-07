@@ -20,7 +20,10 @@ export const NewsList = () => {
   });
 
   const fetchPosts = async () => {
-    const { currentPage, sort: { selectedCategory,selectedRange, searchTerm } } = state;
+    const {
+      currentPage,
+      sort: { selectedCategory, selectedRange, searchTerm },
+    } = state;
 
     const categoryMap = {
       전체: "",
@@ -29,7 +32,10 @@ export const NewsList = () => {
       세계: 2,
     };
 
-    const categoryParam = categoryMap[selectedCategory] !== undefined ? categoryMap[selectedCategory] : "";
+    const categoryParam =
+      categoryMap[selectedCategory] !== undefined
+        ? categoryMap[selectedCategory]
+        : "";
     const apiUrl = `https://j11b305.p.ssafy.io/api/news?page=${currentPage}&category=${categoryParam}&sort=${selectedRange}`;
 
     try {
@@ -48,14 +54,18 @@ export const NewsList = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchPosts();
-  }, [state.currentPage, state.sort.selectedCategory, state.sort.selectedRange]);
+  }, [
+    state.currentPage,
+    state.sort.selectedCategory,
+    state.sort.selectedRange,
+  ]);
 
   const handlePostClick = (id) => navigate(`/news/${id}`);
 
   const handleCategoryOrRangeClick = (key, value) => {
     setState((prevState) => ({
       ...prevState,
-      sort: { ...prevState.sort, [key]: value, searchTerm: "",},
+      sort: { ...prevState.sort, [key]: value, searchTerm: "" },
       currentPage: 1, // 카테고리나 범위 클릭 시 첫 페이지로 초기화
     }));
   };
@@ -67,7 +77,8 @@ export const NewsList = () => {
     }));
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") setState((prevState) => ({ ...prevState, currentPage: 1 }));
+    if (e.key === "Enter")
+      setState((prevState) => ({ ...prevState, currentPage: 1 }));
   };
 
   const clearSearch = () =>
@@ -103,12 +114,18 @@ export const NewsList = () => {
           />
         </div>
 
-        <PostList posts={state.posts} onPostClick={handlePostClick} type='news'/>
+        <PostList
+          posts={state.posts}
+          onPostClick={handlePostClick}
+          type="news"
+        />
 
         <Pagination
           currentPage={state.currentPage}
           totalPages={state.totalPages}
-          onPageChange={(page) => setState((prevState) => ({ ...prevState, currentPage: page }))}
+          onPageChange={(page) =>
+            setState((prevState) => ({ ...prevState, currentPage: page }))
+          }
         />
       </div>
     </div>
