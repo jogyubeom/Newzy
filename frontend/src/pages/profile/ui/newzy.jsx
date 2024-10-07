@@ -23,7 +23,7 @@ export const Newzy = ( { nickname } ) => {
       console.log('nickname : ' + nickname); 
       const response = await axios.get('https://j11b305.p.ssafy.io/api/user/newzy-list', {
         params: {
-          nickname: encodeURIComponent(nickname),
+          nickname: toString(nickname),
           page: currentPage
         }
     });
