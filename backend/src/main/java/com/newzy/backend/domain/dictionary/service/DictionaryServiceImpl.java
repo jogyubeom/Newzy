@@ -11,9 +11,9 @@ import com.newzy.backend.domain.dictionary.entity.Dictionary;
 import com.newzy.backend.domain.dictionary.entity.SearchWord;
 import com.newzy.backend.domain.dictionary.repository.DictionaryRepository;
 import com.newzy.backend.domain.dictionary.repository.SearchWordRepository;
-import com.newzy.backend.domain.news.repository.NewsRepository;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
+import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import com.newzy.backend.global.exception.NotValidRequestException;
 import jakarta.transaction.Transactional;
@@ -72,9 +72,17 @@ public class DictionaryServiceImpl implements DictionaryService {
         );
 
         // SearchWord 엔티티 생성 및 저장
-        SearchWord searchWord = new SearchWord(user.getUserId(), vocaListRequestDTO.getWord(), vocaListRequestDTO.getDefinition());
-        searchWordRepository.save(searchWord);
-        log.info("SearchWord 엔티티가 MongoDB에 저장되었습니다: {}", searchWord);
+
+
+        boolean isExisted = searchWordRepository.existsByUserIdAndWord(userId, vocaListRequestDTO.getWord());
+        if (!isExisted) {
+            SearchWord searchWord = new SearchWord(user.getUserId(), vocaListRequestDTO.getWord(), vocaListRequestDTO.getDefinition());
+            searchWordRepository.save(searchWord);
+
+            log.info("SearchWord 엔티티가 MongoDB에 저장되었습니다: {}", searchWord);
+        } else {
+            throw new EntityIsFoundException("이미 나만의 단어장에 추가된 어휘입니다.");
+        }
     }
 
     @Override

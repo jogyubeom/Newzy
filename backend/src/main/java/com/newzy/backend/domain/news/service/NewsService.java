@@ -13,20 +13,26 @@ import java.util.Map;
 
 public interface NewsService {
     Map<String, Object> getNewsList(NewsListGetRequestDTO newsListGetRequestDTO);
+
     NewsDetailGetResponseDTO getNewsDetail(Long NewsId);
 
     void bookmark(Long userId, Long NewsId);
+
     void deleteBookmark(Long userId, Long newsId);
 
     void likeNews(Long userId, Long NewsId);
+
     void deleteLike(Long userId, Long NewsId);
 
     Map<String, Object> getCardList(Long userId, int page);
+
     List<NewsListGetResponseDTO> getHotNewsList();
+
     List<NewsRecommendGetResponseDTO> getRecommendedNewsList(Long userId);
 
     NewsDailyGetResponseDTO getDailyContent(Long userId);
 
     void collectNewsCard(Long userId, NewsCardRequestDTO newsCardRequestDTO);
+
     NewsCardListGetResponseDTO getCardInfo(Long userId, Long cardId);
 }
