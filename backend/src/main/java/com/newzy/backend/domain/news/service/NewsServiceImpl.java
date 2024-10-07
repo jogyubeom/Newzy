@@ -341,6 +341,8 @@ public class NewsServiceImpl implements NewsService {
         newsLike.setNews(news);
         newsLike.setUser(user);
 
+        news.setLikeCnt(news.getLikeCnt() + 1);
+        newsRepository.save(news);
         newsLikeRepository.save(newsLike);
     }
 
@@ -355,7 +357,8 @@ public class NewsServiceImpl implements NewsService {
         if (!isLike) {
             throw new EntityNotFoundException("해당하는 북마크를 찾을 수 없습니다.");
         }
-
+        news.setLikeCnt(news.getLikeCnt() - 1);
+        newsRepository.save(news);
         newsLikeRepository.deleteByUserAndNews(user, news);
     }
 

@@ -45,6 +45,9 @@ public class News extends BaseTimeEntity {
     @Column(name = "hit", nullable = false)
     private int hit = 0;
 
+    @Column(name = "like_cnt")
+    private int likeCnt = 0;
+
     @Column(name = "thumbnail", length = 255, nullable = true)
     private String thumbnail;
 }
