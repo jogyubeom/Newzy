@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import baseAxios from '../../shared/utils/baseAxios'; // baseAxios import
+import baseAxios from '../../shared/utils/baseAxios';
 import NewzyInfo from './ui/newzyInfo';
 import Content from '../../shared/postDetail/content';
 import UtilityButtons from './ui/utilityButtons';
@@ -28,7 +28,7 @@ export const NewzyDetail = () => {
 
   const fetchNewzy = async () => {
     try {
-      const response = await baseAxios().get(`/newzy/${id}`); // baseAxios 사용
+      const response = await baseAxios().get(`/newzy/${id}`);
       setNewzy(response.data);
     } catch (error) {
       console.error("Error fetching newzy details:", error);
@@ -48,6 +48,7 @@ export const NewzyDetail = () => {
             title={newzy.title} 
             date={new Date(newzy.createdAt).toLocaleString('ko-KR')}
             author={newzy.nickname}
+            newzyId={newzy.newzyId}
           />
         )}
         <Content htmlContent={htmlContent} />
@@ -55,16 +56,16 @@ export const NewzyDetail = () => {
 
       <div className="w-[17%]"></div>
 
-      {newzy && ( // newzy가 존재할 때만 UtilityButtons 렌더링
+      {newzy && (
         <UtilityButtons 
           onActiveSidebar={handleSidebarToggle} 
           activeSidebar={activeSidebar} 
           isLiked={newzy.isLiked}
           isBookmarked={newzy.isBookmarked}
-          newzyId={newzy.newzyId} // newzy ID를 전달
+          newzyId={newzy.newzyId}
         />
       )}
-      {newzy && ( // newzy가 존재하는 경우에만 Sidebar를 렌더링
+      {newzy && (
         <Sidebar 
           activeSidebar={activeSidebar} 
           onActiveSidebar={handleSidebarToggle} 
