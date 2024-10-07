@@ -28,8 +28,8 @@ def remove_ad_divs(html_content):
     # 'ad'가 포함된 클래스 이름을 가진 모든 <div> 태그 제거
     for div in soup.find_all('div', class_=lambda class_name: class_name and 'ad' in class_name):
         div.decompose()
-    # 'ad'가 포함된 클래스 이름을 가진 모든 <aside> 태그 제거
-    for aside in soup.find_all('aside', class_=lambda class_name: class_name and 'ad' in class_name):
+    # 모든 <aside> 태그 제거
+    for aside in soup.find_all('aside'):
         aside.decompose()
     # 'ad'가 포함된 클래스 이름을 가진 모든 <ins> 태그 제거
     for ins in soup.find_all('ins', class_=lambda class_name: class_name and 'ad' in class_name):
