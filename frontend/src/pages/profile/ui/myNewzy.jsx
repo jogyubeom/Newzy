@@ -7,7 +7,7 @@ import useAuthStore from "shared/store/userStore"; // zustand 스토어 import
 
 export const MyNewzy = () => {
   const navigate = useNavigate();
-  const { userInfo } = useAuthStore(); // 사용자 정보 가져오기
+  const user = useAuthStore.getState().userInfo
   const [state, setState] = useState({
     posts: [], // 초기 상태를 빈 배열로 설정
     totalPages: 0,
@@ -29,9 +29,10 @@ export const MyNewzy = () => {
       return;
     }
 
-    const apiUrl = `/user/newzy-list?nickname=${userInfo.nickname}&page=${currentPage}`; // API URL
+    const apiUrl = `/user/newzy-list?nickname=${user.nickname}&page=${currentPage}`; // API URL
 
     try {
+      console.log('nickname : ' + nickname)
       const response = await baseAxios().get(apiUrl); // baseAxios 사용
       console.log(response);
       const { totalPage, newzyList } = response.data;

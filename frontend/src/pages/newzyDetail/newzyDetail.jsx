@@ -5,12 +5,14 @@ import NewzyInfo from './ui/newzyInfo';
 import Content from '../../shared/postDetail/content';
 import UtilityButtons from './ui/utilityButtons';
 import Sidebar from '../../shared/postDetail/sidebar';
+import useAuthStore from 'shared/store/userStore'; // Zustand store import
 
 export const NewzyDetail = () => {
   const [activeSidebar, setActiveSidebar] = useState(null);
   const [newzy, setNewzy] = useState(null);
 
   const { id } = useParams();
+  const token = useAuthStore(state => state.token); // 토큰 가져오기
 
   const handleSidebarToggle = (type) => {
     setActiveSidebar((prev) => (prev === type ? null : type));
@@ -48,7 +50,7 @@ export const NewzyDetail = () => {
             category={getCategoryName(newzy.category)}
             title={newzy.title} 
             date={new Date(newzy.createdAt).toLocaleString('ko-KR')}
-            author="김싸피 뉴포터" 
+            author={newzy.nickname}
           />
         )}
         <Content htmlContent={htmlContent} />
@@ -56,8 +58,22 @@ export const NewzyDetail = () => {
 
       <div className="w-[17%]"></div>
 
-      <UtilityButtons onActiveSidebar={handleSidebarToggle} activeSidebar={activeSidebar} />
-      <Sidebar activeSidebar={activeSidebar} onActiveSidebar={handleSidebarToggle} category={3} />
+      {newzy && ( // newzy가 존재할 때만 UtilityButtons 렌더링
+        <UtilityButtons 
+          onActiveSidebar={handleSidebarToggle} 
+          activeSidebar={activeSidebar} 
+          isLiked={newzy.isLiked || false} // newzy가 null일 경우 false
+          isBookmarked={newzy.isBookmarked || false} // newzy가 null일 경우 false
+          newzyId={newzy.newzyId} // newzy ID를 전달
+        />
+      )}
+      {newzy && ( // newzy가 존재하는 경우에만 Sidebar를 렌더링
+        <Sidebar 
+          activeSidebar={activeSidebar} 
+          onActiveSidebar={handleSidebarToggle} 
+          category={3}
+        />
+      )}
     </div>
   );
 };
