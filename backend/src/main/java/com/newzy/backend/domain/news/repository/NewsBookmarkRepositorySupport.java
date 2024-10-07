@@ -63,6 +63,7 @@ public class NewsBookmarkRepositorySupport extends QuerydslRepositorySupport {
                         qNews.publisher,
                         qNews.thumbnail,
                         qNews.hit,
+                        qNews.likeCnt,
                         qNews.createdAt
                 ))
                 .from(qNewsBookmark)
