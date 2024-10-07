@@ -47,6 +47,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean { // JWT 토큰�
         put("/api/news", new HashSet<>(List.of("GET"))); // 뉴스 조회 제외
         put("/api/user/profile", new HashSet<>(List.of("GET"))); // 특정 유저 프로필 조회 제외
         put("/api/user/check", new HashSet<>(List.of("GET"))); // 닉네임 중복 체크 제외
+        put("/api/user/ranking", new HashSet<>(List.of("GET"))); // 랭킹 조회 제외
     }};
 
     @Override
