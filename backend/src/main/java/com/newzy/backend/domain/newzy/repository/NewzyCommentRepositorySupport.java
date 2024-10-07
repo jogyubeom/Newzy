@@ -15,7 +15,6 @@ import java.util.List;
 public class NewzyCommentRepositorySupport extends QuerydslRepositorySupport {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final int size = 10;
 
     public NewzyCommentRepositorySupport(JPAQueryFactory jpaQueryFactory) {
         super(NewzyComment.class);

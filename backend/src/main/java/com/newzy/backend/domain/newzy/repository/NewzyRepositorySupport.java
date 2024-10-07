@@ -226,7 +226,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
 
         // 8. 결과를 Map으로 반환
         Map<String, Object> result = new HashMap<>();
-        result.put("followerNewzyList", followerNewzyList);  // Newzy 목록
+        result.put("newzyList", followerNewzyList);  // Newzy 목록
         result.put("totalPage", totalPage);  // 총 페이지 수
 
         return result;

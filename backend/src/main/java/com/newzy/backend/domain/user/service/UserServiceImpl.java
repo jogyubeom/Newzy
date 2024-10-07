@@ -166,7 +166,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int getClusterId(Long userId) {
-        User user = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("일치하는 유저가 없습니다."));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("일치하는 유저가 없습니다."));
         return user.getCluster().getClusterId();
     }
 
@@ -192,18 +193,6 @@ public class UserServiceImpl implements UserService {
             log.error(">>> deleteUser - 사용자를 찾을 수 없음: {}", userId);
             throw new NotValidRequestException("사용자를 찾을 수 없습니다.");
         }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<NewzyResponseDTO> getAllUsers() {
-        return List.of();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public NewzyResponseDTO getUserById(Long id) {
-        return null;
     }
 
     @Override
@@ -344,14 +333,12 @@ public class UserServiceImpl implements UserService {
 
     @Override       // 팔로잉 목록
     public Map<String, Object> getFollowingList(int page, String nickname) {
-
         return followRepositorySupport.findFollowingList(page, nickname);
     }
 
 
     @Override       // 팔로워 목록
     public Map<String, Object> getFollowerList(int page, String nickname) {
-
         return followRepositorySupport.findFollowerList(page, nickname);
     }
 
@@ -431,6 +418,4 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException("지난 주의 카드왕을 조회할 수 없습니다.");
         }
     }
-
-
 }
