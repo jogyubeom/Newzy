@@ -12,7 +12,13 @@ export const KoreanWeek = (date) => {
   // 현재 날짜 기준 몇째 주인지 계산
   const weekNumber = Math.ceil((day + firstDayOfWeek - 1) / 7);
 
-  return `${month}월 ${weekNumber}째주의`;
+  // 숫자를 한글로 변환하는 매핑
+  const weekNumberInKorean = ["첫", "둘", "셋", "넷", "다섯", "여섯"];
+
+  // 해당 주차를 한글로 변환
+  const koreanWeekNumber =
+    weekNumberInKorean[weekNumber - 1] || `${weekNumber}째`;
+  return `${month}월 ${koreanWeekNumber}째 주의`;
 };
 
 // 00월 00일
