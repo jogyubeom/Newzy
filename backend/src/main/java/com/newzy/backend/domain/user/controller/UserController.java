@@ -109,13 +109,13 @@ public class UserController {
 
     @GetMapping("/profile/{nickname}")
     @Operation(summary = "회원 정보 조회 By Nickname", description = "회원 정보를 조회합니다.")
-    public ResponseEntity<UserInfoResponseDTO> getUserByNickname(
+    public ResponseEntity<UserProfileResponseDTO> getUserByNickname(
             @PathVariable(value = "nickname") String nickname
     ) {
         log.info(">>> [GET] /user/profile/{} - 회원 정보 조회 요청: {}", nickname);
-        UserInfoResponseDTO userGetResponseDto = userService.getUserByNickname(nickname);
-        log.info(">>> [GET] /user/profile/{} - 회원 정보 조회 완료: {}", nickname, userGetResponseDto);
-        return ResponseEntity.status(200).body(userGetResponseDto);
+        UserProfileResponseDTO userProfileResponseDto = userService.getUserProfile(nickname);
+        log.info(">>> [GET] /user/profile/{} - 회원 정보 조회 완료: {}", nickname, userProfileResponseDto);
+        return ResponseEntity.status(200).body(userProfileResponseDto);
     }
 
 

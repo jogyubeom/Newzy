@@ -21,4 +21,10 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     // a가 b를 팔로우하는지 확인하기
     boolean existsByToUserAndFromUser(User toUser, User fromUser);
+
+    // userId가 팔로우한 사람 수 (fromUser가 해당 userId일 때)
+    Long countByFromUserUserId(Long userId);
+
+    // userId를 팔로우한 사람 수 (toUser가 해당 userId일 때)
+    Long countByToUserUserId(Long userId);
 }

@@ -9,6 +9,7 @@ import com.newzy.backend.domain.news.repository.NewsLikeRepositorySupport;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.repository.NewzyBookmarkRepositorySupport;
 import com.newzy.backend.domain.newzy.repository.NewzyLikeRepositorySupport;
+import com.newzy.backend.domain.newzy.repository.NewzyRepository;
 import com.newzy.backend.domain.newzy.repository.NewzyRepositorySupport;
 import com.newzy.backend.domain.user.dto.request.AuthRequestDTO;
 import com.newzy.backend.domain.user.dto.request.UserInfoRequestDTO;
@@ -60,6 +61,7 @@ public class UserServiceImpl implements UserService {
     private final NewzyLikeRepositorySupport newzyLikeRepositorySupport;
     private final NewzyRepositorySupport newzyRepositorySupport;
     private final ClusterRepository clusterRepository;
+    private final NewzyRepository newzyRepository;
 
 
     @Override
@@ -499,6 +501,27 @@ public class UserServiceImpl implements UserService {
 
     public Map<String, Object> getNewzyListByNickname(int page, String nickname) {
         return newzyRepositorySupport.getNewzyListByNickname(page, nickname);
+    }
+
+    @Override
+    public UserProfileResponseDTO getUserProfile(String nickname) {
+        UserInfoResponseDTO userInfoResponseDTO = getUserByNickname(nickname);
+
+        int newzyCnt = Math.toIntExact(newzyRepository.countByUserUserId(userInfoResponseDTO.getUserId()));
+        int followingCnt = Math.toIntExact(followRepository.countByFromUserUserId(userInfoResponseDTO.getUserId()));
+        int followerCnt = Math.toIntExact(followRepository.countByToUserUserId(userInfoResponseDTO.getUserId()));
+
+        return UserProfileResponseDTO.builder()
+                .userId(userInfoResponseDTO.getUserId())
+                .nickname(userInfoResponseDTO.getNickname())
+                .profile(userInfoResponseDTO.getProfile())
+                .email(userInfoResponseDTO.getEmail())
+                .birth(userInfoResponseDTO.getBirth())
+                .exp(userInfoResponseDTO.getExp())
+                .newzyCnt(newzyCnt)
+                .followerCnt(followerCnt)
+                .followingCnt(followingCnt)
+                .build();
     }
 
 

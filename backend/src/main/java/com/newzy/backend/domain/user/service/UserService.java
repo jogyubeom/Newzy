@@ -62,4 +62,6 @@ public interface UserService {
     List<UserNewporterResponseDTO> getNewporter();
 
     Map<String, Object> getNewzyListByNickname(int page, String nickname);
+
+    UserProfileResponseDTO getUserProfile(String nickname);
 }
