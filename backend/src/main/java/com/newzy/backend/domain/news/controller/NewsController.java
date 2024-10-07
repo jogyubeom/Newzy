@@ -192,7 +192,7 @@ public class NewsController {
         }
 
         log.info(">>> [POST] /news/{}/bookmark - 요청 파라미터: newsId - {}, userId - {}", newsId, newsId, userId);
-        newsService.bookmark(newsId, userId);
+        newsService.bookmark(userId, newsId);
 
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴스를 북마크했습니다."));
     }

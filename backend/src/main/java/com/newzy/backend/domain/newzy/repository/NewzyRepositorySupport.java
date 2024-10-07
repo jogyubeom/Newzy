@@ -109,13 +109,13 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-    public Map<String, Object> getMyNewzyList(int page, Long userId) {
+    public Map<String, Object> getNewzyListByNickname(int page, String nickname) {
         QNewzy qnewzy = QNewzy.newzy;
         QUser qUser = QUser.user;
 
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(qnewzy.isDeleted.eq(false));
-        builder.and(qnewzy.user.userId.eq(userId));
+        builder.and(qnewzy.user.nickname.eq(nickname));
 
         Long totalCount = queryFactory
                 .select(qnewzy.count())
@@ -151,7 +151,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
                 .fetch();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("myNewzyList", myNewzyList); // list
+        result.put("newzyList", myNewzyList); // list
         result.put("totalPage", totalPage); // int
 
         return result;
@@ -226,11 +226,58 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
 
         // 8. 결과를 Map으로 반환
         Map<String, Object> result = new HashMap<>();
-        result.put("followerNewzyList", followerNewzyList);  // Newzy 목록
+        result.put("newzyList", followerNewzyList);  // Newzy 목록
         result.put("totalPage", totalPage);  // 총 페이지 수
 
         return result;
     }
 
 
+    public Map<String, Object> getMyNewzyList(int page, Long userId) {
+        QNewzy qnewzy = QNewzy.newzy;
+        QUser qUser = QUser.user;
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(qnewzy.isDeleted.eq(false));
+        builder.and(qnewzy.user.userId.eq(userId));
+
+        Long totalCount = queryFactory
+                .select(qnewzy.count())
+                .from(qnewzy)
+                .where(builder)  // 동적 조건
+                .fetchOne();
+
+        int totalPage = (int) ((totalCount + size - 1) / size);
+
+        List<NewzyListGetResponseDTO> myNewzyList = queryFactory
+                .select(Projections.constructor(NewzyListGetResponseDTO.class,
+                        qnewzy.user.userId,
+                        qnewzy.user.nickname,
+                        qnewzy.user.email,
+                        qnewzy.user.image.imageUrl,
+                        qnewzy.newzyId,
+                        qnewzy.title,
+                        qnewzy.content,
+                        qnewzy.contentText,
+                        qnewzy.category,
+                        qnewzy.likeCnt,
+                        qnewzy.thumbnail,
+                        qnewzy.hit,
+                        qnewzy.createdAt,
+                        qnewzy.updatedAt
+                ))
+                .from(qnewzy)
+                .join(qnewzy.user, qUser)
+                .where(builder)  // 동적 조건 적용
+                .orderBy(qnewzy.createdAt.desc())
+                .offset((page - 1) * size)
+                .limit(size)
+                .fetch();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("myNewzyList", myNewzyList); // list
+        result.put("totalPage", totalPage); // int
+
+        return result;
+    }
 }

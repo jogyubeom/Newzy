@@ -1,4 +1,4 @@
-package com.newzy.scheudling.domain.card.entity;
+package com.newzy.scheudling.domain.news.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.newzy.scheudling.global.model.BaseTimeEntity;

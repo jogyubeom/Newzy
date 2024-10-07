@@ -19,12 +19,7 @@ public interface UserService {
 
     UserUpdateResponseDTO updateUser(String token, UserUpdateRequestDTO request);
 
-
     void deleteUser(String token);
-
-    List<NewzyResponseDTO> getAllUsers();
-
-    NewzyResponseDTO getUserById(Long id);
 
     boolean checkUserNickname(String nickname);
 
@@ -67,4 +62,6 @@ public interface UserService {
     Map<String, Object> getFollowingsNewzyList(NewzyListGetRequestDTO requestDTO, Long userId);
 
     UserCardCollectorResponseDTO getBestCardCollector();
+
+    Map<String, Object> getNewzyListByNickname(int page, String nickname);
 }
