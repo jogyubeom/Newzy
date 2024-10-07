@@ -277,8 +277,6 @@ public class NewsServiceImpl implements NewsService {
 
         newsDetailGetResponseDTO.setHit((int) (newsDetailGetResponseDTO.getHit() + hit));
 
-        NewsDetailGetResponseDTO newsDetailGetResponseDTO = newsRepositorySupport.getNewsDetail(news.getNewsId());
-
         if (userId != 0) {
             User user = userRepository.findByUserId(userId).orElseThrow(
                     () -> new EntityNotFoundException("일치하는 유저를 찾을 수 없습니다.")
