@@ -8,7 +8,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from newzy.db_operations import insert_news_to_db
 from newzy.utils.analyzer import analyze_difficulty_of_news
-from newzy.utils.parser import parse_relative_time, extract_times, extract_text_from_html
+from newzy.utils.parser import parse_relative_time, extract_times, extract_text_from_html, \
+    remove_ad_divs
 
 
 def crawl_news(driver,
@@ -276,6 +277,8 @@ def crawl_news_detail(driver, url: str,
     if len(content_text) < min_length:
         logging.warning(f">>> {url} : 본문 길이가 {min_length} 이하입니다. 건너뜁니다.")
         return False  # 실패 반환
+
+    content = remove_ad_divs(content)
 
     article = {
         'link': url,

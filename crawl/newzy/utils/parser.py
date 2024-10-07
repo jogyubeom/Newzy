@@ -37,7 +37,41 @@ def remove_ad_divs(html_content):
     # 'ADVERTISE_BG'가 포함된 id 를 가진 모든 <div> 태그 제거
     for div in soup.find_all('div', id=lambda id_name: id_name and 'ADVERTISE_BG' in id_name):
         div.decompose()
-
+    # 'copyright'가 포함된 class 를 가진 모든 <div> 태그 제거
+    for copyright in soup.find_all('div', class_=lambda class_name: class_name and 'copyright' in class_name):
+        copyright.decompose()
+    # 'btn_zoom'가 포함된 class 를 가진 모든 <button> 태그 제거
+    for btn_zoom in soup.find_all('button', class_=lambda class_name: class_name and 'btn_zoom' in class_name):
+        btn_zoom.decompose()
+    # 'agree_type'가 포함된 class 를 가진 모든 <ul> 태그 제거
+    for agree_type in soup.find_all('ul', class_=lambda class_name: class_name and 'agree_type' in class_name):
+        agree_type.decompose()
+    # 'summury'가 포함된 class 를 가진 모든 <div> 태그 제거
+    for summury in soup.find_all('div', class_=lambda
+            class_name: class_name and 'summury' in class_name):
+        summury.decompose()
+    # 모든 <iframe> 태그 제거
+    for iframe in soup.find_all('iframe'):
+        iframe.decompose()
+    # 'subscription'가 포함된 class 를 가진 모든 <div> 태그 제거
+    for subscription in soup.find_all('div', class_=lambda
+            class_name: class_name and 'subscription' in class_name):
+        subscription.decompose()
+    # 'writer-zone01'가 포함된 class 를 가진 모든 <div> 태그 제거
+    for writer in soup.find_all('div', class_=lambda
+            class_name: class_name and 'writer-zone01' in class_name):
+        writer.decompose()
+    # 'ico_enlarge'가 포함된 class 를 가진 모든 <div> 태그 제거
+    for ico_enlarge in soup.find_all('div', class_=lambda
+            class_name: class_name and 'ico_enlarge' in class_name):
+        ico_enlarge.decompose()
+    # 모든 <b> 태그 제거
+    for b in soup.find_all('b'):
+        b.decompose()
+    # 'txt-copyright'가 포함된 class 를 가진 모든 <div> 태그 제거
+    for copyright in soup.find_all('p', class_=lambda
+            class_name: class_name and 'txt-copyright' in class_name):
+        copyright.decompose()
     # 수정된 HTML 코드 반환
     return str(soup)
 
