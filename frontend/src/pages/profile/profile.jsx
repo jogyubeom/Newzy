@@ -163,6 +163,26 @@ export const Profile = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const fetchStatusData = async () => {
+      try {
+        const res = await baseAxios().get(`/user/profile/${user.nickname}`); // 닉네임을 URL에 포함해 요청
+        const Data = res.data;
+
+        setStatus({
+          newzyCnt: Data.newzyCnt,
+          followerCnt: Data.followerCnt,
+          followingCnt: Data.followingCnt,
+        });
+      } catch (error) {
+        console.error("유저 스테이터스 정보를 불러오는 중 오류 발생:", error);
+      }
+    };
+    if (user) {
+      fetchStatusData(); 
+    }
+  }, [setUserInfo, user]);
+
   // 유저 정보 저장 (이미지 제외)
   const handleSaveProfile = async () => {
     if (!user) return;
