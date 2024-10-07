@@ -190,6 +190,8 @@ export const Profile = () => {
     const formData = new FormData();
     formData.append("profile", newImage); // 이미지 파일 추가
 
+    console.log(formData);
+
     try {
       await baseAxios().post("/user/upload-profile", formData, {
         headers: {
