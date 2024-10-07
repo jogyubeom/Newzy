@@ -219,10 +219,11 @@ export const Profile = () => {
     const formData = new FormData();
 
     // 이미지가 있는 경우: FormData에 이미지 추가
-    if (newImage) {
-      formData.append("profile", newImage); // 이미지 파일 추가
+    
+    if (newImage ==='blank') {
+      formData.append("profile", ""); // 이미지 삭제했을 경우 빈 값으로 전송하여 처리
     } else {
-      formData.append("profile", ""); // 이미지가 없을 경우 빈 값으로 전송하여 삭제 처리
+      formData.append("profile", newImage); // 이미지 파일 추가
     }
 
     console.log("보내는 이미지 데이터 : ", formData);
@@ -257,7 +258,7 @@ export const Profile = () => {
   // 이미지 제거 핸들러
   const handleImageRemove = () => {
     setProfileData({ ...profileData, img: null });
-    setNewImage(null); // 업로드할 이미지도 초기화
+    setNewImage('blank'); // 업로드할 이미지도 초기화
   };
 
   // exp 값을 기준으로 grade를 구하는 함수
@@ -295,7 +296,10 @@ export const Profile = () => {
 
   // 저장 버튼 클릭 시 변경 사항 저장
   const handleSave = () => {
-    handleImageUpload();
+    if (newImage) {
+      // 이미지를 수정한 경우에만 handleImageUpload 호출
+      handleImageUpload();
+    }
     handleSaveProfile();
     setIsEditing(false);
   };
