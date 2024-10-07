@@ -1,6 +1,8 @@
 package com.newzy.scheudling.global.config;
 
 import com.newzy.scheudling.domain.card.service.NewsCardService;
+import com.newzy.scheudling.domain.news.service.NewsService;
+import com.newzy.scheudling.domain.newzy.service.NewzyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableRetry
 public class SchedulerConfig {
     private final NewsCardService newsCardService;
+    private final NewsService newsService;
+    private final NewzyService newzyService;
 
     @Scheduled(cron = "0 0 7 ? * MON")
 //@Scheduled(cron = "0 4 3 * * ?")
@@ -24,6 +28,28 @@ public class SchedulerConfig {
             newsCardService.calculateBestCardCollector();
         } catch (Exception e) {
             log.error("카드왕 계산 중 에러 발생", e);
+        }
+    }
+
+    // 매일 00시에 진행
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void scheduleNewsRanking() {
+        try {
+            log.info("뉴스 조회수 DB 반영");
+            newsService.processNewsRanking();
+        } catch (Exception e) {
+            log.error("뉴스 조회수 DB 반영 중 에러 발생", e);
+        }
+    }
+
+    // 매일 00시에 진행
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void scheduleNewzyRanking() {
+        try {
+            log.info("뉴지 조회수 DB 반영");
+            newzyService.processNewzyRanking();
+        } catch (Exception e) {
+            log.error("뉴지 조회수 DB 반영 중 에러 발생", e);
         }
     }
 }
