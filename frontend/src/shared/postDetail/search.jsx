@@ -21,8 +21,12 @@ const SearchContent = ({ category }) => {
       const response = await axios.get(`https://j11b305.p.ssafy.io/api/word/search?word=${searchTerm}&category=${category}`);
       setResults(response.data);
     } catch (error) {
-      setError("검색 중 오류가 발생했습니다.");
-      console.error("Error fetching search results:", error);
+      if (error.response) {
+        setError("검색 중 오류가 발생했습니다.");
+      } else {
+        setError("서버와 연결할 수 없습니다."); // 네트워크 에러 처리
+      }
+      console.error("Error searching word:", error);
     } finally {
       setLoading(false);
     }
@@ -47,7 +51,11 @@ const SearchContent = ({ category }) => {
       });
       alert("단어가 저장되었습니다.");
     } catch (error) {
-      alert("단어 저장 중 오류가 발생했습니다.");
+      if (error.response && error.response.status === 409) {
+        alert("이미 등록된 단어입니다."); // 409 에러일 때
+      } else {
+        alert("단어 저장 중 오류가 발생했습니다."); // 그 외 에러일 때
+      }
       console.error("Error saving word:", error);
     }
   };

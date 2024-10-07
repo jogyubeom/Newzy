@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import baseAxios from "../../shared/utils/baseAxios";
 import NewsInfo from "./ui/newsInfo";
 import Content from "../../shared/postDetail/content";
 import UtilityButtons from "./ui/utilityButtons";
@@ -12,7 +12,6 @@ export const NewsDetail = () => {
   // const { setNewsData } = useNewsDetailStore();
   const [activeSidebar, setActiveSidebar] = useState(null);
   const [news, setNews] = useState(null);
-
   const { id } = useParams();
 
   const handleSidebarToggle = (type) => {
@@ -32,9 +31,7 @@ export const NewsDetail = () => {
 
   const fetchNews = async () => {
     try {
-      const response = await axios.get(
-        `https://j11b305.p.ssafy.io/api/news/${id}`
-      );
+      const response = await baseAxios().get(`/news/${id}`);
       setNews(response.data);
       // setNewsData(response.data);
       // console.log(response.data);
@@ -64,14 +61,23 @@ export const NewsDetail = () => {
 
       <div className="w-[17%]"></div>
 
-      <UtilityButtons
-        onActiveSidebar={handleSidebarToggle}
-        activeSidebar={activeSidebar}
-      />
-      <Sidebar
-        activeSidebar={activeSidebar}
-        onActiveSidebar={handleSidebarToggle}
-      />
+      {/* 안전하게 news가 존재할 때만 isLiked와 isBookmarked를 전달 */}
+      {news && (
+        <UtilityButtons
+          onActiveSidebar={handleSidebarToggle}
+          activeSidebar={activeSidebar}
+          isLiked={news.isLiked}
+          isBookmarked={news.isBookmarked}
+          newsId={news.newsId}
+        />
+      )}
+      {news && ( // news가 존재하는 경우에만 Sidebar를 렌더링
+        <Sidebar
+          activeSidebar={activeSidebar}
+          onActiveSidebar={handleSidebarToggle}
+          category={news.category}
+        />
+      )}
     </div>
   );
 };

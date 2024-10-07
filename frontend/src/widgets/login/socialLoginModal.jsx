@@ -1,11 +1,14 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import naver from 'shared/images/naver_logo.png';
 import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
 
 export const SocialLoginModal = ({ isOpen, onClose }) => {
+
+  const [forceLogin, setForceLogin] = useState(false); // "다른 계정으로 로그인하기" 상태를 관리하는 state
+
   if (!isOpen) return null;
 
   const handleSocialLogin = async (platform) => {
@@ -26,7 +29,12 @@ export const SocialLoginModal = ({ isOpen, onClose }) => {
         response = await axios.get('https://j11b305.p.ssafy.io/api/oauth2/naver/authorize');
       }
       
-      const url = response.data
+      let url = response.data;
+      // forceLogin이 true일 경우, URL에 &prompt=login을 추가
+      if (forceLogin) {
+        url += '&prompt=login';
+      }
+
       // 서버에서 받은 로그인 URL로 리다이렉트
       window.location.href = url
       
@@ -69,6 +77,23 @@ export const SocialLoginModal = ({ isOpen, onClose }) => {
             <span className="text-white font-semibold">Naver 로그인</span>
           </button>
 
+        </div>
+
+        {/* "다른 계정으로 로그인하기" 토글 버튼 */}
+        <div className="flex items-center justify-center w-full mt-6">
+          <span className="text-blue-700 font-semibold mr-3">다른 계정으로 로그인하기</span>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              className="sr-only peer" // peer 클래스 추가
+              checked={forceLogin}
+              onChange={() => setForceLogin(!forceLogin)}
+            />
+            {/* 배경 색상 */}
+            <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-blue-500 transition-colors"></div>
+            {/* 토글 버튼 */}
+            <div className="absolute right-0.5 left-0.5 top-0.5 w-5 h-5 bg-white border border-gray-300 rounded-full shadow transition-transform transform peer-checked:translate-x-5"></div>
+          </label>
         </div>
 
         {/* 닫기 버튼 */}

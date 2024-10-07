@@ -11,6 +11,7 @@ import CardListModal from "pages/profile/ui/cardListModal";
 
 import userProfile from "shared/images/user.png";
 import baseAxios from "shared/utils/baseAxios";
+import useAuthStore from "shared/store/userStore";
 
 import "./profile.css";
 
@@ -57,6 +58,11 @@ export const Profile = () => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
+  const [status, setStatus] = useState({
+    newzyCnt: 0,
+    followerCnt: 0,
+    followingCnt: 0,
+  }); // 유저 데이터 상태
 
   // 편집 모드 관리
   const [isEditing, setIsEditing] = useState(false);
@@ -71,6 +77,9 @@ export const Profile = () => {
   const [newImage, setNewImage] = useState(null); // 새로 업로드할 이미지 상태
 
   const [paddingX, setPaddingX] = useState(32); // 기본 패딩
+
+  // Zustand 스토어에서 유저 정보와 설정 함수 가져오기
+  const { setUserInfo } = useAuthStore();
 
   // 패딩 업데이트 로직을 추가합니다.
   useEffect(() => {
@@ -116,13 +125,25 @@ export const Profile = () => {
           img: userData.profile,
           birth: userData.birth || "",
         });
+
+        // 유저 정보를 Zustand 스토어에 저장
+        setUserInfo(userData);
+
+        const res = await baseAxios().get(`/user/profile/${user.nickname}`); // 닉네임을 URL에 포함해 요청
+        const Data = res.data;
+
+        setStatus({
+          newzyCnt: Data.newzyCnt,
+          followerCnt: Data.followerCnt,
+          followingCnt: Data.followingCnt,
+        });
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류 발생:", error);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [setUserInfo, user.nickname]);
 
   // 현재 경로에 따라 메뉴를 선택 상태로 설정
   useEffect(() => {
@@ -162,6 +183,12 @@ export const Profile = () => {
         state: user.state,
         socialLoginType: user.socialLoginType,
       });
+
+      // 유저 정보가 수정된 후 다시 유저 정보를 불러오고 스토어에 저장
+      const updatedUser = (await baseAxios().get("/user")).data;
+      setUser(updatedUser);
+
+      setUserInfo(updatedUser); // 스토어에 업데이트된 유저 정보 저장
     } catch (error) {
       console.error("프로필 정보 수정 중 오류 발생:", error);
       alert("프로필 정보를 수정하는 중 오류가 발생했습니다.");
@@ -170,13 +197,19 @@ export const Profile = () => {
 
   // 프로필 이미지 업로드
   const handleImageUpload = async () => {
-    if (!newImage) return;
-
     const formData = new FormData();
-    formData.append("profile", newImage); // 이미지 파일 추가
+
+    // 이미지가 있는 경우: FormData에 이미지 추가
+    if (newImage) {
+      formData.append("profile", newImage); // 이미지 파일 추가
+    } else {
+      formData.append("profile", ""); // 이미지가 없을 경우 빈 값으로 전송하여 삭제 처리
+    }
+
+    console.log("보내는 이미지 데이터 : ", formData);
 
     try {
-      await baseAxios().post("/user/uploadProfileImage", formData, {
+      await baseAxios().post("/user/upload-profile", formData, {
         headers: {
           "Content-Type": "multipart/form-data", // 이미지 파일 전송 시 필요
         },
@@ -185,6 +218,12 @@ export const Profile = () => {
       console.error("프로필 이미지 업로드 중 오류 발생:", error);
       alert("프로필 이미지를 업로드하는 중 오류가 발생했습니다.");
     }
+
+    // 유저 정보가 수정된 후 다시 유저 정보를 불러오고 스토어에 저장
+    const updatedUser = (await baseAxios().get("/user")).data;
+    setUser(updatedUser);
+
+    setUserInfo(updatedUser); // 스토어에 업데이트된 유저 정보 저장
   };
 
   // 이미지 변경 핸들러
@@ -450,7 +489,7 @@ export const Profile = () => {
                 Newzy
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                7
+                {status.newzyCnt}
               </div>
             </div>
             <div
@@ -461,7 +500,7 @@ export const Profile = () => {
                 Followers
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                42
+                {status.followerCnt}
               </div>
             </div>
             <div
@@ -472,7 +511,7 @@ export const Profile = () => {
                 Followings
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                25
+                {status.followingCnt}
               </div>
             </div>
           </div>

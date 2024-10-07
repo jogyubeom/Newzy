@@ -2,10 +2,10 @@ import React from 'react';
 import CommentContent from '../../pages/newzyDetail/ui/comment';
 import SearchContent from './search';
 
-const Sidebar = ({ activeSidebar, onActiveSidebar }) => {
+const Sidebar = ({ activeSidebar, onActiveSidebar, category }) => {
   const sidebarContent = {
     댓글: <CommentContent />, // 댓글 내용을 위한 컴포넌트
-    검색: <SearchContent category={0}/>,   // 검색 내용을 위한 컴포넌트
+    검색: category !== undefined ? <SearchContent category={category} /> : null, // category가 유효한지 확인
   };
 
   const title = activeSidebar === '댓글' ? '댓글' : activeSidebar === '검색' ? '단어 검색' : '';

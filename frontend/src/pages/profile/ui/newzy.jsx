@@ -1,13 +1,12 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import PostList from "../../../shared/postList/postList";
 import Pagination from "../../../shared/postList/pagination";
-import useAuthStore from "shared/store/userStore"; // zustand 스토어 import
 
-export const MyNewzy = () => {
+export const Newzy = ( { nickname } ) => {
   const navigate = useNavigate();
-  const user = useAuthStore.getState().userInfo; // user 정보를 가져옵니다.
   
   const [state, setState] = useState({
     posts: [], // 초기 상태를 빈 배열로 설정
@@ -20,19 +19,9 @@ export const MyNewzy = () => {
   const fetchPosts = async () => {
     const { currentPage } = state;
 
-    // 사용자 정보가 있는 경우 API URL을 생성
-    if (!user || !user.nickname) { // user로 변경
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-        error: "사용자 정보를 찾을 수 없습니다.", // 사용자 정보가 없을 경우 오류 처리
-      }));
-      return;
-    }
-
     try {
-      console.log('nickname : ' + user.nickname); // 수정된 부분
-      const response = await axios.get(`https://j11b305.p.ssafy.io/api/user/newzy-list/${user.nickname}`, {
+      console.log('nickname : ' + nickname); 
+      const response = await axios.get(`https://j11b305.p.ssafy.io/api/user/newzy-list/${nickname}`, {
         params: {
           page: currentPage
         }
@@ -84,4 +73,4 @@ export const MyNewzy = () => {
   );
 };
 
-export default MyNewzy;
+export default Newzy;

@@ -17,8 +17,8 @@ function baseAxios() {
   instance.interceptors.request.use(
     (config) => {
       // // 로컬에서 기능 테스트할 때 사용하는 수동 토큰 설정 코드
-      config.headers.Authorization =
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDMxIiwiZXhwIjoxNzI4MzI4ODU1fQ.JdyjPDhf1vfI4qs8cn1TVwV5IQPy9zkf_m-MbNGtbxA";
+      // config.headers.Authorization =
+      //   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDM0IiwiZXhwIjoxNzI4MzE1Mzk0fQ.q15N_mKA70lvSLAKGL4a1YSL6nmH3UlqDPFAFuDHJdo";
 
       // 배포 할 때 코드
       const token = useAuthStore.getState().token; // zustand 스토어에서 토큰 가져오기
