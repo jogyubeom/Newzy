@@ -27,7 +27,10 @@ export const AppRouter = () => {
       </Route>
       <Route path="newzy">
         <Route index element={<NewzyList />} />
+        {/* 새 글 작성 라우트 */}
         <Route path="edit" element={<NewzyEdit />} />
+        {/* 수정 라우트 */}
+        <Route path="edit/:newzyId" element={<NewzyEdit />} />
         <Route path=":id" element={<NewzyDetail />} />
       </Route>
       <Route path="profile">
@@ -36,7 +39,7 @@ export const AppRouter = () => {
         <Route path="bookMark" element={<Profile />}/>
         <Route path="words" element={<Profile />}/>
       </Route>
-      <Route path="profile/:nickname" element={<AnotherProfile/>} />
+      <Route path="profile/:nickname" element={<AnotherProfile />} />
       <Route path="usertest" element={<UserTest />} />
     </Route>
   );

@@ -73,7 +73,7 @@ const SearchContent = ({ category }) => {
         />
         <button
           onClick={handleSearch}
-          className="bg-blue-500 text-white rounded-md px-4 hover:bg-blue-600 transition"
+          className="bg-purple-600 text-white rounded-md px-4 hover:bg-purple-700 transition"
         >
           검색
         </button>
@@ -90,7 +90,7 @@ const SearchContent = ({ category }) => {
             </span>
             <button
               onClick={() => handleAddWord(result.word, result.definition)}
-              className="ml-2 bg-green-500 text-white rounded-md px-2 hover:bg-green-600 transition"
+              className="ml-2 bg-purple-500 text-white rounded-md px-2 hover:bg-purple-600 transition"
             >
               +
             </button>

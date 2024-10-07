@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import baseAxios from '../../shared/utils/baseAxios';
 import NewzyInfo from './ui/newzyInfo';
 import Content from '../../shared/postDetail/content';
@@ -11,6 +11,7 @@ export const NewzyDetail = () => {
   const [newzy, setNewzy] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false); // 구독 상태 관리
   const { id } = useParams();
+  const navigate = useNavigate(); // navigate 사용
 
   const handleSidebarToggle = (type) => {
     setActiveSidebar((prev) => (prev === type ? null : type));
@@ -30,10 +31,17 @@ export const NewzyDetail = () => {
   const fetchNewzy = async () => {
     try {
       const response = await baseAxios().get(`/newzy/${id}`);
-      setNewzy(response.data);
-      setIsFollowed(response.data.isFollowed); // 서버에서 받아온 구독 상태로 설정
+      if (response.status === 200) { // 200 상태코드 확인
+        setNewzy(response.data);
+        setIsFollowed(response.data.isFollowed); // 서버에서 받아온 구독 상태로 설정
+      } else {
+        alert('게시물을 찾을 수 없습니다.'); // 게시물이 없을 때 경고
+        navigate('/newzy'); // 목록 페이지로 이동
+      }
     } catch (error) {
       console.error("Error fetching newzy details:", error);
+      alert('데이터를 불러오는 데 실패했습니다.'); // 오류 발생 시 경고
+      navigate('/newzy'); // 목록 페이지로 이동
     }
   };
 
