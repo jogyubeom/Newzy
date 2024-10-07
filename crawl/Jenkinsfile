@@ -70,6 +70,7 @@ pipeline {
                         docker-compose up -d crawl &&
                         docker container prune -f &&
                         docker image prune -a -f
+                        docker system prune -a
                         "
                     """
                 }
