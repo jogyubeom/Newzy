@@ -271,7 +271,6 @@ public class UserController {
     }
 
 
-    // 유저가 북마크한 뉴스
     @GetMapping(value = "/news-bookmark")
     @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getNewsBookmarkList(
@@ -290,8 +289,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(NewsBookmarkList);
     }
 
-
-    // 유저가 좋아요한 뉴스
     @GetMapping(value = "/news-like")
     @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getNewsLikeList(
@@ -311,7 +308,6 @@ public class UserController {
     }
 
 
-    // 유저가 북마크한 뉴지
     @GetMapping(value = "/newzy-bookmark")
     @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getNewzyBookmarkList(
@@ -330,7 +326,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(NewzyBookmarkList);
     }
 
-    // 유저가 좋아요한 뉴지
     @GetMapping(value = "/newzy-like")
     @Operation(summary = "북마크한 뉴스 목록", description = "유저가 북마크한 뉴스 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getNewzyLikemarkList(
@@ -351,26 +346,20 @@ public class UserController {
 
 
     //  내가 작성한 뉴지 목록
-    @GetMapping(value = "/my-newzy-list")
+    @GetMapping(value = "/newzy-list/{nickname}")
     @Operation(summary = "내가 쓴 뉴지 목록 조회", description = "내가 작성한 뉴지 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getMyNewzyList(
+            @Parameter(description = "유저 닉네임")
+            @PathVariable String nickname,
             @Parameter(description = "페이지 번호")
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @Parameter(description = "JWT", required = true)
-            @RequestHeader(value = "Authorization", required = true) String token
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page
     ) {
-        Long userId = 0L;
-        if (token != null) {
-            userId = userService.getUser(token).getUserId();
-        } else {
-            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
-        }
 
-        log.info(">>> [GET] /newzy/my-newzy-list - 요청 파라미터: userId - {}, page - {}", userId, page);
+        log.info(">>> [GET] /user/newzy-list/{} - 요청 파라미터: nickname- {}, page - {}", nickname, nickname, page);
 
-        Map<String, Object> myNewzyList = userService.getMyNewzyList(page, userId);
+        Map<String, Object> newzyList = userService.getNewzyListByNickname(page, nickname);
 
-        return ResponseEntity.status(HttpStatus.OK).body(myNewzyList);
+        return ResponseEntity.status(HttpStatus.OK).body(newzyList);
     }
 
 

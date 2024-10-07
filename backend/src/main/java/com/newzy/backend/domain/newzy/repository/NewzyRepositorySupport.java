@@ -109,13 +109,13 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-    public Map<String, Object> getMyNewzyList(int page, Long userId) {
+    public Map<String, Object> getNewzyListByNickname(int page, String nickname) {
         QNewzy qnewzy = QNewzy.newzy;
         QUser qUser = QUser.user;
 
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(qnewzy.isDeleted.eq(false));
-        builder.and(qnewzy.user.userId.eq(userId));
+        builder.and(qnewzy.user.nickname.eq(nickname));
 
         Long totalCount = queryFactory
                 .select(qnewzy.count())
@@ -151,7 +151,7 @@ public class NewzyRepositorySupport extends QuerydslRepositorySupport {
                 .fetch();
 
         Map<String, Object> result = new HashMap<>();
-        result.put("myNewzyList", myNewzyList); // list
+        result.put("newzyList", myNewzyList); // list
         result.put("totalPage", totalPage); // int
 
         return result;
