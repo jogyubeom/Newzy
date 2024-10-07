@@ -297,6 +297,7 @@ public class UserServiceImpl implements UserService {
                 .socialLoginType(authRequestDTO.getType())
                 .image(image.get())
                 .cluster(cluster)
+                .isDeleted(false)
                 .build();
 
         log.info("새로운 사용자 등록: {}", authRequestDTO.getEmail());
