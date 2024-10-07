@@ -21,9 +21,8 @@ export const Newzy = ( { nickname } ) => {
 
     try {
       console.log('nickname : ' + nickname); 
-      const response = await axios.get('https://j11b305.p.ssafy.io/api/user/newzy-list', {
+      const response = await axios.get(`https://j11b305.p.ssafy.io/api/user/newzy-list/${nickname}`, {
         params: {
-          nickname: toString(nickname),
           page: currentPage
         }
     });

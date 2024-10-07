@@ -32,9 +32,8 @@ export const MyNewzy = () => {
 
     try {
       console.log('nickname : ' + user.nickname); // 수정된 부분
-      const response = await axios.get('https://j11b305.p.ssafy.io/api/user/newzy-list', {
+      const response = await axios.get(`https://j11b305.p.ssafy.io/api/user/newzy-list/${user.nickname}`, {
         params: {
-          nickname: toString(user.nickname),
           page: currentPage
         }
     });
