@@ -225,21 +225,13 @@ public class UserController {
 
 
     // /user/{nickname}/followings?page={page}
-    @GetMapping(value = "/{nickname}/followings-list")
+    @GetMapping(value = "/followings-list/{nickname}")
     @Operation(summary = "팔로잉 목록", description = "내가 팔로잉한 사람들의 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getFollowings(
             @PathVariable String nickname,
             @Parameter(description = "페이지 번호")
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @Parameter(description = "JWT", required = false)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page
     ) {
-        Long userId = 0L;
-        if (token != null) {
-            userId = userService.getUser(token).getUserId();
-        } else {
-            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
-        }
         log.info(">>> [GET] /news/{}/followings - 요청 파라미터: nickname - {}, page - {}", nickname, nickname, page);
 
         Map<String, Object> followingList = userService.getFollowingList(page, nickname);
@@ -248,21 +240,14 @@ public class UserController {
     }
 
     // /user/{nickname}/followers?page={page}
-    @GetMapping(value = "/{nickname}/followers-list")
+    @GetMapping(value = "/followers-list/{nickname}")
     @Operation(summary = "팔로워 목록", description = "나를 팔로우한 사람들의 목록을 반환합니다.")
     public ResponseEntity<Map<String, Object>> getFollowers(
             @PathVariable String nickname,
             @Parameter(description = "페이지 번호")
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @Parameter(description = "JWT", required = false)
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page
     ) {
-        Long userId = 0L;
-        if (token != null) {
-            userId = userService.getUser(token).getUserId();
-        } else {
-            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
-        }
+
         log.info(">>> [GET] /news/{}/followers - 요청 파라미터: nickname - {}, page - {}", nickname, nickname, page);
 
         Map<String, Object> followerList = userService.getFollowerList(page, nickname);
