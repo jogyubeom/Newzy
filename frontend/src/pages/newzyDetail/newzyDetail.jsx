@@ -62,8 +62,8 @@ export const NewzyDetail = () => {
         <UtilityButtons 
           onActiveSidebar={handleSidebarToggle} 
           activeSidebar={activeSidebar} 
-          isLiked={newzy.isLiked || false} // newzy가 null일 경우 false
-          isBookmarked={newzy.isBookmarked || false} // newzy가 null일 경우 false
+          isLiked={newzy.isLiked}
+          isBookmarked={newzy.isBookmarked}
           newzyId={newzy.newzyId} // newzy ID를 전달
         />
       )}
