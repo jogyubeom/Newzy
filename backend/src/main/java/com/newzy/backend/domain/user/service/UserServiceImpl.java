@@ -526,6 +526,7 @@ public class UserServiceImpl implements UserService {
                 .profile(userInfoResponseDTO.getProfile())
                 .email(userInfoResponseDTO.getEmail())
                 .birth(userInfoResponseDTO.getBirth())
+                .info(userInfoResponseDTO.getInfo())
                 .exp(userInfoResponseDTO.getExp())
                 .newzyCnt(newzyCnt)
                 .followerCnt(followerCnt)
