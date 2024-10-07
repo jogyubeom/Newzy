@@ -27,9 +27,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -86,7 +84,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public List<VocaListResponseDTO> getVocaList(SearchWordRequestDTO searchWordRequestDTO) {
+    public Map<String, Object> getVocaList(SearchWordRequestDTO searchWordRequestDTO) {
         // PageRequest와 정렬 조건 설정
         Sort sorting = (searchWordRequestDTO.getSort() == 0) ? Sort.by(Sort.Direction.DESC, "createdAt") : Sort.by(Sort.Direction.ASC, "createdAt");
         PageRequest pageRequest = PageRequest.of(searchWordRequestDTO.getPage(), 10, sorting);
@@ -101,7 +99,15 @@ public class DictionaryServiceImpl implements DictionaryService {
             vocaListResponseDTOList.add(vocaListResponseDTO);
         }
 
-        return vocaListResponseDTOList;
+        // 전체 페이지 수 계산
+        int totalPage = searchWordsPage.getTotalPages();
+
+        // 결과를 Map으로 반환
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalPage", totalPage);
+        result.put("vocaList", vocaListResponseDTOList);
+
+        return result;
     }
 
     @Transactional

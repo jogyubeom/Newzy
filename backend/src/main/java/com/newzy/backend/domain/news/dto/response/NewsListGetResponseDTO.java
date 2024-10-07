@@ -20,6 +20,7 @@ public class NewsListGetResponseDTO {
     private String publisher;
     private String thumbnail;
     private int hit;
+    private int likeCnt;
     private LocalDateTime createdAt;
 
     public static NewsListGetResponseDTO convertToDTO(News news){
@@ -35,6 +36,7 @@ public class NewsListGetResponseDTO {
                 .publisher(news.getPublisher())
                 .thumbnail(news.getThumbnail())
                 .hit(news.getHit())
+                .likeCnt(news.getLikeCnt())
                 .createdAt(news.getCreatedAt())
                 .build();
     }
