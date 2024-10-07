@@ -1,7 +1,7 @@
 import { BiBell } from "react-icons/bi";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SocialLoginModal } from "widgets/login/socialLoginModal";
 import useAuthStore from "shared/store/userStore";
 import baseAxios from "shared/utils/baseAxios";
@@ -13,6 +13,10 @@ export const Header = () => {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn()); // 로그인 상태 확인
 
   const user = useAuthStore((state) => state.userInfo);
+
+  useEffect(() => {
+    console.log("헤더의 userInfo 변경 감지:", user);  // 유저 정보가 변경되었을 때 제대로 반영되는지 확인
+  }, [user]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -48,17 +52,17 @@ export const Header = () => {
   };
 
   // 종 모양 아이콘 클릭 시 토큰 삭제 함수(디버그용 임시)
-  const handleBellClick = () => {
-    const confirmed = window.confirm(
-      "임시로 만들어둔 강제 로그아웃 버튼,\n확인 시 프론트의 토큰이 삭제됨!\n(토큰이 만료되어 로그아웃이 안될 때만 사용할 것)"
-    );
-    if (confirmed) {
-      useAuthStore.getState().clearToken(); // 토큰 삭제
-      console.log("토큰이 삭제되었습니다.");
-    } else {
-      console.log("토큰 삭제가 취소되었습니다.");
-    }
-  };
+  // const handleBellClick = () => {
+  //   const confirmed = window.confirm(
+  //     "임시로 만들어둔 강제 로그아웃 버튼,\n확인 시 프론트의 토큰이 삭제됨!\n(토큰이 만료되어 로그아웃이 안될 때만 사용할 것)"
+  //   );
+  //   if (confirmed) {
+  //     useAuthStore.getState().clearToken(); // 토큰 삭제
+  //     console.log("토큰이 삭제되었습니다.");
+  //   } else {
+  //     console.log("토큰 삭제가 취소되었습니다.");
+  //   }
+  // };
 
   return (
     <>
@@ -69,7 +73,7 @@ export const Header = () => {
         <div className="flex items-center space-x-4">
           <button
             className="flex-shrink-0 w-[76px] h-[37px] flex items-center justify-center rounded-full hover:bg-gray-100"
-            onClick={handleBellClick}
+            // onClick={handleBellClick}
           >
             <BiBell className="w-6 h-6 text-gray-800" />
           </button>

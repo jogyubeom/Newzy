@@ -174,7 +174,9 @@ export const Profile = () => {
       // 유저 정보가 수정된 후 다시 유저 정보를 불러오고 스토어에 저장
       const updatedUser = (await baseAxios().get("/user")).data;
       setUser(updatedUser);
+
       setUserInfo(updatedUser); // 스토어에 업데이트된 유저 정보 저장
+
     } catch (error) {
       console.error("프로필 정보 수정 중 오류 발생:", error);
       alert("프로필 정보를 수정하는 중 오류가 발생했습니다.");
@@ -199,6 +201,12 @@ export const Profile = () => {
       console.error("프로필 이미지 업로드 중 오류 발생:", error);
       alert("프로필 이미지를 업로드하는 중 오류가 발생했습니다.");
     }
+
+    // 유저 정보가 수정된 후 다시 유저 정보를 불러오고 스토어에 저장
+    const updatedUser = (await baseAxios().get("/user")).data;
+    setUser(updatedUser);
+
+    setUserInfo(updatedUser); // 스토어에 업데이트된 유저 정보 저장
   };
 
   // 이미지 변경 핸들러
