@@ -129,14 +129,6 @@ export const Profile = () => {
         // 유저 정보를 Zustand 스토어에 저장
         setUserInfo(userData);
 
-        const res = await baseAxios().get(`/user/profile/${user.nickname}`); // 닉네임을 URL에 포함해 요청
-        const Data = res.data;
-
-        setStatus({
-          newzyCnt: Data.newzyCnt,
-          followerCnt: Data.followerCnt,
-          followingCnt: Data.followingCnt,
-        });
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류 발생:", error);
       }
