@@ -185,12 +185,17 @@ export const Profile = () => {
 
   // 프로필 이미지 업로드
   const handleImageUpload = async () => {
-    if (!newImage) return;
 
     const formData = new FormData();
-    formData.append("profile", newImage); // 이미지 파일 추가
+    
+    // 이미지가 있는 경우: FormData에 이미지 추가
+    if (newImage) {
+      formData.append("profile", newImage); // 이미지 파일 추가
+    } else {
+      formData.append("profile", ""); // 이미지가 없을 경우 빈 값으로 전송하여 삭제 처리
+    }
 
-    console.log(formData);
+    console.log("보내는 이미지 데이터 : ", formData);
 
     try {
       await baseAxios().post("/user/upload-profile", formData, {
