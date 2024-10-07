@@ -28,6 +28,9 @@ export const UserTest = () => {
   const [isNicknameChecked, setIsNicknameChecked] = useState(false); // 중복 체크 여부
   const [nicknameError, setNicknameError] = useState(""); // 닉네임 중복 에러 메시지 상태
 
+  const [introduceLength, setIntroduceLength] = useState(0); // 자기소개 글자수 상태 추가
+  const maxIntroduceLength = 30; // 최대 글자수 제한
+
   const currentCategory = categories[currentCategoryIndex];
   const nav = useNavigate()
 
@@ -120,9 +123,9 @@ export const UserTest = () => {
 
       // 테스트용으로 콘솔에 출력
       console.log("유저 정보:", Data.nickname ,Data.birth, Data.info);
-      console.log("아는 경제 단어 개수:", Data.categoryScores.additionalProp1);
-      console.log("아는 사회 단어 개수:", Data.categoryScores.additionalProp2);
-      console.log("아는 세계 단어 개수:", Data.categoryScores.additionalProp3);
+      console.log("아는 경제 단어 개수:", Data.categoryScores[0]);
+      console.log("아는 사회 단어 개수:", Data.categoryScores[1]);
+      console.log("아는 세계 단어 개수:", Data.categoryScores[2]);
 
       try {
         // 서버로 데이터 전송
@@ -212,11 +215,18 @@ export const UserTest = () => {
             <label className="block font-semibold mb-2">자기소개</label>
             <textarea
               value={introduction}
-              onChange={(e) => setIntroduction(e.target.value)}
+              onChange={(e) => {
+                const input = e.target.value;
+                if (input.length <= maxIntroduceLength) {
+                  setIntroduction(input);
+                  setIntroduceLength(input.length); // 글자수 업데이트
+                }
+              }}
               className="w-full px-3 py-2 border-2 rounded"
               rows="4"
               placeholder="자기소개를 입력해주세요 (선택사항)"
             />
+            <p className="text-sm font-semibold text-gray-500 mt-1">{introduceLength}/{maxIntroduceLength}</p>
           </div>
         </div>
       )}

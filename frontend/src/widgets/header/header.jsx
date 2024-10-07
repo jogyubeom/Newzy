@@ -31,19 +31,20 @@ export const Header = () => {
         console.error("토큰이 없습니다. 로그아웃을 처리할 수 없습니다.");
         return;
       }
-      
-      // 프론트의 토큰 및 유저 정보 삭제
-      useAuthStore.getState().clearToken(); // 토큰 삭제
-      useAuthStore.getState().clearUserInfo(); // 유저 정보 삭제
 
       // 서버에 로그아웃 요청 (GET 요청)
       await baseAxios().get("/user/logout");
 
-      // 로그아웃 후 메인 화면으로 리다이렉트
-      nav("/"); // useNavigate를 컴포넌트 내에서 사용
     } catch (error) {
       console.error("로그아웃 오류:", error);
     }
+
+    // 프론트의 토큰 및 유저 정보 삭제
+    useAuthStore.getState().clearToken(); // 토큰 삭제
+    useAuthStore.getState().clearUserInfo(); // 유저 정보 삭제
+
+    // 로그아웃 후 메인 화면으로 리다이렉트
+    nav("/"); // useNavigate를 컴포넌트 내에서 사용
   };
 
   // 종 모양 아이콘 클릭 시 토큰 삭제 함수(디버그용 임시)
