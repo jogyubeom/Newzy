@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import baseAxios from '../../shared/utils/baseAxios'; // baseAxios import
 import NewzyInfo from './ui/newzyInfo';
 import Content from '../../shared/postDetail/content';
 import UtilityButtons from './ui/utilityButtons';
 import Sidebar from '../../shared/postDetail/sidebar';
-import useAuthStore from 'shared/store/userStore'; // Zustand store import
 
 export const NewzyDetail = () => {
   const [activeSidebar, setActiveSidebar] = useState(null);
   const [newzy, setNewzy] = useState(null);
-
   const { id } = useParams();
-  const token = useAuthStore(state => state.token); // 토큰 가져오기
 
   const handleSidebarToggle = (type) => {
     setActiveSidebar((prev) => (prev === type ? null : type));
@@ -31,7 +28,7 @@ export const NewzyDetail = () => {
 
   const fetchNewzy = async () => {
     try {
-      const response = await axios.get(`https://j11b305.p.ssafy.io/api/newzy/${id}`);
+      const response = await baseAxios().get(`/newzy/${id}`); // baseAxios 사용
       setNewzy(response.data);
     } catch (error) {
       console.error("Error fetching newzy details:", error);
