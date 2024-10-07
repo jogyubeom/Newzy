@@ -41,7 +41,7 @@ public class NewzyServiceImpl implements NewzyService {
             String key = data.getKey();
             Long hit = data.getValue();
 
-            String newzyId = key.split(":")[3];  // Redis 키에서 newsId 추출
+            String newzyId = key.split(":")[3];  // Redis 키에서 newzyId 추출
 
             // 뉴스 조회수를 DB에 반영하는 로직 (newsId에 해당하는 조회수를 DB에 업데이트)
             Newzy newzy = newzyRepository.findById(Long.parseLong(newzyId))

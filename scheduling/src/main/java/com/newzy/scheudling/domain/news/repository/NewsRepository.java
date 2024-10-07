@@ -10,7 +10,5 @@ import java.util.List;
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
 
-    List<News> findTop3ByCreatedAtAfterOrderByHitDesc(LocalDateTime startOfDay);
-
 }
 
