@@ -23,6 +23,7 @@ import com.newzy.backend.domain.user.repository.FollowRepository;
 import com.newzy.backend.domain.user.repository.FollowRepositorySupport;
 import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.auth.JwtProvider;
+import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import com.newzy.backend.global.exception.NotValidRequestException;
 import com.newzy.backend.global.util.RedisUtil;
@@ -309,6 +310,10 @@ public class UserServiceImpl implements UserService {
 
         User fromUser = userRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다."));
         User toUser = userRepository.findByNickname(nickname);
+        boolean isExisted = followRepository.existsByFromUserAndToUser(fromUser, toUser);
+        if (isExisted)
+            throw new EntityIsFoundException("이미 팔로우한 회원입니다.");
+
         if (toUser == null) {
             throw new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다.");
         }
@@ -328,6 +333,10 @@ public class UserServiceImpl implements UserService {
         if (toUser == null) {
             throw new EntityNotFoundException("해당하는 유저 데이터를 찾을 수 없습니다.");
         }
+
+        boolean isExisted = followRepository.existsByFromUserAndToUser(fromUser, toUser);
+        if (!isExisted)
+            throw new EntityNotFoundException("팔로우 중인 유저가 아닙니다.");
 
         Follow follow = followRepository.findByFromUserAndToUser(fromUser, toUser);
 
