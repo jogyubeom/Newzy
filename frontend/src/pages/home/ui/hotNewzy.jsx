@@ -45,7 +45,7 @@ export const HotNewzy = () => {
 
                 {/* Content (ellipsis 처리) */}
                 <div className="flex-grow flex items-center w-full text-[#747483] text-sm leading-4 font-normal overflow-hidden text-ellipsis whitespace-nowrap">
-                  {item.content}
+                  {item.contentText}
                 </div>
               </div>
               {/* Thumbnail 이미지 */}

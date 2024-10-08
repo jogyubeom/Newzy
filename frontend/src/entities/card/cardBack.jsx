@@ -25,7 +25,9 @@ export const CardBack = ({ summary, userDifficulty, news, onClose }) => {
       : userDifficulty === 1
       ? "보통이예요"
       : "어려워요";
-  console.log(category);
+
+  // console.log(category);
+
   return (
     <div
       className={`relative w-[360px] h-[480px] rounded-2xl flex flex-col items-center py-4 ${categoryBgColor}`}

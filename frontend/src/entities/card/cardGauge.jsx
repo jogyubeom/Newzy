@@ -81,7 +81,7 @@ export const CardGauge = ({ news }) => {
       <style>{pingAnimation}</style>
 
       {/* 카드 획득 후 썸네일과 제목 표시 */}
-      {isCardAcquired ? (
+      {isCardAcquired | news?.isCollected ? (
         <div className="relative" onClick={handleCardClick}>
           <div
             className="absolute bottom-0 w-full p-2 rounded-lg text-white font-bold text-sm"

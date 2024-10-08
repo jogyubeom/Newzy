@@ -1,10 +1,20 @@
-import { KoreanWeek } from "shared/utils/dateUtils";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "shared/store/userStore";
 import useHomeStore from "../store/useHomeStore";
+import { KoreanWeek } from "shared/utils/dateUtils";
 
 export const WeekCardWinner = () => {
+  const { userInfo } = useAuthStore();
   const { weekCardWinner } = useHomeStore();
+  const navigate = useNavigate();
+
+  const handleCardWinner = (nickname) =>
+    nickname !== userInfo.nickname
+      ? navigate(`profile/${nickname}`)
+      : navigate("profile");
 
   const now = new Date();
+
   return (
     <div className="w-full ">
       <div className="flex justify-between items-center w-[639px] h-[188px] p-6 bg-[#002F10] rounded-lg overflow-hidden">
@@ -26,7 +36,10 @@ export const WeekCardWinner = () => {
         </div>
 
         {/* Avatar Section */}
-        <div className="flex flex-col items-center space-y-2 w-[295px]">
+        <button
+          className="flex flex-col items-center space-y-2 w-[295px]"
+          onClick={() => handleCardWinner(weekCardWinner?.nickname)}
+        >
           <div className="relative w-[104px] h-[104px] rounded-full shadow-md">
             <img
               src={weekCardWinner?.profile}
@@ -38,7 +51,7 @@ export const WeekCardWinner = () => {
           <div className="text-white text-lg font-semibold text-center w-full text-shadow-md">
             {weekCardWinner?.nickname}
           </div>
-        </div>
+        </button>
       </div>
     </div>
   );

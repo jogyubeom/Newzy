@@ -17,8 +17,11 @@ function baseAxios() {
   instance.interceptors.request.use(
     (config) => {
       // // 로컬에서 기능 테스트할 때 사용하는 수동 토큰 설정 코드
-      // config.headers.Authorization =
-      //   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDM0IiwiZXhwIjoxNzI4MzE1Mzk0fQ.q15N_mKA70lvSLAKGL4a1YSL6nmH3UlqDPFAFuDHJdo";
+      config.headers.Authorization =
+        // 해인 카카오쿠키(해이니)
+        // "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDI3IiwiZXhwIjoxNzI4NDM3OTI3fQ.mCrMd5kZC4XxIexFms8cuhRc-2cHtW77SINodgrc-W0";
+        //해인 구글 쿠키(하하호호)
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDM0IiwiZXhwIjoxNzI4NDU3NDQ4fQ.yF4d8FSHnqSVG3nHcd7kx4NfdCDuN7I-J71yOg6KtFs";
 
       // 배포 할 때 코드
       const token = useAuthStore.getState().token; // zustand 스토어에서 토큰 가져오기
