@@ -1,6 +1,7 @@
 package com.newzy.backend.domain.newzy.service;
 
 import com.newzy.backend.domain.image.service.ImageService;
+import com.newzy.backend.domain.news.dto.response.NewsListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyImageResponseDTO;
@@ -15,6 +16,7 @@ import com.newzy.backend.domain.user.repository.UserRepository;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
 import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
+import com.newzy.backend.global.exception.NotValidRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -25,9 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -117,18 +117,47 @@ public class NewzyServiceImpl implements NewzyService {
         String pattern = "ranking:newzy:" + yesterdayDate + ":*";  // 오늘 날짜의 모든 뉴지 조회수
 
         Set<String> keys = redisTemplate.keys(pattern);  // 해당 패턴에 맞는 키 가져오기
+        if (keys == null || keys.isEmpty()) {
+            return Collections.emptyList();  // 만약 키가 없으면 빈 리스트 반환
+        }
 
-        // Redis에서 조회수 정보를 가져오고 내림차순으로 정렬 후 상위 3개의 키 추출
-        List<String> topNewzyKeys = redisTemplate.opsForValue().multiGet(keys).stream()
-                .sorted((v1, v2) -> Integer.compare(Integer.parseInt(v2), Integer.parseInt(v1)))  // 내림차순 정렬
-                .map(key -> key.split(":")[3])  // key에서 newzyId 추출
-                .toList();
+        // Redis에서 각 키에 대한 조회수 정보를 가져옴
+        List<String> keyList = new ArrayList<>(keys);
+        List<String> values = redisTemplate.opsForValue().multiGet(keyList);
+        if (values == null || values.isEmpty()) {
+            throw new NotValidRequestException("조회수가 없습니다.");
+        }
 
-        // 상위 3개의 newsId에 해당하는 News 객체들을 데이터베이스에서 조회한 후 DTO로 변환
+        // 키와 조회수를 쌍으로 묶어서 리스트로 만듦
+        List<Map.Entry<String, Integer>> keyValueList = new ArrayList<>();
+        for (int i = 0; i < keyList.size(); i++) {
+            String key = keyList.get(i);
+            String value = values.get(i);
+            if (value != null) {
+                keyValueList.add(new AbstractMap.SimpleEntry<>(key, Integer.parseInt(value)));
+            }
+        }
+        // 조회수(value) 기준으로 내림차순 정렬 후 상위 3개의 키 추출
+        List<String> topNewzyKeys = keyValueList.stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())  // 조회수를 기준으로 내림차순 정렬
+                .limit(4)  // 상위 3개의 키 추출
+                .map(entry -> {
+                    String[] keyParts = entry.getKey().split(":");
+                    if (keyParts.length > 3) {
+                        return keyParts[3];  // key에서 newsId 추출
+                    } else {
+                        log.warn("Invalid key format: " + entry.getKey());
+                        return null;  // 잘못된 형식의 키는 무시
+                    }
+                })
+                .filter(Objects::nonNull)  // null 값 필터링
+                .collect(Collectors.toList());
+        log.info(topNewzyKeys.toString());
+        // 상위 4개의 newzyId에 해당하는 Newzy 객체들을 데이터베이스에서 조회한 후 DTO로 변환
         return topNewzyKeys.stream()
-                .map(newsId -> newzyRepository.findById(Long.parseLong(newsId))
+                .map(newzyId -> newzyRepository.findById(Long.parseLong(newzyId))
                         .map(NewzyListGetResponseDTO::convertToDTO)  // News 객체를 DTO로 변환
-                        .orElseThrow(() -> new EntityNotFoundException("해당 뉴스 데이터를 찾을 수 없습니다.")))
+                        .orElseThrow(() -> new EntityNotFoundException("해당 뉴지 데이터를 찾을 수 없습니다.")))
                 .collect(Collectors.toList());
     }
 

@@ -121,7 +121,7 @@ public class NewsServiceImpl implements NewsService {
                 .filter(Objects::nonNull)  // null 값 필터링
                 .collect(Collectors.toList());
         log.info(topNewsKeys.toString());
-        // 상위 4개의 newsId에 해당하는 News 객체들을 데이터베이스에서 조회한 후 DTO로 변환
+        // 상위 3개의 newsId에 해당하는 News 객체들을 데이터베이스에서 조회한 후 DTO로 변환
         return topNewsKeys.stream()
                 .map(newsId -> newsRepository.findById(Long.parseLong(newsId))
                         .map(NewsListGetResponseDTO::convertToDTO)  // News 객체를 DTO로 변환
