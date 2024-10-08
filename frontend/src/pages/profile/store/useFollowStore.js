@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import baseAxios from "shared/utils/baseAxios";
 
-export const useFollowStore = create((set) => ({
+export const useFollowStore = create((set, get) => ({
   followers: [],
   followings: [],
   loading: false,
@@ -35,20 +35,32 @@ export const useFollowStore = create((set) => ({
     }
   },
 
-  // 팔로우 상태 업데이트
-  updateFollowStatus: (nickname, isFollowing) => {
+  // 팔로워/팔로잉 상태를 업데이트하는 함수
+  updateFollowStatus: (name, isFollowing) => {
     set((state) => {
-      if (isFollowing) {
-        return {
-          followings: [...state.followings, { toUserNickname: nickname }],
-        };
-      } else {
+      // 팔로우 취소 (언팔로우)
+      if (!isFollowing) {
         return {
           followings: state.followings.filter(
-            (user) => user.toUserNickname !== nickname
+            (following) => following.toUserNickname !== name
+          ),
+          followers: state.followers.filter(
+            (follower) => follower.fromUserNickname !== name
           ),
         };
       }
+      // 팔로우 추가
+      return {
+        followings: [...state.followings, { toUserNickname: name }],
+        followers: [...state.followers, { fromUserNickname: name }],
+      };
     });
+  },
+
+  // 팔로우 여부 확인 함수
+  isFollowing: (nickname) => {
+    return get().followings.some(
+      (following) => following.toUserNickname === nickname
+    );
   },
 }));
