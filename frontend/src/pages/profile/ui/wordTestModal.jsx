@@ -6,7 +6,7 @@ import { RiCheckboxMultipleFill } from "react-icons/ri";
 import { FaFrown, FaSmile, FaMeh } from "react-icons/fa";
 import baseAxios from "shared/utils/baseAxios";
 
-const WordTestModal = ({ isOpen, onClose, wordList, userName }) => {
+const WordTestModal = ({ isOpen, onClose, wordList, userName, onWordsRemoved }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [correctCount, setCorrectCount] = useState(0);
