@@ -252,13 +252,16 @@ public class NewzyController {
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴지의 좋아요를 삭제했습니다."));
     }
 
-    @GetMapping(value = "/upload-image")
+    @PostMapping(value = "/upload-image")
     @Operation(summary = "뉴지 이미지 url로 변환", description = "이미지 파일을 뉴지에 들어갈 url로 바꿔줍니다.")
     public ResponseEntity<NewzyImageResponseDTO> convertImgUrl(
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token,
             @RequestPart(value = "image", required = false) MultipartFile[] image
     ) {
+        if (token == null || token.isBlank()) {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
 
         NewzyImageResponseDTO newzyImageResponseDTO = newzyService.convertImgUrl(image);
 
