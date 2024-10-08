@@ -86,7 +86,7 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
       <div className="w-[480px] h-[650px] transform rotate-[0.5deg] rounded-[24px] bg-white border-[3px] border-gray-400 px-6">
         <header className="w-full flex justify-between items-center mt-4">
           <div className="flex-shrink-0 text-[#26262C] whitespace-nowrap text-ellipsis font-[Open Sans] text-[36px] leading-[24px] font-semibold flex items-center justify-between text-justify">
-            <button className="w-[40px] h-[40px] bg-gray-200 rounded-full">
+            <button className="w-[45px] h-[45px] bg-gray-200 rounded-full">
               <img src={userInfo.profile || "/shared/images/user.png"} className="w-full h-full object-cover rounded-full" />
             </button>
           </div>

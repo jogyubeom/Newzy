@@ -81,7 +81,7 @@ export const Header = () => {
           {/* 로그인 상태에 따라 FaUserCircle 또는 로그인 버튼 표시 */}
           {user && isLoggedIn ? (
             <div
-              className="relative"
+              className="relative flex items-center"
               onMouseEnter={() => setIsHovering(true)} // hover 시작
               onMouseLeave={() => setIsHovering(false)} // hover 종료
             >
