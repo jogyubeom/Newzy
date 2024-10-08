@@ -2,9 +2,10 @@ import React from 'react';
 import CommentContent from '../../pages/newzyDetail/ui/comment';
 import SearchContent from './search';
 
-const Sidebar = ({ activeSidebar, onActiveSidebar, category }) => {
+const Sidebar = ({ activeSidebar, onActiveSidebar, category, newzyId }) => {
   const sidebarContent = {
-    댓글: <CommentContent />, // 댓글 내용을 위한 컴포넌트
+    // newzyId가 없으면 댓글 컴포넌트를 렌더링하지 않음
+    댓글: newzyId ? <CommentContent newzyId={newzyId} /> : null,
     검색: category !== undefined ? <SearchContent category={category} /> : null, // category가 유효한지 확인
   };
 
