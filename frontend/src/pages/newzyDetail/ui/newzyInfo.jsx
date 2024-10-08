@@ -4,7 +4,7 @@ import CategoryBadge from '../../../shared/categoryBadge';
 import useAuthStore from 'shared/store/userStore'; // Zustand store import
 import baseAxios from '../../../shared/utils/baseAxios';
 
-const NewzyInfo = ({ category, title, date, author, newzyId, isFollowed, onFollowChange }) => {
+const NewzyInfo = ({ category, title, date, author, newzyId, profile, isFollowed, onFollowChange }) => {
   const navigate = useNavigate(); // useNavigate 사용
   const { token, userInfo } = useAuthStore(state => ({
     token: state.token,
@@ -74,6 +74,11 @@ const NewzyInfo = ({ category, title, date, author, newzyId, isFollowed, onFollo
       <h1 className="text-[36px] font-bold mt-2 mb-2">{title}</h1>
       <div className="text-[#A0A0A0] text-sm mb-2">작성일: {date}</div>
       <div className="flex items-center mb-6">
+        <img 
+          src={profile} 
+          alt={`${author} profile`} 
+          className="w-10 h-10 rounded-full mr-4 border border-gray-300"
+        />
         <span className="text-[#3D3D3D] text-lg mr-4">{author}</span>
 
         {userNickname === author ? (
