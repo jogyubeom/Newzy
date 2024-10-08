@@ -3,6 +3,7 @@ package com.newzy.backend.domain.newzy.service;
 import com.newzy.backend.domain.image.service.ImageService;
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
+import com.newzy.backend.domain.newzy.dto.response.NewzyImageResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import com.newzy.backend.domain.newzy.entity.Newzy;
@@ -21,6 +22,7 @@ import org.jsoup.nodes.Document;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -128,6 +130,14 @@ public class NewzyServiceImpl implements NewzyService {
                         .map(NewzyListGetResponseDTO::convertToDTO)  // News 객체를 DTO로 변환
                         .orElseThrow(() -> new EntityNotFoundException("해당 뉴스 데이터를 찾을 수 없습니다.")))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public NewzyImageResponseDTO convertImgUrl(MultipartFile[] files) {
+        String[] urls = imageService.uploadImages(files);
+        return NewzyImageResponseDTO.builder()
+                .url(urls[0])
+                .build();
     }
 
 

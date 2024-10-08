@@ -2,9 +2,11 @@ package com.newzy.backend.domain.newzy.service;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyListGetRequestDTO;
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
+import com.newzy.backend.domain.newzy.dto.response.NewzyImageResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.newzy.dto.response.NewzyResponseDTO;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -29,5 +31,7 @@ public interface NewzyService {
     void deleteNewzyLike(Long userId, Long newzyId);
 
     List<NewzyListGetResponseDTO> getHotNewzyList();
+
+    NewzyImageResponseDTO convertImgUrl(MultipartFile[] files);
 
 }
