@@ -7,6 +7,8 @@ import FollowIndexModal from "pages/profile/ui/followIndexModal";
 
 import userProfile from "shared/images/user.png";
 import baseAxios from "shared/utils/baseAxios";
+import { useFollowStore } from "./store/useFollowStore";
+import useAuthStore from "../../shared/store/userStore";
 
 const getZoomLevel = () => {
   return window.devicePixelRatio * 100;
@@ -49,6 +51,10 @@ export const AnotherProfile = () => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
+  const { fetchFollowings, isFollowing, updateFollowStatus } = useFollowStore();
+  const [isUserFollowing, setIsUserFollowing] = useState(false);
+
+  const { userInfo } = useAuthStore();
 
   const [profileData, setProfileData] = useState({
     name: '',
@@ -111,6 +117,32 @@ export const AnotherProfile = () => {
 
     fetchUserData(); 
   }, [nickname]); // 닉네임이 변경될 때마다 다시 유저 정보를 불러옴
+
+
+  // 팔로잉 목록 가져오기 및 팔로우 여부 확인
+  useEffect(() => {
+    const checkIfFollowing = async () => {
+      await fetchFollowings(userInfo.nickname); // 자신의 닉네임으로 팔로잉 목록을 가져옴
+      setIsUserFollowing(isFollowing(nickname)); // 해당 유저를 팔로우하는지 여부 확인
+    };
+
+    checkIfFollowing();
+  }, [nickname, fetchFollowings, isFollowing]);
+
+  // 팔로우/언팔로우 버튼 클릭 시
+  const toggleFollow = async () => {
+    try {
+      if (isUserFollowing) {
+        await baseAxios().delete(`/user/${nickname}/follower`);
+      } else {
+        await baseAxios().post(`/user/${nickname}/follower`);
+      }
+      updateFollowStatus(nickname, !isUserFollowing);
+      setIsUserFollowing(!isUserFollowing); // 로컬 상태 업데이트
+    } catch (error) {
+      console.error("팔로우/언팔로우 처리 중 에러 발생:", error);
+    }
+  };
 
 
   // 현재 경로에 따라 메뉴를 선택 상태로 설정
@@ -290,7 +322,15 @@ export const AnotherProfile = () => {
               </div>
             </div>
           </div>
-          <div className="h-[103px] mt-10 mb-7"></div>
+          <div className="h-[103px] mt-10 mb-7">
+            <button
+              onClick={toggleFollow}
+              className={`w-full h-full px-4 py-2 border-2 rounded-[15px] font-semibold transition-colors duration-300
+                ${isUserFollowing ? 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white' : 'border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white'}`}
+            >
+              {isFollowing ? 'Unfollow' : 'Follow'}
+            </button>
+          </div>
         </div>
       </div>
 
