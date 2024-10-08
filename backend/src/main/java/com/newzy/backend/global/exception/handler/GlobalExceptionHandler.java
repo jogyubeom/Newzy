@@ -93,7 +93,7 @@ public class GlobalExceptionHandler {
         ExceptionResponseDto response = ExceptionResponseDto.of(
                 request.getMethod(),
                 request.getRequestURI(),
-                HttpStatus.CONFLICT.value(),
+                HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage()
         );
 
