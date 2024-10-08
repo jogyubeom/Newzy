@@ -6,6 +6,7 @@ import com.newzy.backend.domain.newzy.service.NewzyCommentService;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
 import com.newzy.backend.global.exception.NoTokenRequestException;
+import com.newzy.backend.global.exception.StringLengthLimitException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -52,6 +53,10 @@ public class NewzyCommentController {
         } else {
             throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
+
+        if (dto.getNewzyComment().length() > 500){
+            throw new StringLengthLimitException("댓글은 최대 500자까지 입력할 수 있습니다.");
+        }
         log.info(">> [POST] /newzy/{}/comments - 요청파라미터: newzyId - {}, dto - {}, userId - {}", newzyId, newzyId, dto.toString(), userId);
 
         if (dto == null) {
@@ -78,6 +83,11 @@ public class NewzyCommentController {
         } else {
             throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
         }
+
+        if (dto.getNewzyComment().length() > 500){
+            throw new StringLengthLimitException("본문은 최대 500자까지 입력할 수 있습니다.");
+        }
+
         log.info(">> [PATCH] /newzy/{}/comments/{} - 요청 파라미터: newzyId - {}, commentId - {}, userId - {}", newzyId, commentId, newzyId, commentId, userId);
         newzyCommentService.updateComment(userId, commentId, dto);
 

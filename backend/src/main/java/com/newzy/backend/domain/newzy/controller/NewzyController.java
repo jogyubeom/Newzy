@@ -9,6 +9,7 @@ import com.newzy.backend.domain.newzy.service.NewzyService;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
 import com.newzy.backend.global.exception.NoTokenRequestException;
+import com.newzy.backend.global.exception.StringLengthLimitException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,6 +45,13 @@ public class NewzyController {
             userId = userService.getUser(token).getUserId();
         } else {
             throw new NoTokenRequestException("유효한 유저토큰이 없습니다.");
+        }
+
+        if (dto.getTitle() != null && dto.getTitle().length() > 500){
+            throw new StringLengthLimitException("제목은 최대 500자까지 입력할 수 있습니다.");
+        }
+        if (dto.getTitle() != null && dto.getContent().length() > 3000){
+            throw new StringLengthLimitException("본문은 최대 3000자까지 입력할 수 있습니다.");
         }
 
         log.info(">>> [POST] /newzy - 요청 파라미터: dto - {}, userId - {}", dto.toString(), userId);
