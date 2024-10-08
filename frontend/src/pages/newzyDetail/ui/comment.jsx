@@ -42,22 +42,8 @@ const CommentContent = ({ newzyId }) => {
 
       try {
         const res = await baseAxios().post(`/newzy/${newzyId}/comments`, newComment);
-        setComments((prevComments) => {
-          if (parentCommentId === null) {
-            // 최상위 댓글인 경우
-            return [...prevComments, res.data];
-          } else {
-            // 대댓글인 경우
-            return prevComments.map((comment) =>
-              comment.newzyCommentId === parentCommentId
-                ? {
-                    ...comment,
-                    replies: [...(comment.replies || []), res.data],
-                  }
-                : comment
-            );
-          }
-        });
+        // 댓글을 새로 작성할 때마다 목록을 새로 가져옴
+        await fetchComments(); // 새로운 댓글 작성 후 댓글 목록 재요청
         // 입력 필드 초기화
         if (parentCommentId === null) {
           setNewCommentText(''); // 댓글 입력 필드 초기화
@@ -73,9 +59,19 @@ const CommentContent = ({ newzyId }) => {
   const handleCommentDelete = async (commentId) => {
     try {
       await baseAxios().delete(`/newzy/${newzyId}/comments/${commentId}`);
-      setComments((prevComments) => prevComments.filter(comment => comment.newzyCommentId !== commentId));
+      await fetchComments(); // 댓글 삭제 후 목록 재요청
     } catch (error) {
       console.error('댓글 삭제 오류:', error);
+    }
+  };
+
+  // 댓글 수정 함수
+  const handleCommentEdit = async (commentId, updatedText) => {
+    try {
+      await baseAxios().put(`/newzy/${newzyId}/comments/${commentId}`, { newzyComment: updatedText });
+      await fetchComments(); // 댓글 수정 후 목록 재요청
+    } catch (error) {
+      console.error('댓글 수정 오류:', error);
     }
   };
 
@@ -163,14 +159,16 @@ const CommentContent = ({ newzyId }) => {
                 {userInfo && userInfo.nickname === comment.nickname && ( // userInfo가 null이 아닌 경우에만 체크
                   <>
                     <button
+                      onClick={() => handleCommentEdit(comment.newzyCommentId, prompt("댓글을 수정하세요", comment.newzyComment))} // 수정 버튼 클릭 시 수정 함수 호출
+                      className="text-blue-600 ml-2"
+                    >
+                      수정
+                    </button>
+                    <button
                       onClick={() => handleCommentDelete(comment.newzyCommentId)} // 삭제 버튼 클릭 시 삭제 함수 호출
                       className="text-red-600 ml-2"
                     >
                       삭제
-                    </button>
-                    {/* 수정 버튼은 추후 구현 */}
-                    <button className="text-blue-600 ml-2">
-                      수정
                     </button>
                   </>
                 )}
@@ -236,6 +234,23 @@ const CommentContent = ({ newzyId }) => {
                           ></div>
                         )}
                         <span>{reply.nickname}</span>
+                        {/* 수정 및 삭제 버튼 추가 */}
+                        {userInfo && userInfo.nickname === reply.nickname && ( // userInfo가 null이 아닌 경우에만 체크
+                          <>
+                            <button
+                              onClick={() => handleCommentEdit(reply.newzyCommentId, prompt("대댓글을 수정하세요", reply.newzyComment))} // 수정 버튼 클릭 시 수정 함수 호출
+                              className="text-blue-600 ml-2"
+                            >
+                              수정
+                            </button>
+                            <button
+                              onClick={() => handleCommentDelete(reply.newzyCommentId)} // 삭제 버튼 클릭 시 삭제 함수 호출
+                              className="text-red-600 ml-2"
+                            >
+                              삭제
+                            </button>
+                          </>
+                        )}
                       </div>
                       <div>{reply.newzyComment}</div>
                       <div className="text-gray-500 text-xs">
