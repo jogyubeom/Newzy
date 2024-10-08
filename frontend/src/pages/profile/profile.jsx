@@ -10,11 +10,12 @@ import FollowIndexModal from "pages/profile/ui/followIndexModal";
 import CardListModal from "pages/profile/ui/cardListModal";
 
 import userProfile from "shared/images/user.png";
-import cards from "shared/images/cards.svg";
 import baseAxios from "shared/utils/baseAxios";
 import useAuthStore from "shared/store/userStore";
 
-import "./profile.css"
+import "./profile.css";
+
+import { useNewsCardStore } from "entities/card/store/cardStore";
 
 const getZoomLevel = () => {
   return window.devicePixelRatio * 100;
@@ -29,8 +30,7 @@ const gradeDescriptions = {
   ),
   2: (
     <>
-      <p className="font-semibold">Level 2 중급 뉴포터</p>
-      꽤 실력이 있어요!
+      <p className="font-semibold">Level 2 중급 뉴포터</p>꽤 실력이 있어요!
     </>
   ),
   3: (
@@ -48,6 +48,7 @@ const gradeDescriptions = {
 };
 
 export const Profile = () => {
+  const { fetchNewsCard } = useNewsCardStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation(); // 현재 경로를 가져오기 위해 useLocation 훅 사용
 
@@ -57,15 +58,20 @@ export const Profile = () => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
+  const [status, setStatus] = useState({
+    newzyCnt: 0,
+    followerCnt: 0,
+    followingCnt: 0,
+  }); // 유저 데이터 상태
 
   // 편집 모드 관리
   const [isEditing, setIsEditing] = useState(false);
 
   const [profileData, setProfileData] = useState({
-    name: '',
-    introduce: '',
+    name: "",
+    introduce: "",
     img: null,
-    birth: '',
+    birth: "",
   });
 
   const [newImage, setNewImage] = useState(null); // 새로 업로드할 이미지 상태
@@ -79,7 +85,7 @@ export const Profile = () => {
   useEffect(() => {
     const updatePaddingBasedOnZoom = () => {
       const zoomLevel = getZoomLevel();
-  
+
       if (zoomLevel <= 90) {
         setPaddingX(300); // 줌 레벨이 80% 이하일 때 80px
       } else if (zoomLevel <= 100) {
@@ -128,9 +134,8 @@ export const Profile = () => {
       }
     };
 
-    fetchUserData(); 
-  }, [setUserInfo]);
-
+    fetchUserData();
+  }, []);
 
   // 현재 경로에 따라 메뉴를 선택 상태로 설정
   useEffect(() => {
@@ -149,6 +154,33 @@ export const Profile = () => {
         break;
     }
   }, [location]);
+
+  useEffect(() => {
+    const fetchStatusData = async () => {
+      try {
+        if (user && user.nickname) {
+          const res = await baseAxios().get(`/user/profile/${user.nickname}`); // 닉네임을 URL에 포함해 요청
+          const Data = res.data;
+
+        setStatus({
+          newzyCnt: Data.newzyCnt,
+          followerCnt: Data.followerCnt,
+          followingCnt: Data.followingCnt,
+        });
+        }
+      } catch (error) {
+        console.error("유저 스테이터스 정보를 불러오는 중 오류 발생:", error);
+      }
+    };
+    if (user) {
+      fetchStatusData(); 
+    }
+  }, [user]);
+
+  // 유저 정보가 로드되지 않았을 때 로딩 메시지 표시
+  if (!user || !user.nickname) {
+    return <div>로딩 중...</div>; // 유저 정보가 없으면 로딩 메시지 표시
+  }
 
   // 유저 정보 저장 (이미지 제외)
   const handleSaveProfile = async () => {
@@ -176,7 +208,6 @@ export const Profile = () => {
       setUser(updatedUser);
 
       setUserInfo(updatedUser); // 스토어에 업데이트된 유저 정보 저장
-
     } catch (error) {
       console.error("프로필 정보 수정 중 오류 발생:", error);
       alert("프로필 정보를 수정하는 중 오류가 발생했습니다.");
@@ -185,14 +216,14 @@ export const Profile = () => {
 
   // 프로필 이미지 업로드
   const handleImageUpload = async () => {
-
     const formData = new FormData();
-    
+
     // 이미지가 있는 경우: FormData에 이미지 추가
-    if (newImage) {
-      formData.append("profile", newImage); // 이미지 파일 추가
+    
+    if (newImage ==='blank') {
+      formData.append("profile", ""); // 이미지 삭제했을 경우 빈 값으로 전송하여 처리
     } else {
-      formData.append("profile", ""); // 이미지가 없을 경우 빈 값으로 전송하여 삭제 처리
+      formData.append("profile", newImage); // 이미지 파일 추가
     }
 
     console.log("보내는 이미지 데이터 : ", formData);
@@ -203,7 +234,6 @@ export const Profile = () => {
           "Content-Type": "multipart/form-data", // 이미지 파일 전송 시 필요
         },
       });
-
     } catch (error) {
       console.error("프로필 이미지 업로드 중 오류 발생:", error);
       alert("프로필 이미지를 업로드하는 중 오류가 발생했습니다.");
@@ -228,7 +258,7 @@ export const Profile = () => {
   // 이미지 제거 핸들러
   const handleImageRemove = () => {
     setProfileData({ ...profileData, img: null });
-    setNewImage(null); // 업로드할 이미지도 초기화
+    setNewImage('blank'); // 업로드할 이미지도 초기화
   };
 
   // exp 값을 기준으로 grade를 구하는 함수
@@ -239,15 +269,10 @@ export const Profile = () => {
     return 1;
   };
 
-  // 유저 정보가 로드되지 않았을 때 로딩 메시지 표시
-  if (!user) {
-    return <div>로딩 중...</div>;
-  }
-
   // 각 grade의 최대 경험치값
   const maxExpByGrade = {
-    1: 1000,    // 0~999: Level 1
-    2: 5000,   // 1000~4999: Level 2
+    1: 1000, // 0~999: Level 1
+    2: 5000, // 1000~4999: Level 2
     3: 10000, // 5000~9999: Level 3
     4: user.exp, // 10000 이상: Level 4
   };
@@ -269,17 +294,15 @@ export const Profile = () => {
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  // CardListModal 열기 및 닫기 함수
-  const openCardListModal = () => setIsCardListModalOpen(true);
-  const closeCardListModal = () => setIsCardListModalOpen(false);
-
   // 저장 버튼 클릭 시 변경 사항 저장
   const handleSave = () => {
-    handleImageUpload()
-    handleSaveProfile()
+    if (newImage) {
+      // 이미지를 수정한 경우에만 handleImageUpload 호출
+      handleImageUpload();
+    }
+    handleSaveProfile();
     setIsEditing(false);
   };
-
 
   // 메뉴 클릭 시 경로를 변경
   const handleMenuChange = (menuIndex) => {
@@ -313,19 +336,37 @@ export const Profile = () => {
     }
   };
 
+  // CardListModal 열기
+  const openCardListModal = () => {
+    fetchNewsCard();
+    setIsCardListModalOpen(true);
+  };
+
+  // CardListModal 닫기
+  const closeCardListModal = () => setIsCardListModalOpen(false);
+
   return (
     <div className="overflow-x-auto bg-[#FFFFFF]">
-      <div id="target" className="h-[409px] bg-[#132956] relative flex mb-12" style={{ paddingLeft: `${paddingX}px`, paddingRight: `${paddingX}px` }}>
+      <div
+        id="target"
+        className="h-[409px] bg-[#132956] relative flex mb-12"
+        style={{ paddingLeft: `${paddingX}px`, paddingRight: `${paddingX}px` }}
+      >
         <div className="relative">
           {/* 경험치량 표시 */}
           <div
             className="absolute top-[10px] left-[150px] w-full flex justify-center items-center text-yellow-500 text-base font-extrabold tracking-wide whitespace-nowrap"
             style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)" }}
-            >
-            {user.exp > 10000 ? '10000 / 10000' : `${user.exp} / ${maxExp}`}
+          >
+            {user.exp > 10000 ? "10000 / 10000" : `${user.exp} / ${maxExp}`}
           </div>
           {/* SVG로 경험치 바 추가 */}
-          <svg width="310" height="310" className="absolute top-[35px] left-[0px]" style={{ transform: "rotate(-90deg)" }}>
+          <svg
+            width="310"
+            height="310"
+            className="absolute top-[35px] left-[0px]"
+            style={{ transform: "rotate(-90deg)" }}
+          >
             <circle
               cx="150"
               cy="150"
@@ -350,10 +391,16 @@ export const Profile = () => {
           </svg>
 
           {/* 프로필 이미지 */}
-          <div className={"absolute top-[70px] left-[25px] w-[250px] h-[250px] rounded-full flex items-center justify-center"}>
+          <div
+            className={
+              "absolute top-[70px] left-[25px] w-[250px] h-[250px] rounded-full flex items-center justify-center"
+            }
+          >
             <img
               src={profileData.img || userProfile}
-              className={`w-full h-full object-cover rounded-full ${isEditing ? 'opacity-60' : ''}`}
+              className={`w-full h-full object-cover rounded-full ${
+                isEditing ? "opacity-60" : ""
+              }`}
               alt="프로필 이미지"
             />
             {isEditing && (
@@ -377,7 +424,7 @@ export const Profile = () => {
           </div>
 
           <div className="absolute top-[285px] left-[218px] w-[100px] h-[100px] bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-          <img
+            <img
               src={getGrade(userGrade)}
               className="w-[60px] h-[60px] object-cover cursor-pointer"
               onMouseEnter={() => setIsTooltipVisible(true)}
@@ -399,7 +446,9 @@ export const Profile = () => {
               type="date"
               className="absolute top-[360px] left-[10px] w-[140px] px-2 py-1 rounded-md bg-gray-800 text-white"
               value={profileData.birth}
-              onChange={(e) => setProfileData({ ...profileData, birth: e.target.value })}
+              onChange={(e) =>
+                setProfileData({ ...profileData, birth: e.target.value })
+              }
             />
           )}
         </div>
@@ -410,7 +459,9 @@ export const Profile = () => {
               <input
                 type="text"
                 value={profileData.name}
-                onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                onChange={(e) =>
+                  setProfileData({ ...profileData, name: e.target.value })
+                }
                 className="outline-none w-full p-2 mr-5 text-white bg-gray-800 opacity-100"
               />
             ) : (
@@ -423,10 +474,13 @@ export const Profile = () => {
               <textarea
                 value={profileData.introduce}
                 onChange={(e) => {
-                  const lines = e.target.value.split('\n');
+                  const lines = e.target.value.split("\n");
                   // 최대 5줄까지만 입력 가능하도록 제한
                   if (lines.length <= 5) {
-                    setProfileData({ ...profileData, introduce: e.target.value });
+                    setProfileData({
+                      ...profileData,
+                      introduce: e.target.value,
+                    });
                   }
                 }}
                 rows={5} // 기본 5줄
@@ -453,23 +507,29 @@ export const Profile = () => {
                 Newzy
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                7
+                {status.newzyCnt}
               </div>
             </div>
-            <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
+            <div
+              className="flex flex-col items-center cursor-pointer"
+              onClick={openModal}
+            >
               <div className="w-[166px] h-[103px] text-white font-[Poppins] text-[36px] font-semibold flex items-center">
                 Followers
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                42
+                {status.followerCnt}
               </div>
             </div>
-            <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
+            <div
+              className="flex flex-col items-center cursor-pointer"
+              onClick={openModal}
+            >
               <div className="w-[188px] h-[103px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center">
                 Followings
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                25
+                {status.followingCnt}
               </div>
             </div>
           </div>
@@ -509,14 +569,30 @@ export const Profile = () => {
 
       {/* 하단에 고정된 버튼 추가 */}
       <button
-        className="fixed bottom-5 left-0.5 bg-transparent flex items-center justify-center cursor-pointer"
+        className="fixed bottom-5 left-1 bg-transparent flex items-center justify-center cursor-pointer"
         style={{ zIndex: 1000 }}
         onClick={openCardListModal} // 버튼 클릭 시 CardListModal 열기
       >
-        <img src={cards} alt="카드 버튼" className="w-full h-full object-cover" />
+        <div className="relative w-[120px] h-[172px] group">
+          <div className="absolute bottom-4 left-4 w-full h-full bg-purple-300 rounded-lg shadow-lg pt-10 transition-all duration-500 ease-out group-hover:bottom-8 group-hover:left-10 group-hover:rotate-[10deg]">
+            <span className="text-white font-card text-2xl">Newzy</span>
+          </div>
+          <div className="absolute bottom-2 left-2 w-full h-full bg-purple-400 rounded-lg shadow-lg pt-10 transition-all duration-500 ease-out group-hover:bottom-6 group-hover:left-5 group-hover:rotate-[5deg]">
+            <span className="text-white font-card text-2xl">Newzy</span>
+          </div>
+          <div className="absolute top-0 left-0 w-full h-full bg-purple-600 rounded-lg shadow-lg pt-10 transition-all duration-500 ease-out group-hover:top-[-4px] group-hover:left-[-2px] group-hover:rotate-[1deg]">
+            <span className="text-white font-card text-2xl">Newzy</span>
+          </div>
+        </div>
+        SS
+        {/* <img
+          src={cards}
+          alt="카드 버튼"
+          className="w-full h-full object-cover"
+        /> */}
       </button>
       {/* CardListModal 렌더링 */}
-      {isCardListModalOpen && <CardListModal onClose={closeCardListModal} cardNum={14}/>}
+      {isCardListModalOpen && <CardListModal onClose={closeCardListModal} />}
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import WordCloud from "react-wordcloud";
-import baseAxios from "shared/utils/baseAxios";
 import useHomeStore from "../store/useHomeStore";
 
 const options = {

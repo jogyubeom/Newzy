@@ -6,39 +6,79 @@ import useAuthStore from "shared/store/userStore";
 
 const Words = () => {
 
-  const [wordList, setWordList] = useState([]); // 서버로부터 가져온 단어 리스트 상태 관리
-  const [isModalOpen, setModalOpen] = useState(false); // 모달 상태 관리
-  const [page, setPage] = useState(0); // 현재 페이지 상태
+  const [wordList, setWordList] = useState([]); // 단어 리스트 상태
+  const [allWords, setAllWords] = useState([]); // 모든 단어 리스트 상태 (단어 테스트용)
+  const [isModalOpen, setModalOpen] = useState(false); // 모달 상태
+  const [isLoadingWords, setIsLoadingWords] = useState(false); // 모든 단어 로딩 상태
+  const [page, setPage] = useState(0); // 현재 페이지
   const [sort, setSort] = useState(0); // 정렬 기준 (0: 최신순, 1: 오래된 순)
-  const [hasMore, setHasMore] = useState(true); // 더 가져올 단어가 있는지 여부
+  const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수
+  const [loading, setLoading] = useState(false); // 로딩 상태
+  const [hasMore, setHasMore] = useState(true); // 더 가져올 데이터가 있는지 여부
   const user = useAuthStore.getState().userInfo;
 
   // 단어 리스트를 서버에서 가져오는 함수
   const fetchWordList = async (reset = false) => {
     if (!hasMore) return; // 더 이상 가져올 데이터가 없으면 요청 중단
+    setLoading(true);
 
     try {
-      const response = await baseAxios().get(`/word`, {
-        params: { page, sort }, // 페이지와 정렬 기준 쿼리 파라미터로 전달
+      const response = await baseAxios().get(`https://j11b305.p.ssafy.io/api/word`, {
+        params: { page, sort }, // 페이지와 정렬 기준을 쿼리 파라미터로 전달
       });
-      const fetchedWords = response.data.map((wordData) => ({
+
+      const { totalPage, vocaList } = response.data; // 응답 데이터에서 필요한 값 추출
+      const fetchedWords = vocaList.map((wordData) => ({
         name: wordData.word,
-        mean: [wordData.definition], // 응답 구조에 맞게 데이터 변환
+        mean: [wordData.definition], // 단어 의미 리스트
       }));
 
       if (fetchedWords.length === 0) {
         setHasMore(false); // 빈 리스트가 반환되면 더 이상 가져올 데이터가 없다고 설정
       } else {
-        setWordList((prevList) => (reset ? fetchedWords : [...prevList, ...fetchedWords])); // 새로운 리스트 추가
+        setWordList((prevList) => (reset ? fetchedWords : [...prevList, ...fetchedWords])); // 단어 리스트 업데이트
+        setTotalPages(totalPage); // 전체 페이지 수 설정
       }
     } catch (error) {
       console.error("단어 목록을 불러오는 데 실패했습니다.", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 모든 단어 리스트를 서버에서 가져오는 함수 (단어 테스트용)
+  const fetchAllWords = async () => {
+    setIsLoadingWords(true); // 로딩 시작
+    let allWordsFetched = [];
+    let currentPage = 0;
+
+    try {
+      while (currentPage < totalPages) {
+        const response = await baseAxios().get(`https://j11b305.p.ssafy.io/api/word`, {
+          params: { page: currentPage, sort },
+        });
+
+        const { vocaList } = response.data;
+        const fetchedWords = vocaList.map((wordData) => ({
+          name: wordData.word,
+          mean: [wordData.definition],
+        }));
+
+        allWordsFetched = [...allWordsFetched, ...fetchedWords];
+        currentPage += 1;
+      }
+
+      setAllWords(allWordsFetched); // 모든 단어를 저장
+      setIsLoadingWords(false); // 로딩 완료
+    } catch (error) {
+      console.error("모든 단어를 불러오는 데 실패했습니다.", error);
+      setIsLoadingWords(false); // 에러 발생 시에도 로딩 종료
     }
   };
 
   // 정렬 방식 변경 핸들러
   const handleSortChange = (e) => {
-    setSort(e.target.value);
+    setSort(parseInt(e.target.value));
     setPage(0); // 페이지를 0으로 초기화
     setWordList([]); // 기존 단어 리스트 초기화
     setHasMore(true); // 더 가져올 데이터가 있는지 여부 초기화
@@ -46,16 +86,10 @@ const Words = () => {
 
   // 페이지 변경 시 더 많은 단어를 가져오는 함수
   const loadMoreWords = () => {
-    if (hasMore) {
+    if (hasMore && page < totalPages - 1) {
       setPage((prevPage) => prevPage + 1); // 페이지 증가
     }
   };
-
-  // 컴포넌트가 마운트될 때 또는 page, sort가 변경될 때 단어 리스트 가져오기
-  useEffect(() => {
-    fetchWordList(); // 페이지 또는 정렬 기준이 바뀔 때마다 데이터 요청
-  }, [page, sort]);
-
 
   // 단어 삭제 요청 함수
   const handleDeleteWord = async (wordName) => {
@@ -63,7 +97,6 @@ const Words = () => {
       await baseAxios().delete("/word", {
         params: { wordList: wordName } // wordList 값을 쿼리 파라미터로 전달
       });
-
       // 삭제 후 성공적으로 처리되면, 프론트에서 해당 단어를 삭제
       setWordList((prevList) => prevList.filter((word) => word.name !== wordName));
     } catch (error) {
@@ -71,15 +104,32 @@ const Words = () => {
     }
   };
 
+  // 단어 테스트에서 맞힌 단어를 제거하고 리스트 갱신하는 함수
+  const handleWordsRemoved = (removedWords) => {
+    // 맞힌 단어를 wordList와 allWords에서 제거
+    setWordList((prevList) => prevList.filter((word) => !removedWords.includes(word.name)));
+  };
+
   // 모달 열기 및 닫기 함수
-  const openModal = () => setModalOpen(true);
+  const openModal = async () => {
+    // 단어 테스트를 열기 전에 모든 단어 리스트 불러오기
+    await fetchAllWords();
+    if (!isLoadingWords) {
+      setModalOpen(true); // 모든 단어 로딩이 완료된 후에만 모달을 염
+    }
+  };
   const closeModal = () => setModalOpen(false);
+
+  // 페이지, 정렬 기준이 변경될 때마다 단어 리스트 가져오기
+  useEffect(() => {
+    fetchWordList();
+  }, [page, sort]);
 
   return (
     <>
       <div className="flex justify-end gap-10 items-center py-5 px-10">
         <select
-          className="w-[150px] h-[60px] font-['Open_Sans'] text-[20px] font-semibold leading-[24px] tracking-[-0.04em] text-[#91929F] flex items-center border-none focus:outline-none text-center rounded-[45px] bg-[#F4F4F4] hover:bg-[#EAEAEA] shadow-md transition-colors duration-300"
+          className="w-[120px] h-10 font-['Open_Sans'] text-[18px] font-semibold leading-[24px] tracking-[-0.04em] text-[#91929F] flex items-center border-none focus:outline-none text-center rounded-[10px] bg-[#F4F4F4] hover:bg-[#EAEAEA] shadow-md transition-colors duration-300"
           value={sort}
           onChange={handleSortChange}
         >
@@ -92,22 +142,24 @@ const Words = () => {
         </select>
         <button
           onClick={openModal}
-          className="w-[234px] h-[60px] rounded-[45px] font-['Open_Sans'] bg-[#BF2EF0] hover:bg-[#A229CC] opacity-100 text-white text-[28px] font-semibold transition-colors duration-300 shadow-md"
+          className="w-[220px] h-[50px] rounded-[10px] font-['Open_Sans'] bg-[#BF2EF0] hover:bg-[#A229CC] opacity-100 text-white text-[24px] font-semibold transition-colors duration-300 shadow-md"
         >
-          단어 테스트
+          {isLoadingWords ? '로딩 중...' : '단어 테스트'}
         </button>
       </div>
       <div className="py-3 px-10 mx-auto font-sans mb-10">
-        {wordList.length === 0 ? (
-          // 등록된 단어가 없을 경우 표시할 메시지
-          <div className="flex flex-col items-center justify-center h-[210px] bg-gray-100 rounded-lg shadow-lg border-gray-300">
-            <h2 className="text-3xl font-semibold text-[#BF2EF0] mb-4">
-              등록된 단어가 없습니다.
-            </h2>
-            <p className="text-xl font-semibold text-gray-600">
-              단어를 추가해주세요!
-            </p>
-          </div>
+        {loading ? (
+            <div className="text-center">로딩 중...</div>
+          ) : wordList.length === 0 ? (
+            // 등록된 단어가 없을 경우 표시할 메시지
+            <div className="flex flex-col items-center justify-center h-[210px] bg-gray-100 rounded-lg shadow-lg border-gray-300">
+              <h2 className="text-3xl font-semibold text-[#BF2EF0] mb-4">
+                등록된 단어가 없습니다.
+              </h2>
+              <p className="text-xl font-semibold text-gray-600">
+                단어를 추가해주세요!
+              </p>
+            </div>
         ) : (
           // 등록된 단어가 있을 경우 단어 리스트 렌더링
           wordList.map((word, index) => (
@@ -130,13 +182,26 @@ const Words = () => {
             </div>
           ))
         )}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-5">
+            {page < totalPages - 1 && (
+              <button
+                onClick={loadMoreWords}
+                className="px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-700"
+              >
+                더 보기
+              </button>
+            )}
+          </div>
+        )}
 
          {/* 모달 컴포넌트 렌더링 */}
          <WordTestModal
           isOpen={isModalOpen}
           onClose={closeModal}
-          wordList={wordList}
+          wordList={allWords}
           userName={user && user.nickname ? user.nickname : "사용자"}
+          onWordsRemoved={handleWordsRemoved} // 맞힌 단어 제거 콜백 전달
         />
       </div>
     </>

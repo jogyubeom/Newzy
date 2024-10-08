@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { useCardStore } from "./store/cardStore";
+import { useCardStore, useNewsDetailStore } from "./store/cardStore";
+
+import baseAxios from "shared/utils/baseAxios";
+
 import {
   BsEmojiDizzyFill as Hard,
   BsEmojiSmileFill as Normal,
@@ -7,22 +10,29 @@ import {
 } from "react-icons/bs";
 
 const difficultyItems = [
-  { label: "쉬워요", icon: <Easy />, value: "0" },
-  { label: "보통이예요", icon: <Normal />, value: "1" },
-  { label: "어려워요", icon: <Hard />, value: "2" },
+  { label: "쉬워요", icon: <Easy />, value: 0 },
+  { label: "보통이예요", icon: <Normal />, value: 1 },
+  { label: "어려워요", icon: <Hard />, value: 2 },
 ];
 
-export const CardSummary = ({ onAcquire, onClose }) => {
-  const { summaryText, setSummaryText } = useCardStore();
-  const [inputLength, setInputLength] = useState(0);
-  const [trimmedLength, setTrimmedLength] = useState(0);
+export const CardSummary = ({ onAcquire, onClose, news }) => {
+  const {
+    summaryText,
+    setSummaryText,
+    inputLength,
+    setInputLength,
+    trimmedLength,
+    setTrimmedLength,
+  } = useCardStore();
   const [modalMessage, setModalMessage] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  const [userDifficulty, setUserDifficulty] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const minLength = 10; // 공백 제외 최소 글자 수
   const maxLength = 150; // 최대 글자 수
+
+  const { newsId, category, thumbnail, title } = news;
 
   // 텍스트 인풋 핸들러
   const handleInputChange = (e) => {
@@ -44,27 +54,52 @@ export const CardSummary = ({ onAcquire, onClose }) => {
   };
 
   const handleDifficultySelect = (value) => {
-    setSelectedDifficulty(value);
+    setUserDifficulty(value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (trimmedLength < minLength) {
       setModalMessage(`공백을 제외하고 최소 ${minLength}자 이상 입력해 주세요`);
       setIsModalVisible(true);
       setTimeout(() => setIsModalVisible(false), 1500);
+    } else if (userDifficulty === null) {
+      setModalMessage(`난이도를 선택해 주세요.`);
+      setIsModalVisible(true);
+      setTimeout(() => setIsModalVisible(false), 1500);
+      return;
     } else {
       // 애니메이션 발동
       setIsAnimating(true);
+
+      // console.log(newsId, userDifficulty, summaryText);
+      // 카드 post 요청
+      try {
+        const response = await baseAxios().post(
+          `/news/${newsId}/collect-news-card`,
+          {
+            userId: 1, // 실제 userId로 교체 필요
+            newsId: newsId,
+            score: userDifficulty,
+            summary: summaryText,
+          }
+        );
+        console.log(response.data);
+      } catch (error) {
+        if (error.response) {
+          console.error("Error response:", error.response.data);
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+        } else {
+          console.error("Error setting up request:", error.message);
+        }
+      }
+
       setTimeout(() => {
-        onAcquire(summaryText); // 업데이트된 값을 전달
+        onAcquire(summaryText, userDifficulty); // 업데이트된 값을 전달
         setIsAnimating(false);
       }, 1500);
     }
   };
-
-  // 카드 획득 버튼 활성화 조건
-  const isButtonEnabled =
-    trimmedLength >= minLength && selectedDifficulty !== null;
 
   return (
     <div
@@ -101,7 +136,7 @@ export const CardSummary = ({ onAcquire, onClose }) => {
               >
                 <button
                   className={`rounded-full ${
-                    selectedDifficulty === item.value
+                    userDifficulty === item.value
                       ? "bg-gray-700 text-yellow-400"
                       : "bg-white text-gray-300"
                   } hover:text-yellow-300 text-3xl`}
@@ -119,11 +154,9 @@ export const CardSummary = ({ onAcquire, onClose }) => {
 
         <div className="absolute px-8 w-full bottom-6 flex items-center">
           <button
-            className={`w-full h-12 rounded-md ${
-              isButtonEnabled ? "bg-[#5E007E]" : "bg-gray-400"
-            } text-white text-lg font-semibold `}
+            className="w-full h-12 rounded-md 
+             bg-[#5E007E] text-white text-lg font-semibold"
             onClick={handleSubmit}
-            disabled={!isButtonEnabled} // 버튼 비활성화
           >
             카드 획득
           </button>

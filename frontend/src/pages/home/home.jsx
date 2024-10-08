@@ -108,7 +108,7 @@ export const Home = () => {
           <RecommendNews />
         </div>
 
-        <div className="ml:col-span-12 lg:col-span-3">
+        <div className="col-span-12 lg:col-span-3">
           <Top3News />
         </div>
 

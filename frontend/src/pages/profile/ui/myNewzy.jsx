@@ -65,7 +65,7 @@ export const MyNewzy = () => {
   const handlePostClick = (id) => navigate(`/newzy/${id}`);
 
   return (
-    <div className="bg-white">
+    <div className="bg-white px-10">
       {state.loading ? (
         <div className="text-center py-4">로딩 중...</div> // 로딩 인디케이터
       ) : state.error ? (

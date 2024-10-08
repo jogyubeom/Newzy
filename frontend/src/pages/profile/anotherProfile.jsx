@@ -103,6 +103,7 @@ export const AnotherProfile = () => {
           img: userData.profile,
           birth: userData.birth || "",
         });
+
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류 발생:", error);
       }
@@ -269,7 +270,7 @@ export const AnotherProfile = () => {
                 Newzy
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                7
+                {user.newzyCnt}
               </div>
             </div>
             <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
@@ -277,7 +278,7 @@ export const AnotherProfile = () => {
                 Followers
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                42
+                {user.followerCnt}
               </div>
             </div>
             <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
@@ -285,7 +286,7 @@ export const AnotherProfile = () => {
                 Followings
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                25
+              {user.followingCnt}
               </div>
             </div>
           </div>

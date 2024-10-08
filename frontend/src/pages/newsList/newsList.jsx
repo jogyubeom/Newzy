@@ -20,7 +20,10 @@ export const NewsList = () => {
   });
 
   const fetchPosts = async () => {
-    const { currentPage, sort: { selectedCategory,selectedRange, searchTerm } } = state;
+    const {
+      currentPage,
+      sort: { selectedCategory, selectedRange, searchTerm },
+    } = state;
 
     const categoryMap = {
       전체: "",
@@ -28,6 +31,7 @@ export const NewsList = () => {
       사회: 1,
       세계: 2,
     };
+
 
     const categoryParam = categoryMap[selectedCategory] !== undefined ? categoryMap[selectedCategory] : "";
     const keyword = searchTerm ? `&keyword=${searchTerm}` : ""; // 키워드가 있을 때만 추가
@@ -49,14 +53,18 @@ export const NewsList = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchPosts();
-  }, [state.currentPage, state.sort.selectedCategory, state.sort.selectedRange]);
+  }, [
+    state.currentPage,
+    state.sort.selectedCategory,
+    state.sort.selectedRange,
+  ]);
 
   const handlePostClick = (id) => navigate(`/news/${id}`);
 
   const handleCategoryOrRangeClick = (key, value) => {
     setState((prevState) => ({
       ...prevState,
-      sort: { ...prevState.sort, [key]: value, searchTerm: "",},
+      sort: { ...prevState.sort, [key]: value, searchTerm: "" },
       currentPage: 1, // 카테고리나 범위 클릭 시 첫 페이지로 초기화
     }));
   };
@@ -75,7 +83,7 @@ export const NewsList = () => {
         }));
         fetchPosts();
       }
-    };    
+    };
 
   const clearSearch = () =>
     setState((prevState) => ({
@@ -111,12 +119,18 @@ export const NewsList = () => {
           />
         </div>
 
-        <PostList posts={state.posts} onPostClick={handlePostClick} type='news'/>
+        <PostList
+          posts={state.posts}
+          onPostClick={handlePostClick}
+          type="news"
+        />
 
         <Pagination
           currentPage={state.currentPage}
           totalPages={state.totalPages}
-          onPageChange={(page) => setState((prevState) => ({ ...prevState, currentPage: page }))}
+          onPageChange={(page) =>
+            setState((prevState) => ({ ...prevState, currentPage: page }))
+          }
         />
       </div>
     </div>
