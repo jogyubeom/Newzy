@@ -4,82 +4,59 @@ import { MdCancel } from "react-icons/md";
 import { useState, useEffect } from "react";
 import FollowListItem from "./followListItem";
 import baseAxios from "shared/utils/baseAxios";
+import { useFollowStore } from "../store/useFollowStore";
 
 const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
 
   const [selectedMenu, setSelectedMenu] = useState(0);  // 메뉴 상태
-  const [followers, setFollowers] = useState([]);       // 팔로워 목록
-  const [followings, setFollowings] = useState([]);     // 팔로잉 목록
-  const menus = [`팔로워 ${userInfo?.followerCnt || 0}명`, `팔로잉 ${userInfo?.followingCnt || 0}명`];  // 메뉴 항목에 팔로워, 팔로잉 수 반영
+  const { followers, followings, updateFollowStatus } = useFollowStore();
 
+  if (!isOpen) return null;
 
-  const fetchFollowers = async () => {
-    try {
-      const { data } = await baseAxios().get(`/user/followers-list/${userInfo.nickname}`);
-      setFollowers(data.followingList);
-    } catch (error) {
-      console.error("팔로워 목록을 불러오는 중 에러 발생:", error);
+  const handleFollowToggle = (name, isFollowing) => {
+    // 서버로 팔로우/언팔로우 요청을 보낸 후 상태 업데이트
+    if (isFollowing) {
+      baseAxios().delete(`/user/${name}/follower`).then(() => {
+        updateFollowStatus(name, false);  // 팔로우 취소 시 상태 업데이트
+      });
+    } else {
+      baseAxios().post(`/user/${name}/follower`).then(() => {
+        updateFollowStatus(name, true);  // 팔로우 시 상태 업데이트
+      });
     }
   };
 
-  const fetchFollowings = async () => {
-    try {
-      const { data } = await baseAxios().get(`/user/followings-list/${userInfo.nickname}`);
-      setFollowings(data.followingList);
-    } catch (error) {
-      console.error("팔로잉 목록을 불러오는 중 에러 발생:", error);
-    }
-  };
+  // 메뉴 배열 생성 (팔로워와 팔로잉 목록을 선택할 수 있도록)
+  const menus = [`팔로워 ${followers.length}명`, `팔로잉 ${followings.length}명`];
 
-  useEffect(() => {
-    if (isOpen) {
-      if (selectedMenu === 0) {
-        fetchFollowers(); // 팔로워 목록 불러오기
-      } else {
-        fetchFollowings(); // 팔로잉 목록 불러오기
-      }
-    }
-  }, [isOpen, selectedMenu]);
-
-  // 팔로워/팔로잉 여부 체크
-  const isFollowingUser = (username) => {
-    return followings.some(following => following.toUserNickname === username);
-  };
-
+  // 선택된 메뉴에 따라 팔로워 또는 팔로잉 목록을 렌더링하는 함수
   const renderContent = () => {
     if (selectedMenu === 0) {
-      // 팔로워 목록 렌더링 (팔로우 여부 확인)
-      return followers.map((item) => (
-        <div key={item.fromUserNickname} className="relative py-1 px-5 flex flex-col">
+      // 팔로워 목록 렌더링
+      return followers.map((follower) => (
+        <div key={follower.fromUserNickname} className="relative py-1 px-5 flex flex-col">
           <FollowListItem 
-            name={item.fromUserNickname} 
-            isFollowing={isFollowingUser(item.fromUserNickname)}  // 팔로우 여부 체크
+            name={follower.fromUserNickname} 
+            isFollowing={followings.some(
+              (following) => following.toUserNickname === follower.fromUserNickname
+            )}  // 팔로우 여부 확인
+            onToggleFollow={handleFollowToggle}  // 팔로우/언팔로우 상태 변경 함수 전달
           />
         </div>
       ));
     } else {
-      // 팔로잉 목록 렌더링 (팔로우 여부 true로 고정)
-      return followings.map((item) => (
-        <div key={item.toUserNickname} className="relative py-1 px-5 flex flex-col">
+      // 팔로잉 목록 렌더링
+      return followings.map((following) => (
+        <div key={following.toUserNickname} className="relative py-1 px-5 flex flex-col">
           <FollowListItem 
-            name={item.toUserNickname} 
-            isFollowing={true}  // 항상 true로 설정
+            name={following.toUserNickname} 
+            isFollowing={true}  // 팔로잉 목록에서는 항상 팔로우 상태
+            onToggleFollow={handleFollowToggle}  // 팔로우/언팔로우 상태 변경 함수 전달
           />
         </div>
       ));
     }
   };
-
-  if (!isOpen) return null;
-
-  // userInfo가 없을 경우 로딩 중을 표시
-  if (!userInfo) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p>로딩 중...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
