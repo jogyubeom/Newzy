@@ -21,7 +21,11 @@ def extract_text_from_html(html_content):
     return text
 
 
-def remove_ad_divs(html_content):
+def remove_ad_divs(html_content: str):
+    if html_content is None:
+        logging.error("hotml_content가 None 입니다.")
+        return ""
+
     # HTML 파싱
     soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -72,6 +76,22 @@ def remove_ad_divs(html_content):
     for copyright in soup.find_all('p', class_=lambda
             class_name: class_name and 'txt-copyright' in class_name):
         copyright.decompose()
+    # 'bottomGisaview'가 포함된 id 를 가진 모든 <div> 태그 제거
+    for bottomGisaview in soup.find_all('div', id=lambda
+            id_name: id_name and 'bottomGisaview' in id_name):
+        bottomGisaview.decompose()
+    # 'bottomGisaview'가 포함된 class 를 가진 모든 <div> 태그 제거
+    for bx_cate_news in soup.find_all('div', class_=lambda
+            class_name: class_name and 'bx_cate_news' in class_name):
+        bx_cate_news.decompose()
+    # 'YTN_CSA'가 포함된 class 를 가진 모든 <div> 태그 제거
+    for YTN_CSA in soup.find_all('div', class_=lambda
+            class_name: class_name and 'YTN_CSA' in class_name):
+        YTN_CSA.decompose()
+    # 'related-zone'가 포함된 class 를 가진 모든 <div> 태그 제거
+    for related_zone in soup.find_all('div', class_=lambda
+            class_name: class_name and 'related-zone' in class_name):
+        related_zone.decompose()
     # 수정된 HTML 코드 반환
     return str(soup)
 

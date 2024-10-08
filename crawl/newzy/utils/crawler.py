@@ -279,6 +279,9 @@ def crawl_news_detail(driver, url: str,
         return False  # 실패 반환
 
     content = remove_ad_divs(str(content))
+    if content == "":
+        logging.error("데이터베이스에 저장 안 하고 넘어갑니다.")
+        return False
 
     article = {
         'link': url,
