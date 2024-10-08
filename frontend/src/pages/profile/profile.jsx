@@ -58,6 +58,7 @@ export const Profile = () => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
+  const [nicknameData, setNicknameData] = useState(null); // 팔로우 모달창에 보낼 데이터
   const [status, setStatus] = useState({
     newzyCnt: 0,
     followerCnt: 0,
@@ -162,6 +163,7 @@ export const Profile = () => {
           const res = await baseAxios().get(`/user/profile/${user.nickname}`); // 닉네임을 URL에 포함해 요청
           const Data = res.data;
 
+        setNicknameData(Data)
         setStatus({
           newzyCnt: Data.newzyCnt,
           followerCnt: Data.followerCnt,
@@ -565,7 +567,7 @@ export const Profile = () => {
 
       {renderContent()}
 
-      <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} />
+      <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} userInfo={nicknameData} />
 
       {/* 하단에 고정된 버튼 추가 */}
       <button

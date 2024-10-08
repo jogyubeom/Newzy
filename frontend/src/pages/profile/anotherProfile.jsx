@@ -302,7 +302,7 @@ export const AnotherProfile = () => {
 
       {renderContent()}
 
-      <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} />
+      <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} userInfo={user} />
     </div>
   );
 };
