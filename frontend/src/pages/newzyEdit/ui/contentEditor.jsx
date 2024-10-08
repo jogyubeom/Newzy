@@ -1,9 +1,11 @@
 import React, { useMemo, useRef } from 'react';
 import ReactQuill from 'react-quill-new';
 import axios from "axios";
+import Quill from 'quill'; // Quill import 추가
 import ImageResize from 'quill-image-resize';
 import 'react-quill-new/dist/quill.snow.css';
 
+// ImageResize 모듈을 Quill에 등록
 Quill.register('modules/ImageResize', ImageResize);
 
 const ContentEditor = ({ content, setContent }) => {
@@ -21,7 +23,7 @@ const ContentEditor = ({ content, setContent }) => {
       formData.append("img", file);
 
       try {
-        const res = await axios.get("https://j11b305.p.ssafy.io/api/newzy/upload-image", formData, {
+        const res = await axios.post("https://j11b305.p.ssafy.io/api/newzy/upload-image", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
