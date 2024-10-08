@@ -21,7 +21,11 @@ def extract_text_from_html(html_content):
     return text
 
 
-def remove_ad_divs(html_content):
+def remove_ad_divs(html_content: str):
+    if html_content is None:
+        logging.error("hotml_content가 None 입니다.")
+        return ""
+
     # HTML 파싱
     soup = BeautifulSoup(html_content, 'html.parser')
 
