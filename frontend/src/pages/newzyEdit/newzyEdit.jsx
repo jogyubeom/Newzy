@@ -9,7 +9,7 @@ import baseAxios from 'shared/utils/baseAxios';
 export const NewzyEdit = () => {
   const navigate = useNavigate();
   const { newzyId } = useParams();
-  const { userInfo } = useAuthStore();
+  const { userInfo, token } = useAuthStore(); // 토큰 가져오기
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -17,6 +17,14 @@ export const NewzyEdit = () => {
     content: '',
     nickname: ''
   });
+
+  // 토큰이 없는 경우 로그인 페이지로 리다이렉트
+  useEffect(() => {
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      navigate('/newzy');
+    }
+  }, [token, navigate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -39,7 +47,6 @@ export const NewzyEdit = () => {
           navigate('/newzy');
         }
       } else {
-        // 200 이외의 상태코드 처리
         alert('게시물을 찾을 수 없습니다.'); // 게시물이 존재하지 않을 때
         navigate('/newzy');
       }

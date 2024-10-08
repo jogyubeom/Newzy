@@ -4,8 +4,8 @@ import NewzyListHeader from "./ui/newzyListHeader";
 import PostList from "../../shared/postList/postList";
 import Pagination from "../../shared/postList/pagination";
 import SearchBar from "../../shared/postList/searchBar";
-import baseAxios from "shared/utils/baseAxios"; // baseAxios import
-import useAuthStore from "shared/store/userStore"; // zustand 스토어 import
+import baseAxios from "shared/utils/baseAxios";
+import useAuthStore from "shared/store/userStore";
 
 export const NewzyList = () => {
   const navigate = useNavigate();
