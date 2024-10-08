@@ -107,6 +107,21 @@ public class NewsController {
         return ResponseEntity.status(200).body(newsDailyGetResponseDTO);
     }
 
+    @PostMapping(value="/daily")
+    @Operation(summary = "데일리 퀴즈 결과 저장", description = "사용자의 데일리 퀴즈 결과를 저장합니다.")
+    public ResponseEntity<BaseResponseBody> checkDailyQuizResult(
+            @Parameter(description = "JWT")
+            @RequestHeader(value = "Authorization") String token) {
+        if (token == null || token.isEmpty())
+            throw new NoTokenRequestException("token이 비어있습니다");
+        Long userId = userService.getUser(token).getUserId();
+
+        log.info(">>> [POST] /news/daily - 요청 파라미터: userId-{}",  userId);
+
+        newsService.saveDailyQuiz(userId);
+
+        return ResponseEntity.status(200).body(BaseResponseBody.of(200, "데일리 퀴즈 결과가 저장되었습니다."));
+    }
 
     // 카테고리 정보를 int로 프론트에서 받아옴
     @PostMapping(value = "/{newsId}/collect-news-card")

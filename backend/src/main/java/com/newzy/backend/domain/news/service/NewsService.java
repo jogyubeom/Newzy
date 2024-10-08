@@ -32,6 +32,8 @@ public interface NewsService {
 
     NewsDailyGetResponseDTO getDailyContent(Long userId);
 
+    void saveDailyQuiz(Long userId);
+
     void collectNewsCard(Long userId, NewsCardRequestDTO newsCardRequestDTO);
 
     NewsCardListGetResponseDTO getCardInfo(Long userId, Long cardId);
