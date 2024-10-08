@@ -11,69 +11,52 @@ Quill.register('modules/ImageResize', ImageResize);
 const ContentEditor = ({ content, setContent }) => {
   const quillRef = useRef(null); // ref 생성
 
-  // const imageHandler = () => {
-  //   const input = document.createElement('input');
-  //   input.setAttribute('type', 'file');
-  //   input.setAttribute('accept', 'image/*');
-  //   input.click();
-
-  //   input.addEventListener('change', async () => {
-  //     const file = input.files[0];
-  //     const formData = new FormData();
-  //     formData.append("image", file); // 'image'라는 key로 파일 전송
-
-  //     try {
-  //       // 이미지 업로드를 위한 POST 요청
-  //       const res = await baseAxios().post("/newzy/upload-image", formData, {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",  // 파일 전송을 위한 헤더 설정
-  //         },
-  //       });
-
-  //       const imgUrl = res.data.imgUrl; // 서버에서 받은 이미지 URL
-  //       const editor = quillRef.current.getEditor();
-  //       const range = editor.getSelection(); // 현재 커서 위치 가져오기
-  //       editor.insertEmbed(range.index, 'image', imgUrl); // 이미지 삽입
-  //       editor.setSelection(range.index + 1); // 커서를 이미지 다음으로 이동
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   });
-  // };
-
+  // image를 서버로 전달하는 과정
   const imageHandler = () => {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
-    input.click();
-  
-    input.addEventListener('change', async () => {
-      const file = input.files[0];
-      if (!file) return; // Ensure a file is selected
+    // input type=file DOM을 만든다.
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click(); // toolbar 이미지를 누르게 되면 이 부분이 실행된다.
+    
+    // 이미지를 선택하게 될 시
+    input.onchange = async () => {
+      // 이미지 선택에 따른 조건을 다시 한번 하게 된다.
+      const file = input.files ? input.files[0] : null;
+      if (!file) return; // 선택을 안하면 취소버튼처럼 수행하게 된다.
+
+      // 서버에서 FormData 형식으로 받기 때문에 이에 맞는 데이터 형식으로 만들어준다.
       const formData = new FormData();
-      formData.append("image", file); // Append the file
-  
+      formData.append("image", file); // 서버의 key 값에 맞게 변경해야 합니다.
+
+      // 에디터 정보를 가져온다.
+      let quillObj = quillRef.current?.getEditor();
+      if (!quillObj) return; // 에디터가 없는 경우 함수 종료
+
+      // 에디터 커서 위치를 가져온다.
+      const range = quillObj.getSelection();
+      if (!range) return; // 커서가 없다면 종료
+
       try {
-        // Post the image to the server
+        // 서버에 데이터를 보내고 URL을 imgUrl로 받는다.
         const res = await baseAxios().post("/newzy/upload-image", formData, {
           headers: {
-            "Content-Type": "multipart/form-data",  // Set the correct header
+            "Content-Type": "multipart/form-data",
           },
         });
-  
-        const imgUrl = res.data.imgUrl; // Get the image URL from response
-        const editor = quillRef.current.getEditor();
-        const range = editor.getSelection(); // Get the current selection
-  
-        if (range) {
-          editor.insertEmbed(range.index, 'image', imgUrl); // Insert the image at the cursor position
-          editor.setSelection(range.index + 1); // Move cursor to the right of the image
-        }
+
+        const imgUrl = res.data.url; // 서버로부터 받은 이미지 URL
+
+        console.log(res.data);
+        console.log(imgUrl);
+
+        // 에디터의 커서 위치에 이미지 요소를 삽입한다.
+        quillObj.insertEmbed(range.index, "image", `${imgUrl}`);
       } catch (error) {
         console.error('Error uploading image:', error);
       }
-    });
-  };  
+    };
+  };
 
   const modules = useMemo(() => ({
     toolbar: {
@@ -84,12 +67,12 @@ const ContentEditor = ({ content, setContent }) => {
         ['image'], // 이미지 삽입 버튼
       ],
       handlers: { image: imageHandler }, // 이미지 핸들러 등록
-      clipboard: {
-        matchVisual: false,
-      },
-      ImageResize: {
-        parchment: Quill.import('parchment'),
-      },
+    },
+    clipboard: {
+      matchVisual: false,
+    },
+    ImageResize: {
+      parchment: Quill.import('parchment'),
     },
   }), []);
 
