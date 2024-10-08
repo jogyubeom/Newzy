@@ -109,6 +109,7 @@ public class NewsRepositorySupport extends QuerydslRepositorySupport {
                         qNews.updatedAt,
                         qNews.crawledAt,
                         qNews.hit,
+                        qNews.likeCnt,
                         qNews.thumbnail
                 ))
                 .from(qNews)

@@ -17,7 +17,6 @@ public class UserProfileResponseDTO {
     @Schema(description = "회원 pk", example = "1")
     private Long userId;
 
-
     @Schema(description = "회원 닉네임", example = "nickname")
     private String nickname;
 
