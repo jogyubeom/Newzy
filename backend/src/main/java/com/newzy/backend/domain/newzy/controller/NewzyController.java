@@ -37,8 +37,7 @@ public class NewzyController {
     public ResponseEntity<BaseResponseBody> create(
             @Parameter(description = "JWT", required = false)
             @RequestHeader(value = "Authorization", required = false) String token,
-            @RequestBody @Validated NewzyRequestDTO dto,
-            @RequestPart(value = "images", required = false) MultipartFile[] images
+            @RequestBody @Validated NewzyRequestDTO dto
     ) {
         Long userId = 0L;
         if (token != null) {
@@ -48,7 +47,6 @@ public class NewzyController {
         }
 
         log.info(">>> [POST] /newzy - 요청 파라미터: dto - {}, userId - {}", dto.toString(), userId);
-        dto.setImages(images);
         newzyService.save(userId, dto);
 
         return ResponseEntity.status(201).body(BaseResponseBody.of(201, "뉴지 등록이 완료되었습니다."));

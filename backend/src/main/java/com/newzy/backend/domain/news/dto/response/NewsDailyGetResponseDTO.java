@@ -1,5 +1,6 @@
 package com.newzy.backend.domain.news.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @AllArgsConstructor
@@ -9,6 +10,9 @@ import lombok.*;
 @Builder
 @ToString
 public class NewsDailyGetResponseDTO {
+    @JsonProperty("isSolved")
+    private boolean isSolved;
+
     private Long newsId;
     private String link;
     private String summary;

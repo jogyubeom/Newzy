@@ -31,6 +31,17 @@ public class SchedulerConfig {
         }
     }
 
+    @Scheduled(cron = "0 0 7 ? * MON")
+//@Scheduled(cron = "0 4 3 * * ?")
+    public void scheduleNewporter() {
+        try {
+            log.info("뉴포터 계산 ㄱㄱ");
+            newzyService.calculateNewporter();
+        } catch (Exception e) {
+            log.error("뉴포터 계산 중 에러 발생", e);
+        }
+    }
+
     // 매일 00시에 진행
     @Scheduled(cron = "0 0 0 * * ?")
     public void scheduleNewsRanking() {

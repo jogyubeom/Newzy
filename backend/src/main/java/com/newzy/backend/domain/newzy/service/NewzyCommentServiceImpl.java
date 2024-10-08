@@ -50,6 +50,9 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저 엔티티를 찾을 수 없습니다. : " + userId));
         Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(() -> new EntityNotFoundException("해당하는 뉴지 엔티티를 찾을 수 없습니다.: " + newzyId));
 
+        // 경험치 업데이트
+        user.setExp(user.getExp() + 10);
+
         NewzyComment newzyComment = NewzyComment.convertToEntityByNewzyId(dto, user, newzy);
 
         newzyCommentRepository.save(newzyComment);

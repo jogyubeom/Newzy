@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzy.backend.domain.news.dto.request.NewsCardRequestDTO;
 import com.newzy.backend.domain.news.dto.request.NewsListGetRequestDTO;
 import com.newzy.backend.domain.news.dto.response.*;
-import com.newzy.backend.domain.news.entity.News;
-import com.newzy.backend.domain.news.entity.NewsBookmark;
-import com.newzy.backend.domain.news.entity.NewsCard;
-import com.newzy.backend.domain.news.entity.NewsLike;
+import com.newzy.backend.domain.news.entity.*;
 import com.newzy.backend.domain.news.repository.*;
 import com.newzy.backend.domain.newzy.dto.response.NewzyListGetResponseDTO;
 import com.newzy.backend.domain.user.entity.User;
@@ -49,6 +46,7 @@ public class NewsServiceImpl implements NewsService {
     private final NewsCardRepositorySupport newsCardRepositorySupport;
     private final NewsLikeRepositorySupport newsLikeRepositorySupport;
     private final NewsBookmarkRepositorySupport newsBookmarkRepositorySupport;
+    private final DailyQuizHistoryRepository dailyQuizHistoryRepository;
 
 
     @Override  // branch : feature/get-news의 NewsServiceImpl 참고
@@ -211,7 +209,17 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public NewsDailyGetResponseDTO getDailyContent(Long userId) {
-        NewsDailyGetResponseDTO dto = null;
+        NewsDailyGetResponseDTO dto = new NewsDailyGetResponseDTO();
+
+        LocalDate todayDate = LocalDate.now();
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유저 엔티티가 없습니다."));
+        boolean isExisted = dailyQuizHistoryRepository.existsByUserAndDate(user, todayDate);
+
+        if (isExisted)
+            dto.setSolved(true);
+        else
+            dto.setSolved(false);
 
         try {
             // 1. 오늘 날짜 계산
@@ -245,14 +253,13 @@ public class NewsServiceImpl implements NewsService {
                         continue; // 뉴스 정보를 찾지 못하면 다음 인덱스로 넘어감
                     }
 
-                    // 7. JSON 파싱하여 NewsRecommendGetResponseDTO 생성
+                    // 7. JSON 파싱하여 NewsRecommendGetResponseDTO
                     JsonNode newsJsonNode = objectMapper.readTree(newsValue);
-                    dto = NewsDailyGetResponseDTO.builder()
-                            .newsId(newsJsonNode.get("news_id").asLong())
-                            .link(newsJsonNode.get("link").asText())
-                            .summary(newsJsonNode.get("summary").asText())
-                            .thumbnail(newsJsonNode.get("thumbnail").asText())
-                            .build();
+                    dto.setNewsId(newsJsonNode.get("news_id").asLong());
+                    dto.setSummary(newsJsonNode.get("summary").asText());
+                    dto.setLink(newsJsonNode.get("link").asText());
+                    dto.setSummary(newsJsonNode.get("summary").asText());
+                    dto.setThumbnail(newsJsonNode.get("thumbnail").asText());
 
                     // 8. 퀴즈 정보 조회
                     String redisQuizKey = String.format(":1:quiz:%s", dto.getNewsId());
@@ -280,13 +287,28 @@ public class NewsServiceImpl implements NewsService {
             }
             // 5개의 인덱스에 대해 모두 실패한 경우
             throw new EntityNotFoundException("데일리 뉴스를 조회할 수 없습니다.");
-
         } catch (JsonProcessingException e) {
             throw new RuntimeException("JSON 처리 중 오류가 발생했습니다.", e);
         } catch (Exception e) {
             throw new RuntimeException("데일리 컨텐츠 조회 중 오류가 발생했습니다.", e);
         }
     }
+
+    @Override
+    public void saveDailyQuiz(Long userId) {
+        LocalDate today = LocalDate.now();
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유저 엔티티가 없습니다."));
+        boolean isExisted = dailyQuizHistoryRepository.existsByUserAndDate(user, today);
+        if (isExisted)
+            throw new EntityIsFoundException("이미 데일리 퀴즈를 풀었습니다.");
+
+        dailyQuizHistoryRepository.save(new DailyQuizHistory(user, today));
+
+        user.setExp(user.getExp() + 20);
+        userRepository.save(user);
+    }
+
 
     @Override
     public NewsDetailGetResponseDTO getNewsDetail(Long userId, Long newsId) {
@@ -423,6 +445,8 @@ public class NewsServiceImpl implements NewsService {
             default:
                 throw new EntityNotFoundException("잘못된 카테고리 값: " + category);
         }
+        // 경험치 더하기
+        user.setExp(user.getExp()+10);
         userRepository.save(user);
 
         // logic 2. 뉴스 카드 생성, 저장

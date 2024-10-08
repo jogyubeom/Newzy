@@ -24,7 +24,4 @@ public class NewzyRequestDTO {
     @Schema(description = "뉴지 카테고리", example = "category")
     private int category;
 
-    @Schema(description = "이미지 파일 배열", example = "image")
-    private MultipartFile[] images;
-
 }

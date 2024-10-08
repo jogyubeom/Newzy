@@ -17,6 +17,6 @@ public interface DictionaryService {
     void deleteSearchWordHistory(Long userId, List<String> wordList);
     List<WordCloudResponseDTO> getWordCloudHistory();
 
-    void saveSearchWordHistoryToRedis(int category, String word);
+    void saveSearchWordHistoryToRedis(int category, String word, String token);
 
 }
