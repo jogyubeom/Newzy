@@ -5,6 +5,7 @@ import baseAxios from "shared/utils/baseAxios";
 const FollowListItem = ({ name, isFollowing: initialFollowing }) => {
   const [profile, setProfile] = useState(null); // 프로필 정보
   const [isFollowing, setIsFollowing] = useState(initialFollowing); // 팔로우 상태
+  const defaultProfileImage = "/shared/images/user.png";  // 기본 프로필 이미지
 
   // 유저 프로필 조회
   const fetchUserProfile = async () => {
@@ -20,14 +21,9 @@ const FollowListItem = ({ name, isFollowing: initialFollowing }) => {
     fetchUserProfile();
   }, [name]);
 
-  // 프로필이 없을 때 로딩 중 표시
-  if (!profile) {
-    return (
-      <div className="flex items-center justify-center h-16">
-        <p>로딩 중...</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    setIsFollowing(initialFollowing);  // initialFollowing이 변경될 때마다 상태 업데이트
+  }, [initialFollowing]);
 
   // 팔로우/언팔로우 버튼 클릭
   const toggleFollow = async () => {
@@ -51,7 +47,7 @@ const FollowListItem = ({ name, isFollowing: initialFollowing }) => {
           {/* 프로필 이미지 */}
           <div className="rounded-full overflow-hidden w-16 h-16">
             <img
-              src={profile.profile || "/shared/images/user.png"}
+              src={profile?.profile || defaultProfileImage}
               className="w-full h-full object-cover"
             />
           </div>

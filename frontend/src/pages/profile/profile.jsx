@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useFollowStore } from "./store/useFollowStore";
 import { getGrade } from "shared/getGrade";
 import { MdAdd, MdDelete } from "react-icons/md";
 import MenuBar from "pages/profile/ui/menuBar";
@@ -109,6 +110,9 @@ export const Profile = () => {
       clearInterval(intervalId);
     };
   }, []);
+
+  // 팔로워/팔로잉 상태를 스토어에서 관리
+  const { fetchFollowers, fetchFollowings } = useFollowStore();
 
   // 유저 정보 불러오기
   useEffect(() => {
@@ -292,8 +296,16 @@ export const Profile = () => {
   // 글자수 제한
   const maxIntroduceLength = 30;
 
-  // 모달 열기 및 닫기 함수
-  const openModal = () => setModalOpen(true);
+  // 모달을 열 때 팔로워 및 팔로잉 목록을 가져오기
+  const openModal = async () => {
+    if (nicknameData) {
+      await fetchFollowers(nicknameData.nickname); // 팔로워 목록 가져오기
+      await fetchFollowings(nicknameData.nickname); // 팔로잉 목록 가져오기
+    }
+    setModalOpen(true);
+  };
+
+  // 모달 닫기 함수
   const closeModal = () => setModalOpen(false);
 
   // 저장 버튼 클릭 시 변경 사항 저장
