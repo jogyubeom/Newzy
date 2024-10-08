@@ -1,75 +1,85 @@
 /* eslint-disable react/prop-types */
 import { FaUserCircle } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FollowListItem from "./followListItem";
+import baseAxios from "shared/utils/baseAxios";
 
-const FollowIndexModal = ({ isOpen, onClose }) => {
+const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
 
-  // 임시 유저 더미데이터
-  const user = {
-    name: "정지훈",
-    grade: 3,
-    introduce: "안녕하세요. 잘 부탁드립니다! 하하",
-    img: null,
-    followers: 42,
-    newzy: 7,
-    followings: 25,
+  const [selectedMenu, setSelectedMenu] = useState(0);  // 메뉴 상태
+  const [followers, setFollowers] = useState([]);       // 팔로워 목록
+  const [followings, setFollowings] = useState([]);     // 팔로잉 목록
+  const menus = [`팔로워 ${userInfo.followerCnt || 0}명`, `팔로잉 ${userInfo.followingCnt || 0}명`];  // 메뉴 항목에 팔로워, 팔로잉 수 반영
+
+
+  const fetchFollowers = async () => {
+    try {
+      const { data } = await baseAxios().get(`/user/followers-list/${userInfo.nickname}`);
+      setFollowers(data.followingList);
+    } catch (error) {
+      console.error("팔로워 목록을 불러오는 중 에러 발생:", error);
+    }
   };
 
-  // 임시 팔로우 더미데이터
-  const followList = [
-    { name: "차은우", follow: false, img: "https://i.namu.wiki/i/ZnBMAAGJaiFKqDmASXCt-977Xuq6gLA-G8AsD4K1BKCVBEzrjISoW9QyfcSKPnacwuBpCGSSyBtCJv8E-UocNQ.webp"},
-    { name: "손시우", follow: true, img: "https://image.xportsnews.com/contents/images/upload/article/2023/0628/mb_1687924647620553.jpg"},
-    { name: "장하권", follow: false, img: "https://news.nateimg.co.kr/orgImg/ck/2022/04/21/kuk202204210051.680x.0.jpg"},
-    { name: "김수환", follow: true, img: "https://i.namu.wiki/i/aUXvF4edykEEenR2kKMPLCVJD7Bq22Sl_ogTMQRrcL0qFTuvgisB-hmrxhbXviq7fZVEwMvLhY9tfKcysbK0qA.webp"},
-    { name: "허수", follow: false, img: "https://i.namu.news/26/26fc4836ce73833bfcca8d7f09f248e97a1ab7901df987da03b591b16b4be9bf.jpg"},
-    { name: "김건부", follow: true, img: "https://t1.daumcdn.net/news/202405/15/SPORTSSEOUL/20240515150316509ihrp.jpg"},
-    { name: "김기인", follow: true, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeE7h4b1EiwLtg5LfzOhDzX_62gM74LQVNog&s"},
-    { name: "차은우", follow: false, img: "https://i.namu.wiki/i/ZnBMAAGJaiFKqDmASXCt-977Xuq6gLA-G8AsD4K1BKCVBEzrjISoW9QyfcSKPnacwuBpCGSSyBtCJv8E-UocNQ.webp"},
-    { name: "손시우", follow: true, img: "https://image.xportsnews.com/contents/images/upload/article/2023/0628/mb_1687924647620553.jpg"},
-    { name: "장하권", follow: false, img: "https://news.nateimg.co.kr/orgImg/ck/2022/04/21/kuk202204210051.680x.0.jpg"},
-    { name: "김수환", follow: true, img: "https://i.namu.wiki/i/aUXvF4edykEEenR2kKMPLCVJD7Bq22Sl_ogTMQRrcL0qFTuvgisB-hmrxhbXviq7fZVEwMvLhY9tfKcysbK0qA.webp"},
-    { name: "허수", follow: false, img: "https://i.namu.news/26/26fc4836ce73833bfcca8d7f09f248e97a1ab7901df987da03b591b16b4be9bf.jpg"},
-    { name: "김건부", follow: true, img: "https://t1.daumcdn.net/news/202405/15/SPORTSSEOUL/20240515150316509ihrp.jpg"},
-    { name: "김기인", follow: true, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeE7h4b1EiwLtg5LfzOhDzX_62gM74LQVNog&s"},
-  ]
+  const fetchFollowings = async () => {
+    try {
+      const { data } = await baseAxios().get(`/user/followings-list/${userInfo.nickname}`);
+      setFollowings(data.followingList);
+    } catch (error) {
+      console.error("팔로잉 목록을 불러오는 중 에러 발생:", error);
+    }
+  };
 
-  // 선택된 메뉴를 추적하는 상태
-  const [selectedMenu, setSelectedMenu] = useState(0);
-  const menus=[`팔로워 ${user.followers}명`, `팔로잉 ${user.followings}명`]
+  useEffect(() => {
+    if (isOpen) {
+      if (selectedMenu === 0) {
+        fetchFollowers(); // 팔로워 목록 불러오기
+      } else {
+        fetchFollowings(); // 팔로잉 목록 불러오기
+      }
+    }
+  }, [isOpen, selectedMenu]);
 
-  // 선택된 메뉴에 따라 다른 컴포넌트 렌더링
+  // 팔로워/팔로잉 여부 체크
+  const isFollowingUser = (username) => {
+    return followings.some(following => following.toUserNickname === username);
+  };
+
   const renderContent = () => {
-    switch (selectedMenu) {
-      case 0:
-        return (
-          followList.map((item, index) => (
-          <div 
-            key={index}
-            className="relative py-1 px-5 flex flex-col"
-          >
-            <FollowListItem name={item.name} img={item.img} follow={item.follow}/>
-          </div>
-          ))
-        )
-      case 1:
-        return (
-          followList.map((item, index) => (
-          <div 
-            key={index}
-            className="relative py-1 px-5 flex flex-col"
-          >
-            <FollowListItem name={item.name} img={item.img} follow={item.follow}/>
-          </div>
-          ))
-        )
-      default:
-        return null;
+    if (selectedMenu === 0) {
+      // 팔로워 목록 렌더링 (팔로우 여부 확인)
+      return followers.map((item) => (
+        <div key={item.fromUserNickname} className="relative py-1 px-5 flex flex-col">
+          <FollowListItem 
+            name={item.fromUserNickname} 
+            isFollowing={isFollowingUser(item.fromUserNickname)}  // 팔로우 여부 체크
+          />
+        </div>
+      ));
+    } else {
+      // 팔로잉 목록 렌더링 (팔로우 여부 true로 고정)
+      return followings.map((item) => (
+        <div key={item.toUserNickname} className="relative py-1 px-5 flex flex-col">
+          <FollowListItem 
+            name={item.toUserNickname} 
+            isFollowing={true}  // 항상 true로 설정
+          />
+        </div>
+      ));
     }
   };
 
   if (!isOpen) return null;
+
+  // userInfo가 없을 경우 로딩 중을 표시
+  if (!userInfo) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p>로딩 중...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -77,7 +87,7 @@ const FollowIndexModal = ({ isOpen, onClose }) => {
         <header className="w-full flex justify-between items-center mt-4">
           <div className="flex-shrink-0 text-[#26262C] whitespace-nowrap text-ellipsis font-[Open Sans] text-[36px] leading-[24px] font-semibold flex items-center justify-between text-justify">
             <button className="w-[40px] h-[40px] bg-gray-200 rounded-full">
-              <FaUserCircle className="w-full h-full object-cover rounded-full text-blue-400" />
+              <img src={userInfo.profile || "/shared/images/user.png"} className="w-full h-full object-cover rounded-full" />
             </button>
           </div>
           <div className="flex items-center">
@@ -86,6 +96,7 @@ const FollowIndexModal = ({ isOpen, onClose }) => {
             </button>
           </div>
         </header>
+
         {/* MenuBar에 선택된 메뉴 상태와 상태 변경 함수 전달 */}
         <div className="flex items-center justify-center border-b-2 border-gray-300 font-semibold text-[18px]">
         {menus.map((menu, index) => (
