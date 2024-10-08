@@ -1,17 +1,11 @@
     package com.newzy.backend.domain.newzy.entity;
 
-    import com.fasterxml.jackson.annotation.JsonIgnore;
     import com.newzy.backend.domain.newzy.dto.request.NewzyCommentRequestDTO;
-    import com.newzy.backend.domain.newzy.repository.NewzyCommentRepository;
-    import com.newzy.backend.domain.newzy.repository.NewzyRepository;
     import com.newzy.backend.domain.user.entity.User;
+    import com.newzy.backend.global.exception.StringLengthLimitException;
     import com.newzy.backend.global.model.BaseTimeEntity;
     import jakarta.persistence.*;
     import lombok.*;
-    import org.hibernate.annotations.DynamicUpdate;
-
-    import java.util.ArrayList;
-    import java.util.List;
 
     @Entity
     @Getter @Setter
@@ -41,7 +35,7 @@
         private NewzyComment parentComment;
 
         // 댓글 내용
-        @Column(name = "newzy_comment")
+        @Column(name = "newzy_comment", columnDefinition = "TEXT", length = 500)
         private String newzyComment;
 
         @Column(name = "is_updated")
@@ -51,6 +45,10 @@
         private Boolean isDeleted = false;
 
         public static NewzyComment convertToEntityByNewzyCommentId(User user, Long newzyCommentId, NewzyCommentRequestDTO requestDTO){
+
+            if (requestDTO.getNewzyComment().length() > 500) {
+                throw new StringLengthLimitException("댓글은 최대 500자까지 입력할 수 있습니다.");
+            }
             NewzyComment newzyComment = new NewzyComment();
             newzyComment.setUser(user);
             newzyComment.setNewzyCommentId(newzyCommentId);
@@ -61,6 +59,9 @@
 
         public static NewzyComment convertToEntityByNewzyId(NewzyCommentRequestDTO dto, User user, Newzy newzy) {
 
+            if (dto.getNewzyComment().length() > 500) {
+                throw new StringLengthLimitException("댓글은 최대 500자까지 입력할 수 있습니다.");
+            }
             NewzyComment newzyComment = new NewzyComment();
             newzyComment.setNewzyComment(dto.getNewzyComment());
             newzyComment.setUser(user);

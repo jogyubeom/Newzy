@@ -2,12 +2,10 @@ package com.newzy.backend.domain.newzy.entity;
 
 import com.newzy.backend.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.backend.domain.user.entity.User;
+import com.newzy.backend.global.exception.StringLengthLimitException;
 import com.newzy.backend.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -30,10 +28,10 @@ public class Newzy extends BaseTimeEntity {
     @JoinColumn(name = "user_id", updatable = false)
     private User user;
 
-    @Column(name = "title")
+    @Column(name = "title", length = 100)
     private String title;
 
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "TEXT", length = 3000)
     private String content;
 
     @Column(name = "content_text", columnDefinition = "TEXT", nullable = false)
@@ -64,6 +62,14 @@ public class Newzy extends BaseTimeEntity {
 
     // save newzy
     public static Newzy convertToEntity(User user, NewzyRequestDTO dto){
+
+        if (dto.getTitle().length() > 100) {
+            throw new StringLengthLimitException("제목은 최대 100자까지 입력할 수 있습니다.");
+        }
+        if (dto.getContent().length() > 3000) {
+            throw new StringLengthLimitException("본문은 최대 3000자까지 입력할 수 있습니다.");
+        }
+
         Newzy newzy = new Newzy();
         newzy.setUser(user);
         newzy.setTitle(dto.getTitle());
@@ -75,6 +81,14 @@ public class Newzy extends BaseTimeEntity {
 
     // update newzy
     public static Newzy convertToEntity(User user, Long newzyId , NewzyRequestDTO dto, String contentText){
+
+        if (dto.getTitle().length() > 100) {
+            throw new StringLengthLimitException("제목은 최대 100자까지 입력할 수 있습니다.");
+        }
+        if (dto.getContent().length() > 3000) {
+            throw new StringLengthLimitException("본문은 최대 3000자까지 입력할 수 있습니다.");
+        }
+
         Newzy newzy = new Newzy();
         newzy.setUser(user);
         newzy.setNewzyId(newzyId);
