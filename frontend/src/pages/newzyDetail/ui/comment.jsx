@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import baseAxios from 'shared/utils/baseAxios'; // baseAxios 임포트
-import useAuthStore from 'shared/store/userStore'; // 토큰 가져오기 위한 스토어 임포트
+import baseAxios from 'shared/utils/baseAxios';
+import useAuthStore from 'shared/store/userStore';
 
 const CommentContent = ({ newzyId }) => {
-  const { token } = useAuthStore(); // 스토어에서 토큰 가져오기
-  const [comments, setComments] = useState([]); // 댓글 리스트 상태
-  const [newCommentText, setNewCommentText] = useState(''); // 새 댓글 입력값 상태
-  const [replyText, setReplyText] = useState({}); // 대댓글 입력값 상태
+  const { token, userInfo } = useAuthStore(state => ({
+    token: state.token,
+    userInfo: state.userInfo,
+  }));
 
-  // 댓글 데이터 로드
+  const [comments, setComments] = useState([]);
+  const [newCommentText, setNewCommentText] = useState('');
+  const [replyText, setReplyText] = useState({});
+  const [showReplyInput, setShowReplyInput] = useState({});
+
   useEffect(() => {
     const fetchComments = async () => {
       try {
         const res = await baseAxios().get(`/newzy/${newzyId}/comments`);
-        setComments(res.data); // 서버에서 가져온 댓글 데이터를 상태로 설정
+        console.log('가져온 댓글:', res.data);
+        setComments(res.data);
       } catch (error) {
         console.error(error);
       }
@@ -21,55 +26,42 @@ const CommentContent = ({ newzyId }) => {
     fetchComments();
   }, [newzyId]);
 
-  // 새 댓글 작성
-  const handleCommentSubmit = async () => {
+  // 댓글 작성 및 대댓글 작성을 위한 공통 함수
+  const handleCommentSubmit = async (commentText, parentCommentId = null) => {
     if (!token) {
       alert('로그인이 필요합니다.');
       return;
     }
-    
-    if (newCommentText.trim()) {
+
+    if (commentText.trim()) {
       const newComment = {
-        newzyComment: newCommentText,
-        newzyId,
-      };
-      
-      try {
-        const res = await baseAxios().post(`/newzy/${newzyId}/comments`, newComment);
-        setComments([...comments, res.data]); // 새 댓글을 기존 댓글 리스트에 추가
-        setNewCommentText(''); // 입력 필드 초기화
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
-  // 대댓글 작성
-  const handleReplySubmit = async (parentCommentId) => {
-    if (!token) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
-
-    if (replyText[parentCommentId]?.trim()) {
-      const newReply = {
-        newzyComment: replyText[parentCommentId],
+        newzyComment: commentText,
         newzyParentCommentId: parentCommentId,
         newzyId,
       };
 
       try {
-        const res = await baseAxios().post(`/newzy/${newzyId}/comments`, newReply);
-        setComments((prevComments) =>
-          prevComments.map((comment) =>
-            comment.newzyCommentId === parentCommentId
-              ? {
-                  ...comment,
-                  replies: [...comment.replies, res.data], // 대댓글 추가
-                }
-              : comment
-          )
-        );
+        const res = await baseAxios().post(`/newzy/${newzyId}/comments`, newComment);
+        setComments((prevComments) => {
+          if (parentCommentId === null) {
+            // 최상위 댓글인 경우
+            return [...prevComments, res.data];
+          } else {
+            // 대댓글인 경우
+            return prevComments.map((comment) =>
+              comment.newzyCommentId === parentCommentId
+                ? {
+                    ...comment,
+                    replies: [...(comment.replies || []), res.data],
+                  }
+                : comment
+            );
+          }
+        });
+        // 입력 필드 초기화
+        if (parentCommentId === null) {
+          setNewCommentText(''); // 댓글 입력 필드 초기화
+        }
         setReplyText((prev) => ({ ...prev, [parentCommentId]: '' })); // 대댓글 입력 필드 초기화
       } catch (error) {
         console.error(error);
@@ -77,19 +69,53 @@ const CommentContent = ({ newzyId }) => {
     }
   };
 
+  // 댓글 삭제 함수
+  const handleCommentDelete = async (commentId) => {
+    try {
+      await baseAxios().delete(`/newzy/${newzyId}/comments/${commentId}`);
+      setComments((prevComments) => prevComments.filter(comment => comment.newzyCommentId !== commentId));
+    } catch (error) {
+      console.error('댓글 삭제 오류:', error);
+    }
+  };
+
   // 엔터키로 새 댓글 추가
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleCommentSubmit();
+      handleCommentSubmit(newCommentText); // 새 댓글 추가
     }
   };
 
   // 각 댓글에 대한 대댓글 엔터키 처리
   const handleReplyKeyPress = (e, commentId) => {
     if (e.key === 'Enter') {
-      handleReplySubmit(commentId);
+      handleCommentSubmit(replyText[commentId], commentId); // 대댓글 추가
     }
   };
+
+  // 댓글과 대댓글을 그룹화
+  const groupComments = (comments) => {
+    const grouped = comments.reduce((acc, comment) => {
+      if (comment.parentCommentId === null) {
+        // 최상위 댓글인 경우
+        acc.push({ ...comment, replies: [] });
+      }
+      return acc;
+    }, []);
+
+    // 대댓글 추가
+    grouped.forEach((parentComment) => {
+      comments.forEach((comment) => {
+        if (comment.parentCommentId === parentComment.newzyCommentId) {
+          parentComment.replies.push(comment);
+        }
+      });
+    });
+
+    return grouped;
+  };
+
+  const groupedComments = groupComments(comments);
 
   return (
     <div className="w-[400px] p-4">
@@ -104,8 +130,8 @@ const CommentContent = ({ newzyId }) => {
           className="border border-gray-300 rounded-md p-1 mr-2"
         />
         <button
-          onClick={handleCommentSubmit}
-          className="bg-purple-600 text-white rounded-md px-2 hover:bg-text-purple-500 transition"
+          onClick={() => handleCommentSubmit(newCommentText)} // 클릭 시 댓글 추가
+          className="bg-purple-600 text-white rounded-md px-2 hover:bg-purple-700 transition"
         >
           추가
         </button>
@@ -113,37 +139,114 @@ const CommentContent = ({ newzyId }) => {
 
       {/* 댓글 목록 */}
       <div>
-        {comments.length > 0 ? (
-          comments.map((comment) => (
+        {groupedComments.length > 0 ? (
+          groupedComments.map((comment) => (
             <div key={comment.newzyCommentId} className="bg-white p-2 mb-2 rounded-md shadow-sm">
-              <div>{comment.nickname}</div>
+              <div className="flex items-center">
+                {/* 프로필 이미지 존재 여부에 따라 다르게 표시 */}
+                {comment.profile ? (
+                  <img
+                    src={comment.profile}
+                    alt={`${comment.nickname}의 프로필`}
+                    className="w-8 h-8 rounded-full mr-2 border border-gray-300"
+                  />
+                ) : (
+                  <div
+                    className="w-8 h-8 rounded-full mr-2"
+                    style={{
+                      backgroundColor: '#4A90E2', // 원하는 색상으로 변경 가능
+                    }}
+                  ></div>
+                )}
+                <span>{comment.nickname}</span>
+                {/* 수정 및 삭제 버튼 추가 */}
+                {userInfo && userInfo.nickname === comment.nickname && ( // userInfo가 null이 아닌 경우에만 체크
+                  <>
+                    <button
+                      onClick={() => handleCommentDelete(comment.newzyCommentId)} // 삭제 버튼 클릭 시 삭제 함수 호출
+                      className="text-red-600 ml-2"
+                    >
+                      삭제
+                    </button>
+                    {/* 수정 버튼은 추후 구현 */}
+                    <button className="text-blue-600 ml-2">
+                      수정
+                    </button>
+                  </>
+                )}
+              </div>
               <div>{comment.newzyComment}</div>
-              <div>{new Date(comment.createdAt).toLocaleDateString()}</div>
+              <div className="text-gray-500 text-sm">
+                {new Date(comment.createdAt).toLocaleString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </div>
+
+              {/* 대댓글 입력 버튼 */}
+              <button
+                onClick={() => setShowReplyInput((prev) => ({ ...prev, [comment.newzyCommentId]: !prev[comment.newzyCommentId] }))}
+                className="text-purple-600 underline mt-2"
+              >
+                {showReplyInput[comment.newzyCommentId] ? '대댓글 숨기기' : '대댓글 달기'}
+              </button>
 
               {/* 대댓글 입력창 */}
-              <div className="mt-2">
-                <input
-                  type="text"
-                  value={replyText[comment.newzyCommentId] || ''}
-                  onChange={(e) => setReplyText({ ...replyText, [comment.newzyCommentId]: e.target.value })}
-                  onKeyPress={(e) => handleReplyKeyPress(e, comment.newzyCommentId)} // 엔터키 이벤트 추가
-                  placeholder="대댓글을 입력하세요..."
-                  className="border border-gray-300 rounded-md p-1 mr-2"
-                />
-                <button
-                  onClick={() => handleReplySubmit(comment.newzyCommentId)}
-                  className="bg-purple-600 text-white rounded-md px-2 hover:bg-purple-700 transition"
-                >
-                  추가
-                </button>
-              </div>
+              {showReplyInput[comment.newzyCommentId] && (
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    value={replyText[comment.newzyCommentId] || ''}
+                    onChange={(e) => setReplyText({ ...replyText, [comment.newzyCommentId]: e.target.value })}
+                    onKeyPress={(e) => handleReplyKeyPress(e, comment.newzyCommentId)} // 엔터키 이벤트 추가
+                    placeholder="대댓글을 입력하세요..."
+                    className="border border-gray-300 rounded-md p-1 mr-2"
+                  />
+                  <button
+                    onClick={() => handleCommentSubmit(replyText[comment.newzyCommentId], comment.newzyCommentId)} // 클릭 시 대댓글 추가
+                    className="bg-purple-600 text-white rounded-md px-2 hover:bg-purple-700 transition"
+                  >
+                    추가
+                  </button>
+                </div>
+              )}
 
               {/* 대댓글 목록 */}
               {comment.replies?.length > 0 && (
                 <div className="ml-4 mt-2">
-                  {comment.replies.map((reply, index) => (
-                    <div key={index} className="bg-gray-200 p-2 rounded-md shadow-sm mb-1">
-                      {reply.newzyComment}
+                  {comment.replies.map((reply) => (
+                    <div key={reply.newzyCommentId} className="bg-gray-200 p-2 rounded-md shadow-sm mb-1">
+                      <div className="flex items-center">
+                        {/* 대댓글 작성자 프로필 이미지 존재 여부에 따라 다르게 표시 */}
+                        {reply.profile ? (
+                          <img
+                            src={reply.profile}
+                            alt={`${reply.nickname}의 프로필`}
+                            className="w-8 h-8 rounded-full mr-2 border border-gray-300"
+                          />
+                        ) : (
+                          <div
+                            className="w-8 h-8 rounded-full mr-2"
+                            style={{
+                              backgroundColor: '#4A90E2', // 원하는 색상으로 변경 가능
+                            }}
+                          ></div>
+                        )}
+                        <span>{reply.nickname}</span>
+                      </div>
+                      <div>{reply.newzyComment}</div>
+                      <div className="text-gray-500 text-xs">
+                        {new Date(reply.createdAt).toLocaleString('ko-KR', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </div>
                     </div>
                   ))}
                 </div>
