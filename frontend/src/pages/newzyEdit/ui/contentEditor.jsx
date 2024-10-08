@@ -23,7 +23,7 @@ const ContentEditor = ({ content, setContent }) => {
       formData.append("img", file);
 
       try {
-        const res = await baseAxios().post("https://j11b305.p.ssafy.io/api/newzy/upload-image", formData, {
+        const res = await baseAxios().get("/newzy/upload-image", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
