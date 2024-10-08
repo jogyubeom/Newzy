@@ -60,6 +60,8 @@ export const Profile = () => {
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
   const [nicknameData, setNicknameData] = useState(null); // 팔로우 모달창에 보낼 데이터
+  const { followers, followings, fetchFollowers, fetchFollowings } = useFollowStore();
+
   const [status, setStatus] = useState({
     newzyCnt: 0,
     followerCnt: 0,
@@ -111,9 +113,6 @@ export const Profile = () => {
     };
   }, []);
 
-  // 팔로워/팔로잉 상태를 스토어에서 관리
-  const { fetchFollowers, fetchFollowings } = useFollowStore();
-
   // 유저 정보 불러오기
   useEffect(() => {
     const fetchUserData = async () => {
@@ -141,6 +140,15 @@ export const Profile = () => {
 
     fetchUserData();
   }, []);
+
+  // 팔로워/팔로잉 목록 불러오기
+  useEffect(() => {
+    if (user && user.nickname) {
+      fetchFollowers(user.nickname);  // 팔로워 목록 불러오기
+      fetchFollowings(user.nickname);  // 팔로잉 목록 불러오기
+    }
+  }, [user]);
+
 
   // 현재 경로에 따라 메뉴를 선택 상태로 설정
   useEffect(() => {
@@ -532,7 +540,7 @@ export const Profile = () => {
                 Followers
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {status.followerCnt}
+                {followers.length}
               </div>
             </div>
             <div
@@ -543,7 +551,7 @@ export const Profile = () => {
                 Followings
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {status.followingCnt}
+                {followings.length}
               </div>
             </div>
           </div>
