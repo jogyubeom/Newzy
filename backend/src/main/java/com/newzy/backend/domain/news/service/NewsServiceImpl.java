@@ -139,9 +139,9 @@ public class NewsServiceImpl implements NewsService {
 
 
     @Override
-    public NewsCardListGetResponseDTO getCardInfo(Long userId, Long cardId) {
+    public NewsCardListGetResponseDTO getCardInfo(Long userId, Long newsId) {
 
-        return newsCardRepositorySupport.findNewsCardInfo(cardId);
+        return newsCardRepositorySupport.findNewsCardInfo(userId, newsId);
     }
 
 

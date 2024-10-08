@@ -170,10 +170,10 @@ public class NewsController {
     }
 
 
-    @GetMapping(value = "/news-card-list/{cardId}")
+    @GetMapping(value = "/news-card-list/{newsId}")
     @Operation(summary = "뉴스 카드", description = "뉴스 카드의 상세 정보를 반환합니다.")
     public ResponseEntity<NewsCardListGetResponseDTO> getNewsCardDetail(
-            @PathVariable("cardId") Long cardId,
+            @PathVariable("newsId") Long newsId,
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token
     ) {
@@ -183,9 +183,9 @@ public class NewsController {
         } else {
             throw new IllegalStateException("유효한 유저 토큰이 없습니다.");
         }
-        log.info(">>> [GET] /news/news-card-list - 요청 파라미터 : userId - {}, cardId - {}", userId, cardId);
+        log.info(">>> [GET] /news/news-card-list - 요청 파라미터 : userId - {}, cardId - {}", userId, newsId);
 
-        NewsCardListGetResponseDTO cardInfo = newsService.getCardInfo(userId, cardId);
+        NewsCardListGetResponseDTO cardInfo = newsService.getCardInfo(userId, newsId);
         return ResponseEntity.status(200).body(cardInfo);
     }
 
