@@ -5,6 +5,7 @@ import com.newzy.backend.domain.news.entity.NewsCard;
 import com.newzy.backend.domain.news.entity.QNews;
 import com.newzy.backend.domain.news.entity.QNewsCard;
 import com.newzy.backend.domain.user.entity.QUser;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
@@ -71,10 +72,14 @@ public class NewsCardRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-    public NewsCardListGetResponseDTO findNewsCardInfo(Long cardId) {
+    public NewsCardListGetResponseDTO findNewsCardInfo(Long userId, Long newsId) {
         QNewsCard newsCard = QNewsCard.newsCard;
         QUser user = QUser.user;
         QNews news = QNews.news;
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(newsCard.user.userId.eq(userId));
+        builder.and(newsCard.news.newsId.eq(newsId));
 
         return queryFactory
                 .select(Projections.constructor(NewsCardListGetResponseDTO.class,
@@ -91,7 +96,7 @@ public class NewsCardRepositorySupport extends QuerydslRepositorySupport {
                 .from(newsCard)
                 .join(newsCard.user, user)
                 .join(newsCard.news, news)
-                .where(newsCard.newsCardId.eq(cardId))
+                .where(builder)
                 .fetchOne();
     }
 }

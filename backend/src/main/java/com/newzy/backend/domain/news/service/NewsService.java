@@ -36,5 +36,5 @@ public interface NewsService {
 
     void collectNewsCard(Long userId, NewsCardRequestDTO newsCardRequestDTO);
 
-    NewsCardListGetResponseDTO getCardInfo(Long userId, Long cardId);
+    NewsCardListGetResponseDTO getCardInfo(Long userId, Long newsId);
 }
