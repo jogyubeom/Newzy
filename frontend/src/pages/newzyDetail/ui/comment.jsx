@@ -13,7 +13,6 @@ const CommentContent = ({ newzyId }) => {
   const [replyText, setReplyText] = useState({});
   const [showReplyInput, setShowReplyInput] = useState({});
 
-  // 댓글 목록을 가져오는 함수
   const fetchComments = async () => {
     try {
       const res = await baseAxios().get(`/newzy/${newzyId}/comments`);
@@ -24,7 +23,6 @@ const CommentContent = ({ newzyId }) => {
     }
   };
 
-  // 컴포넌트가 마운트될 때 댓글 목록을 가져옴
   useEffect(() => {
     fetchComments();
   }, [newzyId]);
@@ -44,7 +42,8 @@ const CommentContent = ({ newzyId }) => {
       };
 
       try {
-        await baseAxios().post(`/newzy/${newzyId}/comments`, newComment);
+        const res = await baseAxios().post(`/newzy/${newzyId}/comments`, newComment);
+        // 댓글을 새로 작성할 때마다 목록을 새로 가져옴
         await fetchComments(); // 새로운 댓글 작성 후 댓글 목록 재요청
         // 입력 필드 초기화
         if (parentCommentId === null) {
@@ -94,7 +93,7 @@ const CommentContent = ({ newzyId }) => {
   // 댓글과 대댓글을 그룹화
   const groupComments = (comments) => {
     const grouped = comments.reduce((acc, comment) => {
-      if (comment.newzyParentCommentId === null) {
+      if (comment.parentCommentId === null) {
         // 최상위 댓글인 경우
         acc.push({ ...comment, replies: [] });
       }
@@ -104,7 +103,7 @@ const CommentContent = ({ newzyId }) => {
     // 대댓글 추가
     grouped.forEach((parentComment) => {
       comments.forEach((comment) => {
-        if (comment.newzyParentCommentId === parentComment.newzyCommentId) {
+        if (comment.parentCommentId === parentComment.newzyCommentId) {
           parentComment.replies.push(comment);
         }
       });
@@ -265,7 +264,7 @@ const CommentContent = ({ newzyId }) => {
                         })}
                       </div>
                     </div>
-                  ))} 
+                  ))}
                 </div>
               )}
             </div>
