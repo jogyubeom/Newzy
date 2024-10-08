@@ -10,7 +10,7 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
   const [selectedMenu, setSelectedMenu] = useState(0);  // 메뉴 상태
   const [followers, setFollowers] = useState([]);       // 팔로워 목록
   const [followings, setFollowings] = useState([]);     // 팔로잉 목록
-  const menus = [`팔로워 ${userInfo.followerCnt || 0}명`, `팔로잉 ${userInfo.followingCnt || 0}명`];  // 메뉴 항목에 팔로워, 팔로잉 수 반영
+  const menus = [`팔로워 ${userInfo?.followerCnt || 0}명`, `팔로잉 ${userInfo?.followingCnt || 0}명`];  // 메뉴 항목에 팔로워, 팔로잉 수 반영
 
 
   const fetchFollowers = async () => {
