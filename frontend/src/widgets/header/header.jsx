@@ -85,7 +85,7 @@ export const Header = () => {
               onMouseEnter={() => setIsHovering(true)} // hover 시작
               onMouseLeave={() => setIsHovering(false)} // hover 종료
             >
-              <button className="w-[40px] h-[40px] bg-gray-200 rounded-full">
+              <button className="w-[45px] h-[45px] bg-gray-200 rounded-full">
               {user.profile ? ( // user가 null이 아닌지 먼저 확인
                   <img src={user.profile} className="w-full h-full object-cover rounded-full" />
                 ) : (
