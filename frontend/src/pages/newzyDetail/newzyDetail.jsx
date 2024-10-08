@@ -64,6 +64,7 @@ export const NewzyDetail = () => {
             date={new Date(newzy.createdAt).toLocaleString('ko-KR')}
             author={newzy.nickname}
             newzyId={newzy.newzyId}
+            profile={newzy.profile}
             isFollowed={isFollowed} // 구독 상태 전달
             onFollowChange={handleFollowChange} // 구독 상태 변경 핸들러 전달
           />

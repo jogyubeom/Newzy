@@ -32,11 +32,10 @@ export const NewsList = () => {
       세계: 2,
     };
 
-    const categoryParam =
-      categoryMap[selectedCategory] !== undefined
-        ? categoryMap[selectedCategory]
-        : "";
-    const apiUrl = `https://j11b305.p.ssafy.io/api/news?page=${currentPage}&category=${categoryParam}&sort=${selectedRange}`;
+
+    const categoryParam = categoryMap[selectedCategory] !== undefined ? categoryMap[selectedCategory] : "";
+    const keyword = searchTerm ? `&keyword=${searchTerm}` : ""; // 키워드가 있을 때만 추가
+    const apiUrl = `https://j11b305.p.ssafy.io/api/news?page=${currentPage}&category=${categoryParam}&sort=${selectedRange}${keyword}`;
 
     try {
       const response = await axios.get(apiUrl);
@@ -76,10 +75,15 @@ export const NewsList = () => {
       sort: { ...prevState.sort, searchTerm: e.target.value },
     }));
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter")
-      setState((prevState) => ({ ...prevState, currentPage: 1 }));
-  };
+    const handleKeyPress = (e) => {
+      if (e.key === "Enter") {
+        setState((prevState) => ({
+          ...prevState,
+          currentPage: 1,
+        }));
+        fetchPosts();
+      }
+    };
 
   const clearSearch = () =>
     setState((prevState) => ({

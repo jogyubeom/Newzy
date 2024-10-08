@@ -23,7 +23,7 @@ export const NewzyList = () => {
 
   // 게시글 불러오는 함수
   const fetchPosts = async () => {
-    const { currentPage, sort: { selectedCategory, selectedRange } } = state;
+    const { currentPage, sort: { selectedCategory, selectedRange,searchTerm } } = state;
 
     const categoryMap = {
       전체: "",
@@ -34,10 +34,13 @@ export const NewzyList = () => {
 
     const categoryParam = categoryMap[selectedCategory] !== undefined ? categoryMap[selectedCategory] : "";
 
+    const keyword = searchTerm ? `&keyword=${searchTerm}` : ""; // 키워드가 있을 때만 추가
+
     // selectedRange가 0일 때는 기존 API, 1일 때는 구독 API 호출
     const apiUrl = selectedRange === 0
-      ? `/newzy?page=${currentPage}&category=${categoryParam}` // 기본 API
-      : `/user/followings-newzy-list?page=${currentPage}&category=${categoryParam}`; // 구독 API
+      ? `/newzy?page=${currentPage}&category=${categoryParam}${keyword}` // 기본 API에 키워드 추가
+      : `/user/followings-newzy-list?page=${currentPage}&category=${categoryParam}${keyword}`; // 구독 API에 키워드 추가
+    
 
     try {
       const response = await baseAxios().get(apiUrl); // baseAxios 사용
@@ -73,9 +76,15 @@ export const NewzyList = () => {
       sort: { ...prevState.sort, searchTerm: e.target.value },
     }));
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") setState((prevState) => ({ ...prevState, currentPage: 1 }));
-  };
+    const handleKeyPress = (e) => {
+      if (e.key === "Enter") {
+        setState((prevState) => ({
+          ...prevState,
+          currentPage: 1,
+        }));
+        fetchPosts();
+      }
+    };
 
   const clearSearch = () =>
     setState((prevState) => ({
