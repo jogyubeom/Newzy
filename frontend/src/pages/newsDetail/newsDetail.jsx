@@ -43,7 +43,7 @@ export const NewsDetail = () => {
   const htmlContent = news ? news.content : "";
 
   return (
-    <div className="relative flex h-screen bg-white">
+    <div className="relative flex min-h-screen bg-white">
       <CardGauge news={news} />
       <div className="w-[17%]"></div>
 
