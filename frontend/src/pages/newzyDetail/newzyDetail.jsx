@@ -88,6 +88,7 @@ export const NewzyDetail = () => {
           activeSidebar={activeSidebar} 
           onActiveSidebar={handleSidebarToggle} 
           category={3}
+          newzyId={newzy.newzyId}
         />
       )}
     </div>
