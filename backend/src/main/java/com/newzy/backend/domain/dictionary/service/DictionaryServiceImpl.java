@@ -13,6 +13,7 @@ import com.newzy.backend.domain.dictionary.repository.DictionaryRepository;
 import com.newzy.backend.domain.dictionary.repository.SearchWordRepository;
 import com.newzy.backend.domain.user.entity.User;
 import com.newzy.backend.domain.user.repository.UserRepository;
+import com.newzy.backend.global.auth.JwtProvider;
 import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import com.newzy.backend.global.exception.NotValidRequestException;
@@ -44,6 +45,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     private final long SEARCH_HISTORY_EXPIRATION_TIME = 432000; // 5 days
 
     private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 변환용 ObjectMapper
+    private final JwtProvider jwtProvider;
 
     @Override
     public List<DictionaryResponseDTO> searchByWord(String word) {
@@ -165,11 +167,21 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public void saveSearchWordHistoryToRedis(int category, String word) {
+    public void saveSearchWordHistoryToRedis(int category, String word, String token) {
         String today = LocalDate.now().toString();
         String wordKey = "word:" + today + ":" + word;
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+
+        // token이 있으면 경험치 업데이트
+        if(token!=null){
+            Long userId = jwtProvider.getUserIdFromToken(token);
+            User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당하는 유저를 찾을 수 없습니다."));
+            user.setExp(user.getExp()+3);
+            userRepository.save(user);
+        }
+
+
 
         try {
             if (Boolean.TRUE.equals(redisTemplate.hasKey(wordKey))) {

@@ -1,6 +1,6 @@
 package com.newzy.scheudling.domain.newzy.entity;
 
-import com.newzy.scheudling.domain.card.entity.User;
+import com.newzy.scheudling.domain.user.entity.User;
 import com.newzy.scheudling.domain.newzy.dto.request.NewzyRequestDTO;
 import com.newzy.scheudling.global.model.BaseTimeEntity;
 import jakarta.persistence.*;

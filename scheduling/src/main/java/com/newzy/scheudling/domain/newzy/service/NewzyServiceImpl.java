@@ -6,6 +6,8 @@ import com.newzy.scheudling.domain.card.dto.CardCountDTO;
 import com.newzy.scheudling.domain.newzy.entity.Newzy;
 import com.newzy.scheudling.domain.newzy.repository.NewzyRepository;
 import com.newzy.scheudling.domain.newzy.repository.NewzyRepositorySupport;
+import com.newzy.scheudling.domain.user.entity.User;
+import com.newzy.scheudling.domain.user.repository.UserRepository;
 import com.newzy.scheudling.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ public class NewzyServiceImpl implements NewzyService {
     private final RedisTemplate<String, String> redisTemplate;
     private final NewzyRepository newzyRepository;
     private final NewzyRepositorySupport newzyRepositorySupport;
+    private final UserRepository userRepository;
 
     @Override
     public void processNewzyRanking() {
@@ -63,6 +66,18 @@ public class NewzyServiceImpl implements NewzyService {
                 .limit(6)  // 상위 6개의 키만 남김
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+//
+        // 경험치 업데이트
+        for(String topNKey : topNKeys) {
+            String newzyId = topNKey.split(":")[3];  // Redis 키에서 newzyId 추출
+
+            Newzy newzy = newzyRepository.findById(Long.parseLong(newzyId))
+                    .orElseThrow(() -> new EntityNotFoundException("해당 뉴지를 찾을 수 없습니다: " + newzyId));
+            newzy.getUser().setExp(newzy.getUser().getExp()+20);
+            userRepository.save(newzy.getUser());
+        }
+
+
 
         // 상위 N개를 제외한 나머지 키 삭제
         keys.stream()
@@ -92,6 +107,11 @@ public class NewzyServiceImpl implements NewzyService {
             int value = topNewzies.get(i).getLikeCnt();
             valueOperations.set(key, String.valueOf(value), 691200, TimeUnit.SECONDS);  // 691200초 = 8일 동안 유지
             log.info("key = " + key + ", value = " + value);
+            // 경험치 업데이트
+            User user = userRepository.findByUserId(topNewzies.get(i).getUser().getUserId())
+                    .orElseThrow(() -> new EntityNotFoundException("해당 유저를 찾을 수 없습니다."));
+            user.setExp(user.getExp()+30);
+            userRepository.save(user);
         }
         log.info("뉴포터 랭킹이 성공적으로 Redis에 저장되었습니다.");
     }

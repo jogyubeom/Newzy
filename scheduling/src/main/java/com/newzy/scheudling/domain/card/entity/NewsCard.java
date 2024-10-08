@@ -1,6 +1,7 @@
 package com.newzy.scheudling.domain.card.entity;
 
 import com.newzy.scheudling.domain.news.entity.News;
+import com.newzy.scheudling.domain.user.entity.User;
 import com.newzy.scheudling.global.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;

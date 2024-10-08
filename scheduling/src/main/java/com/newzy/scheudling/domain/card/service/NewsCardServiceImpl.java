@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzy.scheudling.domain.card.dto.CardCountDTO;
 import com.newzy.scheudling.domain.card.repository.NewsCardRepositorySupport;
+import com.newzy.scheudling.domain.user.entity.User;
+import com.newzy.scheudling.domain.user.repository.UserRepository;
 import com.newzy.scheudling.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ public class NewsCardServiceImpl implements NewsCardService {
     private final RedisTemplate<String, String> redisTemplate;
     private final NewsCardRepositorySupport newsCardRepositorySupport;
     private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 변환용 ObjectMapper
+    private final UserRepository userRepository;
 
     @Override
     public void calculateBestCardCollector() {
@@ -35,6 +38,12 @@ public class NewsCardServiceImpl implements NewsCardService {
                 .orElseThrow(() -> new EntityNotFoundException("일치하는 유저가 없습니다."));
 
         log.info("{} - {} 카드왕 : {}", startDate, endDate, bestCollectorUser);
+
+        // 경험치 업데이트
+        User user = userRepository.findByUserId(bestCollectorUser.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 유저를 찾을 수 없습니다."));
+        user.setExp(user.getExp()+50);
+        userRepository.save(user);
 
         // 레디스에 저장
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
