@@ -28,10 +28,10 @@ export const useNewsCardStore = create(
     newsCards: [],
     totalPage: 1,
 
-    fetchNewsCard: async (page = 2) => {
+    fetchNewsCard: async (page = 1) => {
       try {
         const newsCardResponse = await baseAxios().get("/news/news-card-list", {
-          page: page, // 요청할 페이지 번호
+          params: { page: page },
         });
         // console.log("응답하니", newsCardResponse.data);
         set({

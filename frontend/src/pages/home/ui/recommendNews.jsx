@@ -46,7 +46,7 @@ export const RecommendNews = () => {
               className="min-w-[33.33%] p-4 hover:duration-150 flex flex-col"
             >
               {/* 뉴스 카드 디자인 */}
-              <div
+              <button
                 className="rounded-lg shadow-lg overflow-hidden flex flex-col h-full relative"
                 onClick={() => handleRecommendNews(news.newsId)}
               >
@@ -73,7 +73,7 @@ export const RecommendNews = () => {
                     <span className="text-white font-card">Newzy</span>
                   </div>
                 )}
-              </div>
+              </button>
             </div>
           ))}
         </div>
