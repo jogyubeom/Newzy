@@ -62,6 +62,9 @@ const Comment = ({
     }
   };
 
+  // 대댓글이 아닌 경우에만 대댓글 입력 버튼을 표시
+  const isReply = comment.parentCommentId !== null; // 대댓글 여부를 확인하는 방법. 'parentId'는 대댓글을 연결하는 필드로 가정.
+
   return (
     <div className="bg-white p-2 mb-2 rounded-md shadow-sm">
       <div className="flex items-center">
@@ -139,12 +142,15 @@ const Comment = ({
           minute: '2-digit',
         })}
       </div>
-      <button
-        onClick={() => setShowReplyInput(!showReplyInput)}
-        className="text-purple-600 underline mt-2"
-      >
-        {showReplyInput ? '대댓글 숨기기' : '대댓글 달기'}
-      </button>
+      {/* 대댓글 입력 버튼: 대댓글이 아닐 때만 표시 */}
+      {!isReply && (
+        <button
+          onClick={() => setShowReplyInput(!showReplyInput)}
+          className="text-purple-600 underline mt-2"
+        >
+          {showReplyInput ? '대댓글 숨기기' : '대댓글 달기'}
+        </button>
+      )}
 
       {showReplyInput && (
         <ReplyInput
