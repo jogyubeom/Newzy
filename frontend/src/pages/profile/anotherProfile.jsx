@@ -51,10 +51,10 @@ export const AnotherProfile = () => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
-  const { followers, followings, fetchFollowers, fetchFollowings, isFollowing, updateFollowStatus } = useFollowStore();
+  const { followers, followings, fetchFollowers, fetchFollowings, updateFollowStatus } = useFollowStore();
   const [isUserFollowing, setIsUserFollowing] = useState(false);
 
-  const { userInfo: loggedInUser, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex } = useAuthStore();  // ✅ 로그인된 사용자 정보
+  const { userInfo: loggedInUser, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex, isFollowing } = useAuthStore();  // ✅ 로그인된 사용자 정보
 
   const [profileData, setProfileData] = useState({
     name: '',
@@ -122,6 +122,7 @@ export const AnotherProfile = () => {
   // 팔로워/팔로잉 목록 가져오기 및 팔로우 여부 확인
   useEffect(() => {
     const checkIfFollowing = async () => {
+      await loggedInUserFollowings(loggedInUser.nickname);
       await fetchFollowings(nickname); // 타 유저 닉네임으로 팔로잉 목록을 가져옴
       setIsUserFollowing(isFollowing(nickname)); // 해당 유저를 팔로우하는지 여부 확인
     };
