@@ -139,7 +139,6 @@ export const AnotherProfile = () => {
       } else {
         await baseAxios().post(`/user/${nickname}/follower`);
       }
-
       updateFollowStatus(nickname, !isUserFollowing);
  
       setIsUserFollowing(!isUserFollowing); // 로컬 상태 업데이트
