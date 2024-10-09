@@ -315,7 +315,7 @@ export const AnotherProfile = () => {
                 Newzy
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {user.newzyCnt}
+                {user?.newzyCnt}
               </div>
             </div>
             <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
