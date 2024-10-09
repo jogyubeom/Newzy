@@ -1,6 +1,7 @@
 // userStore.js (zustand 스토어)
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import baseAxios from "shared/utils/baseAxios";
 
 const useAuthStore = create(
   persist(
