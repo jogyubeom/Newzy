@@ -68,6 +68,18 @@ const useHomeStore = create(
         console.error("Error fetching home data:", error);
       }
     },
+
+    // 퀴즈 정답 제출 요청 함수
+    postAnswer: async () => {
+      try {
+        const response = await baseAxios().post("/news/daily");
+        console.log("정답 제출 성공", response.data);
+        return response.data; // 성공한 데이터를 반환할 수 있음
+      } catch (error) {
+        console.error("정답 제출 실패", error);
+        throw error; // 실패 시 오류를 던져서 호출한 곳에서 처리할 수 있도록
+      }
+    },
   }))
 );
 

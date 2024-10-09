@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { useCardStore, useNewsDetailStore } from "./store/cardStore";
-
-import baseAxios from "shared/utils/baseAxios";
+import { useCardStore, useNewsCardStore } from "./store/cardStore";
 
 import {
   BsEmojiDizzyFill as Hard,
@@ -10,9 +8,9 @@ import {
 } from "react-icons/bs";
 
 const difficultyItems = [
-  { label: "쉬워요", icon: <Easy />, value: 0 },
+  { label: "어려워요", icon: <Hard />, value: 0 },
   { label: "보통이예요", icon: <Normal />, value: 1 },
-  { label: "어려워요", icon: <Hard />, value: 2 },
+  { label: "쉬워요", icon: <Easy />, value: 2 },
 ];
 
 export const CardSummary = ({ onAcquire, onClose, news }) => {
@@ -24,15 +22,16 @@ export const CardSummary = ({ onAcquire, onClose, news }) => {
     trimmedLength,
     setTrimmedLength,
   } = useCardStore();
+  const { postNewsCard } = useNewsCardStore();
   const [modalMessage, setModalMessage] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [userDifficulty, setUserDifficulty] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  const { newsId, category } = news;
+
   const minLength = 10; // 공백 제외 최소 글자 수
   const maxLength = 150; // 최대 글자 수
-
-  const { newsId, category, thumbnail, title } = news;
 
   // 텍스트 인풋 핸들러
   const handleInputChange = (e) => {
@@ -73,26 +72,7 @@ export const CardSummary = ({ onAcquire, onClose, news }) => {
 
       // console.log(newsId, userDifficulty, summaryText);
       // 카드 post 요청
-      try {
-        const response = await baseAxios().post(
-          `/news/${newsId}/collect-news-card`,
-          {
-            userId: 1, // 실제 userId로 교체 필요
-            newsId: newsId,
-            score: userDifficulty,
-            summary: summaryText,
-          }
-        );
-        console.log(response.data);
-      } catch (error) {
-        if (error.response) {
-          console.error("Error response:", error.response.data);
-        } else if (error.request) {
-          console.error("No response received:", error.request);
-        } else {
-          console.error("Error setting up request:", error.message);
-        }
-      }
+      postNewsCard(category, newsId, userDifficulty, summaryText);
 
       setTimeout(() => {
         onAcquire(summaryText, userDifficulty); // 업데이트된 값을 전달

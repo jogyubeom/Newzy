@@ -1,7 +1,17 @@
 // entities/card/cardBack.jsx
+import { useNavigate } from "react-router-dom";
+import { useNewsCardStore } from "./store/cardStore";
 
-export const CardBack = ({ summary, userDifficulty, news, onClose }) => {
-  const { category } = news;
+export const CardBack = ({ onClose }) => {
+  const navigate = useNavigate();
+  const { newsCard } = useNewsCardStore();
+  const category = newsCard.category;
+  // const userDifficulty = newsCard.score
+
+  const handleCardNews = (id) => {
+    onClose();
+    navigate(`/news/${id}`);
+  };
 
   // 카테고리에 따른 배경색 설정
   const categoryBgColor =
@@ -19,12 +29,12 @@ export const CardBack = ({ summary, userDifficulty, news, onClose }) => {
       ? "bg-green-700"
       : "bg-blue-700";
   // 난이도 숫자를 한글로 변환
-  const difficultyText =
-    userDifficulty === 0
-      ? "쉬어요"
-      : userDifficulty === 1
-      ? "보통이예요"
-      : "어려워요";
+  // const difficultyText =
+  //   userDifficulty === 0
+  //     ? "어려워요"
+  //     : userDifficulty === 1
+  //     ? "보통이예요"
+  // : "쉬어요";
 
   // console.log(category);
 
@@ -49,16 +59,16 @@ export const CardBack = ({ summary, userDifficulty, news, onClose }) => {
               획득날짜 :
             </div>
             <div className="text-white text-[14px] font-[ChosunilboNM]">
-              2024년 9월 30일
+              create_at
             </div>
           </div>
 
           <div className="flex justify-end items-center gap-x-[6px] w-full">
             <div className="text-white text-[14px] font-[ChosunilboNM]">
-              체감난이도 :
+              체감난이도 : score
             </div>
             <div className="text-white text-[14px] font-[ChosunilboNM]">
-              {difficultyText}
+              {/* {difficultyText} */}
             </div>
           </div>
         </div>
@@ -66,14 +76,14 @@ export const CardBack = ({ summary, userDifficulty, news, onClose }) => {
 
       <div className="px-9 pb-16 flex flex-grow justify-center items-center">
         <p className="text-white text-[16px] font-[ChosunilboNM] leading-[25px] tracking-wider">
-          {summary}
+          {newsCard?.summary}
         </p>
       </div>
 
       <div className="absolute px-8 w-full bottom-6 flex items-center">
         <button
           className={`w-full h-12 ${categoryBtColor} rounded-md  text-white text-lg font-semibold`}
-          onClick={() => onClose()}
+          onClick={() => handleCardNews(newsCard.newsId)}
         >
           기사 다시 보기
         </button>

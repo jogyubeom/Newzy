@@ -1,10 +1,12 @@
 // entities/card/cardGauge.jsx
 
 import { useEffect, useState } from "react";
+import { useNewsCardStore } from "./store/cardStore";
 import { CardSummary } from "./cardSummary";
 import { CardBack } from "./cardBack";
 
 export const CardGauge = ({ news }) => {
+  const { fetchNewsCard } = useNewsCardStore();
   const [scrollPercent, setScrollPercent] = useState(0);
   const [isComplete, setIsComplete] = useState(false); // 카드 읽은 상태
   const [isCardAcquired, setIsCardAcquired] = useState(false); // 카드 획득 여부 상태
@@ -12,27 +14,32 @@ export const CardGauge = ({ news }) => {
   const [userDifficulty, setUserDifficulty] = useState(0); // 난이도 평가 (0: 쉬움, 1: 보통, 2: 어려움)
   const [modalStep, setModalStep] = useState(0); // 모달 상태 (0: 닫힘, 1: 요약 모달, 2: 뒷면 모달)
 
+  console.log(news?.isCollected, isCardAcquired);
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
-      const scrollHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercentage = (scrollTop / scrollHeight) * 100;
+    if (news?.isCollected) {
+      setIsCardAcquired(true);
+    } else {
+      const handleScroll = () => {
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight =
+          document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercentage = (scrollTop / scrollHeight) * 100;
 
-      // 스크롤이 100%에 도달했을 때 고정
-      if (scrollPercentage >= 100) {
-        setScrollPercent(100);
-        setIsComplete(true);
-      } else if (!isComplete) {
-        // 스크롤이 완료되지 않았을 때만 업데이트
-        setScrollPercent(scrollPercentage);
-      }
-    };
+        // 스크롤이 100%에 도달했을 때 고정
+        if (scrollPercentage >= 90) {
+          setScrollPercent(100);
+          setIsComplete(true);
+        } else if (!isComplete) {
+          // 스크롤이 완료되지 않았을 때만 업데이트
+          setScrollPercent(scrollPercentage);
+        }
+      };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isComplete]); // isComplete가 바뀔 때만 다시 실행
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [isComplete, news?.isCollected]); // isComplete가 바뀔 때만 다시 실행
 
   const pingAnimation = `
   @keyframes ping-border {
@@ -47,20 +54,20 @@ export const CardGauge = ({ news }) => {
   }
 `;
 
-  const handleCardBack = (summaryText, userDifficulty) => {
-    setSummary(summaryText); // 요약 내용 저장
-    setUserDifficulty(userDifficulty);
+  const handleCardBack = () => {
+    fetchNewsCard(news.newsId);
     setIsCardAcquired(true);
     setModalStep(2); // 카드 뒷면 모달로 전환
-    console.log(summaryText);
   };
 
   const closeModal = () => {
     setModalStep(0); // 모달 닫기
   };
+  console.log(news);
 
   const handleCardClick = () => {
     if (isCardAcquired) {
+      fetchNewsCard(news.newsId);
       setModalStep(2); // 카드 뒷면 모달 열기
     } else if (isComplete) {
       setModalStep(1); // 요약 모달 열기
@@ -81,7 +88,7 @@ export const CardGauge = ({ news }) => {
       <style>{pingAnimation}</style>
 
       {/* 카드 획득 후 썸네일과 제목 표시 */}
-      {isCardAcquired | news?.isCollected ? (
+      {isCardAcquired ? (
         <div className="relative" onClick={handleCardClick}>
           <div
             className="absolute bottom-0 w-full p-2 rounded-lg text-white font-bold text-sm"
@@ -136,12 +143,7 @@ export const CardGauge = ({ news }) => {
                 news={news}
               />
             ) : (
-              <CardBack
-                summary={summary}
-                userDifficulty={userDifficulty}
-                news={news}
-                onClose={closeModal}
-              />
+              <CardBack onClose={closeModal} />
             )}
           </div>
         </div>

@@ -8,7 +8,7 @@ import file from "shared/images/file.png";
 import card from "shared/images/card.svg";
 import arrowBack from "shared/images/arrowBack.png";
 import arrowFront from "shared/images/arrowForward.png";
-
+import { CardBack } from "entities/card/cardBack";
 import "./cardListModal.css";
 
 const CardListModal = ({ onClose }) => {
@@ -137,6 +137,7 @@ const CardListModal = ({ onClose }) => {
           </footer>
         )}
       </div>
+      <CardBack />
     </div>
   );
 };
