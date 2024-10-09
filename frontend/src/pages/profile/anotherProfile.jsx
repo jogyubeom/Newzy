@@ -140,8 +140,6 @@ export const AnotherProfile = () => {
         await baseAxios().post(`/user/${nickname}/follower`);
       }
 
-      // 타 유저의 팔로워 수만 업데이트
-      await fetchFollowers(nickname);  // 타 유저의 팔로워 목록 다시 불러오기
       updateFollowStatus(nickname, !isUserFollowing);
  
       setIsUserFollowing(!isUserFollowing); // 로컬 상태 업데이트
