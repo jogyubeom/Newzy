@@ -13,16 +13,21 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
 
   if (!isOpen) return null;
 
-  const handleFollowToggle = (name, isFollowing) => {
-    // 서버로 팔로우/언팔로우 요청을 보낸 후 상태 업데이트
-    if (isFollowing) {
-      baseAxios().delete(`/user/${name}/follower`).then(() => {
+  const handleFollowToggle = async (name, isFollowing) => {
+    try {
+      if (isFollowing) {
+        await baseAxios().delete(`/user/${name}/follower`);
         updateFollowStatus(name, false);  // 팔로우 취소 시 상태 업데이트
-      });
-    } else {
-      baseAxios().post(`/user/${name}/follower`).then(() => {
+      } else {
+        await baseAxios().post(`/user/${name}/follower`);
         updateFollowStatus(name, true);  // 팔로우 시 상태 업데이트
-      });
+      }
+  
+      // ✅ 팔로워/팔로잉 수를 업데이트하기 위해 팔로워/팔로잉 목록 다시 불러오기
+      await fetchFollowers(userInfo.nickname);  // 팔로워 목록 다시 불러오기
+      await fetchFollowings(userInfo.nickname); // 팔로잉 목록 다시 불러오기
+    } catch (error) {
+      console.error("팔로우/언팔로우 중 오류 발생:", error);
     }
   };
 
