@@ -148,7 +148,7 @@ const Comment = ({
           onClick={() => setShowReplyInput(!showReplyInput)}
           className="text-purple-600 underline mt-2"
         >
-          {showReplyInput ? '대댓글 숨기기' : '대댓글 달기'}
+          {showReplyInput ? '입력창 숨기기' : '대댓글 달기'}
         </button>
       )}
 
