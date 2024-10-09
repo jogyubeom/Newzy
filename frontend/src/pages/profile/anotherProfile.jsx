@@ -51,10 +51,10 @@ export const AnotherProfile = () => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
-  const { followers, followings, fetchFollowers, fetchFollowings, isFollowing, updateFollowStatus } = useFollowStore();
+  const { followers, followings, fetchFollowers, fetchFollowings, updateFollowStatus } = useFollowStore();
   const [isUserFollowing, setIsUserFollowing] = useState(false);
 
-  const { userInfo: loggedInUser, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex } = useAuthStore();  // ✅ 로그인된 사용자 정보
+  const { userInfo: loggedInUser, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex, isFollowing } = useAuthStore();  // ✅ 로그인된 사용자 정보
 
   const [profileData, setProfileData] = useState({
     name: '',
@@ -122,6 +122,7 @@ export const AnotherProfile = () => {
   // 팔로워/팔로잉 목록 가져오기 및 팔로우 여부 확인
   useEffect(() => {
     const checkIfFollowing = async () => {
+      await loggedInUserFollowings(loggedInUser.nickname);
       await fetchFollowings(nickname); // 타 유저 닉네임으로 팔로잉 목록을 가져옴
       setIsUserFollowing(isFollowing(nickname)); // 해당 유저를 팔로우하는지 여부 확인
     };
@@ -138,7 +139,11 @@ export const AnotherProfile = () => {
       } else {
         await baseAxios().post(`/user/${nickname}/follower`);
       }
+
+      // 타 유저의 팔로워 수만 업데이트
+      await fetchFollowers(nickname);  // 타 유저의 팔로워 목록 다시 불러오기
       updateFollowStatus(nickname, !isUserFollowing);
+ 
       setIsUserFollowing(!isUserFollowing); // 로컬 상태 업데이트
     } catch (error) {
       console.error("팔로우/언팔로우 처리 중 에러 발생:", error);
@@ -196,7 +201,11 @@ export const AnotherProfile = () => {
   const progress = (expRatio / 100) * circumference; // 현재 경험치에 해당하는 원형 길이
 
   // 모달 열기 및 닫기 함수
-  const openModal = () => async () => {
+  const openModal = async () => {
+    
+    await fetchFollowings(nickname)
+    await fetchFollowers(nickname)
+
     // ✅ 로그인한 현재 사용자의 팔로워/팔로잉 목록도 다시 불러오기
     await loggedInUserFollowers(loggedInUser.nickname);  // 팔로워 목록 다시 불러오기
     await loggedInUserFollowings(loggedInUser.nickname); // 팔로잉 목록 다시 불러오기
@@ -335,7 +344,7 @@ export const AnotherProfile = () => {
               className={`w-full h-[73px] px-4 py-2 rounded-[10px] flex items-center justify-center text-white font-[Open Sans] text-[32px] font-semibold transition-colors duration-300
                 ${isUserFollowing ? 'bg-red-600 hover:bg-red-700' : 'bg-[#3578FF] hover:bg-[#2a61cc]'}`}
             >
-              {isFollowing ? 'Unfollow' : 'Follow'}
+              {isUserFollowing ? 'Unfollow' : 'Follow'}
             </button>
           </div>
         </div>
