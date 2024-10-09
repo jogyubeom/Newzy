@@ -124,7 +124,12 @@ const Comment = ({
           <p>{comment.newzyComment}</p>
         )}
       </div>
-      <div className="text-sm text-gray-500">{editedComment.length}/500</div>
+      {/* 글자 수 표시: 편집 모드일 때만 보여줌 */}
+      {isEditing && (
+        <div className="text-sm text-gray-500">
+          {editedComment.length}/500
+        </div>
+      )}
       <div className="text-gray-500 text-sm">
         {new Date(comment.createdAt).toLocaleString('ko-KR', {
           year: 'numeric',
