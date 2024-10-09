@@ -5,11 +5,10 @@ import baseAxios from 'shared/utils/baseAxios';
 const Comment = ({
   comment,
   userInfo,
-  handleCommentEdit,
-  handleCommentDelete,
   replyText,
   setReplyText,
   handleReplySubmit,
+  fetchComments, // 추가
 }) => {
   const [isEditing, setIsEditing] = useState(false); // 수정 모드 상태
   const [editedComment, setEditedComment] = useState(comment.newzyComment); // 수정할 댓글 내용 상태
@@ -27,9 +26,19 @@ const Comment = ({
         newzyComment: editedComment,
       });
       setIsEditing(false); // 수정 모드 종료
-      handleCommentEdit(comment.newzyCommentId, editedComment); // 변경된 댓글 반영
+      await fetchComments(); // 수정 후 즉시 댓글 목록 새로 불러오기
     } catch (error) {
       console.error('댓글 수정 오류:', error);
+    }
+  };
+
+  // 댓글 삭제 함수
+  const handleDelete = async () => {
+    try {
+      await baseAxios().delete(`/newzy/${comment.newzyId}/comments/${comment.newzyCommentId}`);
+      await fetchComments(); // 삭제 후 즉시 댓글 목록 새로 불러오기
+    } catch (error) {
+      console.error('댓글 삭제 오류:', error);
     }
   };
 
@@ -72,7 +81,7 @@ const Comment = ({
                   수정
                 </button>
                 <button
-                  onClick={() => handleCommentDelete(comment.newzyCommentId)} // 댓글 삭제
+                  onClick={handleDelete} // 댓글 삭제
                   className="text-red-600 ml-2"
                 >
                   삭제
@@ -84,7 +93,6 @@ const Comment = ({
       </div>
       <div>
         {isEditing ? (
-          // 수정 모드일 때는 input으로 댓글 내용 표시
           <input
             type="text"
             value={editedComment}
@@ -92,7 +100,6 @@ const Comment = ({
             className="border border-gray-300 rounded-md p-1 w-full"
           />
         ) : (
-          // 수정 모드가 아닐 때는 일반 텍스트로 댓글 내용 표시
           <p>{comment.newzyComment}</p>
         )}
       </div>

@@ -51,24 +51,6 @@ const CommentContent = ({ newzyId }) => {
     }
   };
 
-  const handleCommentDelete = async (commentId) => {
-    try {
-      await baseAxios().delete(`/newzy/${newzyId}/comments/${commentId}`);
-      await fetchComments();
-    } catch (error) {
-      console.error('댓글 삭제 오류:', error);
-    }
-  };
-
-  const handleCommentEdit = async (commentId, updatedText) => {
-    try {
-      await baseAxios().put(`/newzy/${newzyId}/comments/${commentId}`, { newzyComment: updatedText });
-      await fetchComments();
-    } catch (error) {
-      console.error('댓글 수정 오류:', error);
-    }
-  };
-
   const groupComments = (comments) => {
     const grouped = comments.reduce((acc, comment) => {
       if (comment.parentCommentId === null) {
@@ -100,11 +82,10 @@ const CommentContent = ({ newzyId }) => {
       <CommentList
         groupedComments={groupedComments}
         userInfo={userInfo}
-        handleCommentEdit={handleCommentEdit}
-        handleCommentDelete={handleCommentDelete}
         replyText={replyText}
         setReplyText={setReplyText}
         handleReplySubmit={handleCommentSubmit}
+        fetchComments={fetchComments}
       />
     </div>
   );

@@ -4,8 +4,7 @@ import Comment from './comment';
 const CommentList = ({
   groupedComments,
   userInfo,
-  handleCommentEdit,
-  handleCommentDelete,
+  fetchComments,
   replyText,
   setReplyText,
   handleReplySubmit,
@@ -18,8 +17,7 @@ const CommentList = ({
             <Comment
               comment={comment}
               userInfo={userInfo}
-              handleCommentEdit={handleCommentEdit}
-              handleCommentDelete={handleCommentDelete}
+              fetchComments={fetchComments}
               replyText={replyText}
               setReplyText={setReplyText}
               handleReplySubmit={handleReplySubmit}
@@ -31,8 +29,7 @@ const CommentList = ({
                     key={reply.newzyCommentId}
                     comment={reply}
                     userInfo={userInfo}
-                    handleCommentEdit={handleCommentEdit}
-                    handleCommentDelete={handleCommentDelete}
+                    fetchComments={fetchComments}
                     replyText={replyText}
                     setReplyText={setReplyText}
                     handleReplySubmit={handleReplySubmit}
