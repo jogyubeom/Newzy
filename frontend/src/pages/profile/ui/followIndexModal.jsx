@@ -63,7 +63,7 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
           <FollowListItem 
             name={following.toUserNickname} 
             isFollowing={loggedInUserFollowingsIndex.some(
-              (following) => following.toUserNickname === follower.fromUserNickname
+              (following) => following.toUserNickname === following.toUserNickname
             )}  // 팔로우 여부 확인
             onToggleFollow={handleFollowToggle}  // 팔로우/언팔로우 상태 변경 함수 전달
           />
