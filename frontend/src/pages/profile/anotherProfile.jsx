@@ -54,7 +54,7 @@ export const AnotherProfile = () => {
   const { followers, followings, fetchFollowers, fetchFollowings, isFollowing, updateFollowStatus } = useFollowStore();
   const [isUserFollowing, setIsUserFollowing] = useState(false);
 
-  const { userInfo } = useAuthStore();
+  const { userInfo: loggedInUser, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex } = useAuthStore();  // ✅ 로그인된 사용자 정보
 
   const [profileData, setProfileData] = useState({
     name: '',
@@ -196,7 +196,14 @@ export const AnotherProfile = () => {
   const progress = (expRatio / 100) * circumference; // 현재 경험치에 해당하는 원형 길이
 
   // 모달 열기 및 닫기 함수
-  const openModal = () => setModalOpen(true);
+  const openModal = () => async () => {
+    if (nicknameData) {
+      // ✅ 로그인한 현재 사용자의 팔로워/팔로잉 목록도 다시 불러오기
+      await loggedInUserFollowers(loggedInUser.nickname);  // 팔로워 목록 다시 불러오기
+      await loggedInUserFollowings(loggedInUser.nickname); // 팔로잉 목록 다시 불러오기
+    }
+    setModalOpen(true);
+  };
   const closeModal = () => setModalOpen(false);
 
   // 메뉴 클릭 시 경로를 변경
