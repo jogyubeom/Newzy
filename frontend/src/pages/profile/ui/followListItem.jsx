@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import baseAxios from "shared/utils/baseAxios";
 import useAuthStore from "shared/store/userStore"; 
+import { useFollowStore } from "../store/useFollowStore";
 
 const FollowListItem = ({ name, isFollowing: initialFollowing }) => {
   const [profile, setProfile] = useState(null); // 프로필 정보
   const [isFollowing, setIsFollowing] = useState(initialFollowing); // 팔로우 상태
   const defaultProfileImage = "/shared/images/user.png";  // 기본 프로필 이미지
+  const { updateFollowStatus } = useFollowStore();
   const nav = useNavigate()
 
   // 현재 사용자 정보 가져오기
@@ -39,6 +41,8 @@ const FollowListItem = ({ name, isFollowing: initialFollowing }) => {
       } else {
         await baseAxios().post(`/user/${name}/follower`);
       }
+
+      updateFollowStatus(name, !isFollowing);
       // 팔로우 상태를 로컬에서 토글
       setIsFollowing(!isFollowing);
     } catch (error) {
