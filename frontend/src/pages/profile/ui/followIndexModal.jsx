@@ -5,11 +5,13 @@ import { useState, useEffect } from "react";
 import FollowListItem from "./followListItem";
 import baseAxios from "shared/utils/baseAxios";
 import { useFollowStore } from "../store/useFollowStore";
+import useAuthStore from "shared/store/userStore";
 
 const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
 
   const [selectedMenu, setSelectedMenu] = useState(0);  // 메뉴 상태
-  const { followers, followings, updateFollowStatus } = useFollowStore();
+  const { followers, followings, updateFollowStatus, fetchFollowers, fetchFollowings } = useFollowStore();
+  const { userInfo: loggedInUser, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex } = useAuthStore();  // ✅ 로그인된 사용자 정보
 
   if (!isOpen) return null;
 
@@ -26,6 +28,11 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
       // ✅ 팔로워/팔로잉 수를 업데이트하기 위해 팔로워/팔로잉 목록 다시 불러오기
       await fetchFollowers(userInfo.nickname);  // 팔로워 목록 다시 불러오기
       await fetchFollowings(userInfo.nickname); // 팔로잉 목록 다시 불러오기
+
+      // ✅ 로그인한 현재 사용자의 팔로워/팔로잉 목록도 다시 불러오기
+      await loggedInUserFollowers(loggedInUser.nickname);  // 팔로워 목록 다시 불러오기
+      await loggedInUserFollowings(loggedInUser.nickname); // 팔로잉 목록 다시 불러오기
+
     } catch (error) {
       console.error("팔로우/언팔로우 중 오류 발생:", error);
     }
@@ -42,7 +49,7 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
         <div key={follower.fromUserNickname} className="relative py-1 px-5 flex flex-col">
           <FollowListItem 
             name={follower.fromUserNickname} 
-            isFollowing={followings.some(
+            isFollowing={loggedInUserFollowingsIndex.some(
               (following) => following.toUserNickname === follower.fromUserNickname
             )}  // 팔로우 여부 확인
             onToggleFollow={handleFollowToggle}  // 팔로우/언팔로우 상태 변경 함수 전달
@@ -55,7 +62,9 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
         <div key={following.toUserNickname} className="relative py-1 px-5 flex flex-col">
           <FollowListItem 
             name={following.toUserNickname} 
-            isFollowing={true}  // 팔로잉 목록에서는 항상 팔로우 상태
+            isFollowing={loggedInUserFollowingsIndex.some(
+              (following) => following.toUserNickname === follower.fromUserNickname
+            )}  // 팔로우 여부 확인
             onToggleFollow={handleFollowToggle}  // 팔로우/언팔로우 상태 변경 함수 전달
           />
         </div>

@@ -122,7 +122,7 @@ export const AnotherProfile = () => {
   // 팔로워/팔로잉 목록 가져오기 및 팔로우 여부 확인
   useEffect(() => {
     const checkIfFollowing = async () => {
-      await fetchFollowings(nickname); // 자신의 닉네임으로 팔로잉 목록을 가져옴
+      await fetchFollowings(nickname); // 타 유저 닉네임으로 팔로잉 목록을 가져옴
       setIsUserFollowing(isFollowing(nickname)); // 해당 유저를 팔로우하는지 여부 확인
     };
 
