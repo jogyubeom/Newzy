@@ -41,9 +41,9 @@ export const useFollowStore = create((set, get) => ({
       // 팔로우 취소 (언팔로우)
       if (!isFollowing) {
         return {
-          followings: state.followings.filter(
-            (following) => following.toUserNickname !== name
-          ),
+          // followings: state.followings.filter(
+          //   (following) => following.toUserNickname !== name
+          // ),
           followers: state.followers.filter(
             (follower) => follower.fromUserNickname !== name
           ),
@@ -51,7 +51,7 @@ export const useFollowStore = create((set, get) => ({
       }
       // 팔로우 추가
       return {
-        followings: [...state.followings, { toUserNickname: name }],
+        // followings: [...state.followings, { toUserNickname: name }],
         followers: [...state.followers, { fromUserNickname: name }],
       };
     });
