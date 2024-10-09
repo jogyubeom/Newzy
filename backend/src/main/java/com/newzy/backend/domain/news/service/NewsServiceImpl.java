@@ -139,7 +139,7 @@ public class NewsServiceImpl implements NewsService {
 
 
     @Override
-    public NewsCardListGetResponseDTO getCardInfo(Long userId, Long newsId) {
+    public NewsCardInfoGetResponseDTO getCardInfo(Long userId, Long newsId) {
 
         return newsCardRepositorySupport.findNewsCardInfo(userId, newsId);
     }
