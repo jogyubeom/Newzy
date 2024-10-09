@@ -62,8 +62,8 @@ export const NewzyEdit = () => {
 
     // 제목의 글자 수 제한 (100자)
     if (name === 'title' && value.length > 100) {
+      setFormData((prevData) => ({ ...prevData, title: value.slice(0, 100) }));
       alert('제목은 최대 100자까지 입력할 수 있습니다.');
-      setFormData((prevData) => ({ ...prevData, title: title.slice(0, 100) }));
       return;
     }
 
@@ -135,8 +135,8 @@ export const NewzyEdit = () => {
               if (content.length <= 3000) {
                 setFormData((prevData) => ({ ...prevData, content }));
               } else {
-                alert('콘텐츠는 최대 3000자까지 입력할 수 있습니다.');
                 setFormData((prevData) => ({ ...prevData, content: content.slice(0, 3000) }));
+                alert('콘텐츠는 최대 3000자까지 입력할 수 있습니다.');
               }
             }}
           />

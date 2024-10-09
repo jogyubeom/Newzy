@@ -9,8 +9,14 @@ const CommentInput = ({ newCommentText, setNewCommentText, handleCommentSubmit }
 
   // 글자수 제한 500자
   const handleInputChange = (e) => {
-    if (e.target.value.length <= 500) {
-      setNewCommentText(e.target.value);
+    const { value } = e.target;
+
+    // 500자를 초과하는 경우 경고 표시 및 잘라내기
+    if (value.length > 500) {
+      setNewCommentText(value.slice(0, 500)); // 500자까지만 유지
+      alert('댓글은 최대 500자까지 입력할 수 있습니다.');
+    } else {
+      setNewCommentText(value);
     }
   };
 
@@ -21,7 +27,7 @@ const CommentInput = ({ newCommentText, setNewCommentText, handleCommentSubmit }
         value={newCommentText}
         onChange={handleInputChange}
         onKeyPress={handleKeyPress}
-        placeholder="새 댓글을 입력하세요... (최대 500자)"
+        placeholder="새 댓글을 입력하세요..."
         className="border border-gray-300 rounded-md p-1 mr-2"
       />
       <button
