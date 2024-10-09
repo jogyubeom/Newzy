@@ -2,8 +2,8 @@ import { useState } from "react";
 import useHomeStore from "../store/useHomeStore";
 
 export const TodayQuizModal = ({ isOpen, onClose }) => {
-  const { todayNews } = useHomeStore();
-
+  const { todayNews, postAnswer } = useHomeStore();
+  console.log(todayNews?.isSolved);
   const [selectedOption, setSelectedOption] = useState(null);
   const [disabledOptions, setDisabledOptions] = useState([]);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -15,6 +15,7 @@ export const TodayQuizModal = ({ isOpen, onClose }) => {
     if (optionIndex === parseInt(todayNews.answer)) {
       setFeedback("정답입니다!");
       setIsAnswered(true); // 정답을 맞추면 모든 버튼 비활성화
+      postAnswer();
     } else {
       setFeedback("오답입니다. 다시 시도해보세요.");
       setDisabledOptions([...disabledOptions, optionIndex]); // 틀린 버튼만 비활성화

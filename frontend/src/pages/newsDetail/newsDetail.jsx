@@ -6,10 +6,10 @@ import Content from "../../shared/postDetail/content";
 import UtilityButtons from "./ui/utilityButtons";
 import Sidebar from "../../shared/postDetail/sidebar";
 import { CardGauge } from "entities/card/cardGauge";
-// import { useNewsDetailStore } from "entities/card/store/cardStore";
+import { useCardStore } from "entities/card/store/cardStore";
 
 export const NewsDetail = () => {
-  // const { setNewsData } = useNewsDetailStore();
+  const { setSummaryText, setInputLength, setTrimmedLength } = useCardStore();
   const [activeSidebar, setActiveSidebar] = useState(null);
   const [news, setNews] = useState(null);
   const { id } = useParams();
@@ -17,6 +17,12 @@ export const NewsDetail = () => {
   const handleSidebarToggle = (type) => {
     setActiveSidebar((prev) => (prev === type ? null : type));
   };
+
+  useEffect(() => {
+    setSummaryText("");
+    setInputLength(0);
+    setTrimmedLength(0);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);

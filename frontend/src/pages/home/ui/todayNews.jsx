@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuthStore from "shared/store/userStore";
 import useHomeStore from "../store/useHomeStore";
+import useAuthStore from "shared/store/userStore";
 import { SocialLoginModal } from "widgets/login/socialLoginModal";
 import { TodayQuizModal } from "./todayQuiz";
 import { IoIosLock as Lock } from "react-icons/io?react";
@@ -50,7 +50,7 @@ export const TodayNews = () => {
               </div>
             </div>
             <div className="text-center text-purple-200 opacity-80 text-[12px]">
-              <p>{userInfo.nickname}님을 위한 추천 뉴스 제발 읽어주세요</p>
+              <p>{userInfo?.nickname}님을 위한 추천 뉴스 제발 읽어주세요</p>
             </div>
           </button>
 

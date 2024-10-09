@@ -49,7 +49,7 @@ const gradeDescriptions = {
 };
 
 export const Profile = () => {
-  const { fetchNewsCard } = useNewsCardStore();
+  const { fetchNewsCardList } = useNewsCardStore();
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation(); // 현재 경로를 가져오기 위해 useLocation 훅 사용
 
@@ -60,7 +60,8 @@ export const Profile = () => {
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
   const [nicknameData, setNicknameData] = useState(null); // 팔로우 모달창에 보낼 데이터
-  const { followers, followings, fetchFollowers, fetchFollowings } = useFollowStore();
+  const { followers, followings, fetchFollowers, fetchFollowings } =
+    useFollowStore();
 
   const [status, setStatus] = useState({
     newzyCnt: 0,
@@ -132,7 +133,6 @@ export const Profile = () => {
 
         // 유저 정보를 Zustand 스토어에 저장
         setUserInfo(userData);
-
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류 발생:", error);
       }
@@ -144,11 +144,10 @@ export const Profile = () => {
   // 팔로워/팔로잉 목록 불러오기
   useEffect(() => {
     if (user && user.nickname) {
-      fetchFollowers(user.nickname);  // 팔로워 목록 불러오기
-      fetchFollowings(user.nickname);  // 팔로잉 목록 불러오기
+      fetchFollowers(user.nickname); // 팔로워 목록 불러오기
+      fetchFollowings(user.nickname); // 팔로잉 목록 불러오기
     }
   }, [user]);
-
 
   // 현재 경로에 따라 메뉴를 선택 상태로 설정
   useEffect(() => {
@@ -175,19 +174,19 @@ export const Profile = () => {
           const res = await baseAxios().get(`/user/profile/${user.nickname}`); // 닉네임을 URL에 포함해 요청
           const Data = res.data;
 
-        setNicknameData(Data)
-        setStatus({
-          newzyCnt: Data.newzyCnt,
-          followerCnt: Data.followerCnt,
-          followingCnt: Data.followingCnt,
-        });
+          setNicknameData(Data);
+          setStatus({
+            newzyCnt: Data.newzyCnt,
+            followerCnt: Data.followerCnt,
+            followingCnt: Data.followingCnt,
+          });
         }
       } catch (error) {
         console.error("유저 스테이터스 정보를 불러오는 중 오류 발생:", error);
       }
     };
     if (user) {
-      fetchStatusData(); 
+      fetchStatusData();
     }
   }, [user]);
 
@@ -233,8 +232,8 @@ export const Profile = () => {
     const formData = new FormData();
 
     // 이미지가 있는 경우: FormData에 이미지 추가
-    
-    if (newImage ==='blank') {
+
+    if (newImage === "blank") {
       formData.append("profile", ""); // 이미지 삭제했을 경우 빈 값으로 전송하여 처리
     } else {
       formData.append("profile", newImage); // 이미지 파일 추가
@@ -272,7 +271,7 @@ export const Profile = () => {
   // 이미지 제거 핸들러
   const handleImageRemove = () => {
     setProfileData({ ...profileData, img: null });
-    setNewImage('blank'); // 업로드할 이미지도 초기화
+    setNewImage("blank"); // 업로드할 이미지도 초기화
   };
 
   // exp 값을 기준으로 grade를 구하는 함수
@@ -360,7 +359,7 @@ export const Profile = () => {
 
   // CardListModal 열기
   const openCardListModal = () => {
-    fetchNewsCard();
+    fetchNewsCardList();
     setIsCardListModalOpen(true);
   };
 
@@ -587,7 +586,11 @@ export const Profile = () => {
 
       {renderContent()}
 
-      <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} userInfo={nicknameData} />
+      <FollowIndexModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        userInfo={nicknameData}
+      />
 
       {/* 하단에 고정된 버튼 추가 */}
       <button

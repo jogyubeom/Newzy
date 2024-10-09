@@ -15,31 +15,63 @@ export const useCardStore = create(
   }))
 );
 
-// NewsDetailStore에 devtools 적용
-export const useNewsDetailStore = create(
-  devtools((set) => ({
-    newsData: null,
-    setNewsData: (data) => set(() => ({ newsData: data })),
-  }))
-);
-
 export const useNewsCardStore = create(
   devtools((set) => ({
     newsCards: [],
     totalPage: 1,
+    newsCard: {},
 
-    fetchNewsCard: async (page = 1) => {
+    fetchNewsCardList: async (page = 1) => {
       try {
-        const newsCardResponse = await baseAxios().get("/news/news-card-list", {
-          params: { page: page },
-        });
+        const newsCardListResponse = await baseAxios().get(
+          "/news/news-card-list",
+          {
+            params: { page: page },
+          }
+        );
         // console.log("응답하니", newsCardResponse.data);
         set({
-          newsCards: newsCardResponse.data.newsCardList,
-          totalPage: newsCardResponse.data.totalPage,
+          newsCards: newsCardListResponse.data.newsCardList,
+          totalPage: newsCardListResponse.data.totalPage,
         });
       } catch (error) {
         console.error("카드 리스트 받아오기 에러 당첨", error);
+      }
+    },
+
+    fetchNewsCard: async (newsId) => {
+      try {
+        const newsCardResponse = await baseAxios().get(
+          `/news/news-card-list/${newsId}`
+        );
+
+        set({ newsCard: newsCardResponse.data });
+        // console.log("뉴스 카드 조회 잘 됌");
+      } catch (error) {
+        console.error("카드 조회 실 패 !", error);
+      }
+    },
+
+    postNewsCard: async (category, newsId, userDifficulty, summaryText) => {
+      try {
+        const response = await baseAxios().post(
+          `/news/${newsId}/collect-news-card`,
+          {
+            category: category,
+            newsId: newsId,
+            score: userDifficulty,
+            summary: summaryText,
+          }
+        );
+        console.log(response.data);
+      } catch (error) {
+        if (error.response) {
+          console.error("Error response:", error.response.data);
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+        } else {
+          console.error("Error setting up request:", error.message);
+        }
       }
     },
   }))
