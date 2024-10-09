@@ -60,14 +60,10 @@ export const Profile = () => {
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
   const [nicknameData, setNicknameData] = useState(null); // 팔로우 모달창에 보낼 데이터
-  const { followers, followings, fetchFollowers, fetchFollowings } =
-    useFollowStore();
+  const { followers, followings, fetchFollowers, fetchFollowings } = useFollowStore();
 
-  const [status, setStatus] = useState({
-    newzyCnt: 0,
-    followerCnt: 0,
-    followingCnt: 0,
-  }); // 유저 데이터 상태
+  // Zustand 스토어에서 유저 정보와 설정 함수 가져오기
+  const { setUserInfo, userInfo: loggedInUser, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex, followers: loggedInUserFollowersIndex } = useAuthStore();  // ✅ 로그인된 사용자 정보
 
   // 편집 모드 관리
   const [isEditing, setIsEditing] = useState(false);
@@ -82,9 +78,6 @@ export const Profile = () => {
   const [newImage, setNewImage] = useState(null); // 새로 업로드할 이미지 상태
 
   const [paddingX, setPaddingX] = useState(32); // 기본 패딩
-
-  // Zustand 스토어에서 유저 정보와 설정 함수 가져오기
-  const { setUserInfo, userInfo: loggedInUser, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex } = useAuthStore();  // ✅ 로그인된 사용자 정보
 
   // 패딩 업데이트 로직을 추가합니다.
   useEffect(() => {
@@ -144,8 +137,8 @@ export const Profile = () => {
   // 팔로워/팔로잉 목록 불러오기
   useEffect(() => {
     if (user && user.nickname) {
-      fetchFollowers(user.nickname); // 팔로워 목록 불러오기
-      fetchFollowings(user.nickname); // 팔로잉 목록 불러오기
+      loggedInUserFollowers(user.nickname); // 팔로워 목록 불러오기
+      loggedInUserFollowings(user.nickname); // 팔로잉 목록 불러오기
     }
   }, [user]);
 
@@ -175,11 +168,6 @@ export const Profile = () => {
           const Data = res.data;
 
           setNicknameData(Data);
-          setStatus({
-            newzyCnt: Data.newzyCnt,
-            followerCnt: Data.followerCnt,
-            followingCnt: Data.followingCnt,
-          });
         }
       } catch (error) {
         console.error("유저 스테이터스 정보를 불러오는 중 오류 발생:", error);
@@ -532,7 +520,7 @@ export const Profile = () => {
                 Newzy
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {status.newzyCnt}
+                {nicknameData.newzyCnt}
               </div>
             </div>
             <div
@@ -543,7 +531,7 @@ export const Profile = () => {
                 Followers
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {followers.length}
+                {loggedInUserFollowersIndex.length}
               </div>
             </div>
             <div
@@ -554,7 +542,7 @@ export const Profile = () => {
                 Followings
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {followings.length}
+                {loggedInUserFollowingsIndex.length}
               </div>
             </div>
           </div>

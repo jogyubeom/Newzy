@@ -5,15 +5,14 @@ import baseAxios from "shared/utils/baseAxios";
 import useAuthStore from "shared/store/userStore"; 
 import { useFollowStore } from "../store/useFollowStore";
 
-const FollowListItem = ({ name, isFollowing: initialFollowing }) => {
+const FollowListItem = ({ PageOwner, name, isFollowing: initialFollowing }) => {
   const [profile, setProfile] = useState(null); // 프로필 정보
   const [isFollowing, setIsFollowing] = useState(initialFollowing); // 팔로우 상태
   const defaultProfileImage = "/shared/images/user.png";  // 기본 프로필 이미지
-  const { updateFollowStatus } = useFollowStore();
   const nav = useNavigate()
-
-  // 현재 사용자 정보 가져오기
-  const { userInfo } = useAuthStore(); 
+  
+  const { followers, followings, updateFollowStatus, fetchFollowers, fetchFollowings } = useFollowStore();
+  const { userInfo, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex } = useAuthStore();  // ✅ 로그인된 사용자 정보
 
   // 유저 프로필 조회
   const fetchUserProfile = async () => {
@@ -42,9 +41,14 @@ const FollowListItem = ({ name, isFollowing: initialFollowing }) => {
         await baseAxios().post(`/user/${name}/follower`);
       }
 
-      updateFollowStatus(name, !isFollowing);
-      // 팔로우 상태를 로컬에서 토글
-      setIsFollowing(!isFollowing);
+    // ✅ 팔로워/팔로잉 수를 업데이트하기 위해 팔로워/팔로잉 목록 다시 불러오기
+    await fetchFollowers(PageOwner.nickname);  // 팔로워 목록 다시 불러오기
+    await fetchFollowings(PageOwner.nickname); // 팔로잉 목록 다시 불러오기
+
+    // ✅ 로그인한 현재 사용자의 팔로워/팔로잉 목록도 다시 불러오기
+    await loggedInUserFollowers(userInfo.nickname);  // 팔로워 목록 다시 불러오기
+    await loggedInUserFollowings(userInfo.nickname); // 팔로잉 목록 다시 불러오기
+
     } catch (error) {
       console.error("팔로우/언팔로우 처리 중 에러 발생:", error);
     }

@@ -15,29 +15,6 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
 
   if (!isOpen) return null;
 
-  const handleFollowToggle = async (name, isFollowing) => {
-    try {
-      if (isFollowing) {
-        await baseAxios().delete(`/user/${name}/follower`);
-        updateFollowStatus(name, false);  // 팔로우 취소 시 상태 업데이트
-      } else {
-        await baseAxios().post(`/user/${name}/follower`);
-        updateFollowStatus(name, true);  // 팔로우 시 상태 업데이트
-      }
-  
-      // ✅ 팔로워/팔로잉 수를 업데이트하기 위해 팔로워/팔로잉 목록 다시 불러오기
-      await fetchFollowers(userInfo.nickname);  // 팔로워 목록 다시 불러오기
-      await fetchFollowings(userInfo.nickname); // 팔로잉 목록 다시 불러오기
-
-      // ✅ 로그인한 현재 사용자의 팔로워/팔로잉 목록도 다시 불러오기
-      await loggedInUserFollowers(loggedInUser.nickname);  // 팔로워 목록 다시 불러오기
-      await loggedInUserFollowings(loggedInUser.nickname); // 팔로잉 목록 다시 불러오기
-
-    } catch (error) {
-      console.error("팔로우/언팔로우 중 오류 발생:", error);
-    }
-  };
-
   // 메뉴 배열 생성 (팔로워와 팔로잉 목록을 선택할 수 있도록)
   const menus = ["팔로워", "팔로잉"];
   console.log(followers, '팔로워 목록') 
@@ -49,12 +26,12 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
       // 팔로워 목록 렌더링
       return followers.map((follower) => (
         <div key={follower.fromUserNickname} className="relative py-1 px-5 flex flex-col">
-          <FollowListItem 
+          <FollowListItem
+            PageOwner={userInfo} 
             name={follower.fromUserNickname} 
             isFollowing={loggedInUserFollowingsIndex.some(
               (following) => following.toUserNickname === follower.fromUserNickname
             )}  // 팔로우 여부 확인
-            onToggleFollow={handleFollowToggle}  // 팔로우/언팔로우 상태 변경 함수 전달
           />
         </div>
       ));
@@ -62,12 +39,12 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
       // 팔로잉 목록 렌더링
       return followings.map((following) => (
         <div key={following.toUserNickname} className="relative py-1 px-5 flex flex-col">
-          <FollowListItem 
+          <FollowListItem
+            PageOwner={userInfo} 
             name={following.toUserNickname} 
             isFollowing={loggedInUserFollowingsIndex.some(
-              (following) => following.toUserNickname === following.toUserNickname
+              (following_2) => following_2.toUserNickname === following.toUserNickname
             )}  // 팔로우 여부 확인
-            onToggleFollow={handleFollowToggle}  // 팔로우/언팔로우 상태 변경 함수 전달
           />
         </div>
       ));
