@@ -83,7 +83,7 @@ export const Profile = () => {
   const [paddingX, setPaddingX] = useState(32); // 기본 패딩
 
   // Zustand 스토어에서 유저 정보와 설정 함수 가져오기
-  const { setUserInfo } = useAuthStore();
+  const { setUserInfo, userInfo: loggedInUser, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex } = useAuthStore();  // ✅ 로그인된 사용자 정보
 
   // 패딩 업데이트 로직을 추가합니다.
   useEffect(() => {
@@ -309,6 +309,10 @@ export const Profile = () => {
     if (nicknameData) {
       await fetchFollowers(nicknameData.nickname); // 팔로워 목록 가져오기
       await fetchFollowings(nicknameData.nickname); // 팔로잉 목록 가져오기
+
+      // ✅ 로그인한 현재 사용자의 팔로워/팔로잉 목록도 다시 불러오기
+      await loggedInUserFollowers(loggedInUser.nickname);  // 팔로워 목록 다시 불러오기
+      await loggedInUserFollowings(loggedInUser.nickname); // 팔로잉 목록 다시 불러오기
     }
     setModalOpen(true);
   };
