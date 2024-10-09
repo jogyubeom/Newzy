@@ -139,7 +139,11 @@ export const AnotherProfile = () => {
       } else {
         await baseAxios().post(`/user/${nickname}/follower`);
       }
+
+      // 타 유저의 팔로워 수만 업데이트
+      await fetchFollowers(nickname);  // 타 유저의 팔로워 목록 다시 불러오기
       updateFollowStatus(nickname, !isUserFollowing);
+ 
       setIsUserFollowing(!isUserFollowing); // 로컬 상태 업데이트
     } catch (error) {
       console.error("팔로우/언팔로우 처리 중 에러 발생:", error);
@@ -340,7 +344,7 @@ export const AnotherProfile = () => {
               className={`w-full h-[73px] px-4 py-2 rounded-[10px] flex items-center justify-center text-white font-[Open Sans] text-[32px] font-semibold transition-colors duration-300
                 ${isUserFollowing ? 'bg-red-600 hover:bg-red-700' : 'bg-[#3578FF] hover:bg-[#2a61cc]'}`}
             >
-              {isFollowing ? 'Unfollow' : 'Follow'}
+              {isUserFollowing ? 'Unfollow' : 'Follow'}
             </button>
           </div>
         </div>
