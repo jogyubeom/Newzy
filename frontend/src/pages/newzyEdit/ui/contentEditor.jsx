@@ -77,13 +77,15 @@ const ContentEditor = ({ content, setContent }) => {
   }), []);
 
   return (
-    <ReactQuill
-      ref={quillRef} // ref 연결
-      style={{ width: '100%', height: '60%' }}
-      modules={modules}
-      value={content}
-      onChange={setContent}
-    />
+    <div style={{ width: '100%', maxWidth: '800px', overflowY: 'auto', maxHeight: '400px' }}>
+      <ReactQuill
+        ref={quillRef} // ref 연결
+        style={{ width: '100%', height: '100%' }} // width와 height를 100%로 설정
+        modules={modules}
+        value={content}
+        onChange={setContent}
+      />
+    </div>
   );
 };
 
