@@ -42,6 +42,20 @@ const Comment = ({
     }
   };
 
+  // 엔터 키를 눌렀을 때 수정 저장 함수 호출
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveEdit();
+    }
+  };
+
+  // 글자수 제한 500자
+  const handleInputChange = (e) => {
+    if (e.target.value.length <= 500) {
+      setEditedComment(e.target.value);
+    }
+  };
+
   return (
     <div className="bg-white p-2 mb-2 rounded-md shadow-sm">
       <div className="flex items-center">
@@ -96,13 +110,15 @@ const Comment = ({
           <input
             type="text"
             value={editedComment}
-            onChange={(e) => setEditedComment(e.target.value)}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown} // 엔터 키 감지
             className="border border-gray-300 rounded-md p-1 w-full"
           />
         ) : (
           <p>{comment.newzyComment}</p>
         )}
       </div>
+      <div className="text-sm text-gray-500">{editedComment.length}/500</div>
       <div className="text-gray-500 text-sm">
         {new Date(comment.createdAt).toLocaleString('ko-KR', {
           year: 'numeric',
