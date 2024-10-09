@@ -21,7 +21,7 @@ function baseAxios() {
         // 해인 카카오쿠키(해이니)
         // "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDI3IiwiZXhwIjoxNzI4NDM3OTI3fQ.mCrMd5kZC4XxIexFms8cuhRc-2cHtW77SINodgrc-W0";
         //해인 구글 쿠키(하하호호)
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDMxIiwiZXhwIjoxNzI4NTE0OTYwfQ.TOD064SfI-SS1L5eB5CvLkXDHcVkBoKcpJp-Azcavf0";
+        // "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDMxIiwiZXhwIjoxNzI4NTE0OTYwfQ.TOD064SfI-SS1L5eB5CvLkXDHcVkBoKcpJp-Azcavf0";
 
       // 배포 할 때 코드
       const token = useAuthStore.getState().token; // zustand 스토어에서 토큰 가져오기
