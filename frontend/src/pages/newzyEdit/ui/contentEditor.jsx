@@ -77,7 +77,7 @@ const ContentEditor = ({ content, setContent }) => {
   }), []);
 
   return (
-    <div style={{ width: '100%', maxWidth: '800px', overflowY: 'auto', maxHeight: '400px' }}>
+    <div style={{ width: '100%', maxWidth: '800px', overflowY: 'auto', minHeight: '400px', maxHeight: '400px' }}>
       <ReactQuill
         ref={quillRef} // ref 연결
         style={{ width: '100%', height: '100%' }} // width와 height를 100%로 설정

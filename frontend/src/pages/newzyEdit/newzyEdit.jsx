@@ -80,6 +80,12 @@ export const NewzyEdit = () => {
       return;
     }
 
+    // 콘텐츠 길이 체크 (3000자 이하인지 확인)
+    if (formData.content.length > 3000) {
+      alert('콘텐츠는 최대 3000자까지 입력할 수 있습니다.');
+      return;
+    }
+
     try {
       if (isEditing) {
         // 수정 로직 (PATCH 요청)
@@ -132,12 +138,7 @@ export const NewzyEdit = () => {
           <ContentEditor 
             content={formData.content}
             setContent={(content) => {
-              if (content.length <= 3000) {
-                setFormData((prevData) => ({ ...prevData, content }));
-              } else {
-                setFormData((prevData) => ({ ...prevData, content: content.slice(0, 3000) }));
-                alert('콘텐츠는 최대 3000자까지 입력할 수 있습니다.');
-              }
+              setFormData((prevData) => ({ ...prevData, content }));
             }}
           />
         </div>
