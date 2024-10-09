@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import baseAxios from "shared/utils/baseAxios";
 import useAuthStore from "shared/store/userStore"; 
 
@@ -7,6 +8,7 @@ const FollowListItem = ({ name, isFollowing: initialFollowing }) => {
   const [profile, setProfile] = useState(null); // 프로필 정보
   const [isFollowing, setIsFollowing] = useState(initialFollowing); // 팔로우 상태
   const defaultProfileImage = "/shared/images/user.png";  // 기본 프로필 이미지
+  const nav = useNavigate()
 
   // 현재 사용자 정보 가져오기
   const { userInfo } = useAuthStore(); 
@@ -52,7 +54,7 @@ const FollowListItem = ({ name, isFollowing: initialFollowing }) => {
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center justify-around gap-5">
           {/* 프로필 이미지 */}
-          <div className="rounded-full overflow-hidden w-16 h-16">
+          <div className="rounded-full overflow-hidden w-16 h-16" onClick={() => {nav(`/profile/${name}`)}}>
             <img
               src={profile?.profile || defaultProfileImage}
               className="w-full h-full object-cover"
