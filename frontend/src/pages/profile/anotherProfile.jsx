@@ -196,7 +196,7 @@ export const AnotherProfile = () => {
   const progress = (expRatio / 100) * circumference; // 현재 경험치에 해당하는 원형 길이
 
   // 모달 열기 및 닫기 함수
-  const openModal = () => async () => {
+  const openModal = async () => {
     
     await fetchFollowings(nickname)
     await fetchFollowers(nickname)
