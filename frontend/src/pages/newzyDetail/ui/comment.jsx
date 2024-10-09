@@ -51,8 +51,14 @@ const Comment = ({
 
   // 글자수 제한 500자
   const handleInputChange = (e) => {
-    if (e.target.value.length <= 500) {
-      setEditedComment(e.target.value);
+    const value = e.target.value;
+
+    // 500자를 초과하는 경우 경고 표시 및 잘라내기
+    if (value.length > 500) {
+      setEditedComment(value.slice(0, 500)); // 500자까지만 유지
+      alert('댓글은 최대 500자까지 입력할 수 있습니다.');
+    } else {
+      setEditedComment(value);
     }
   };
 
@@ -110,7 +116,7 @@ const Comment = ({
           <input
             type="text"
             value={editedComment}
-            onChange={handleInputChange}
+            onChange={handleInputChange} // 변경된 함수로 교체
             onKeyDown={handleKeyDown} // 엔터 키 감지
             className="border border-gray-300 rounded-md p-1 w-full"
           />
