@@ -359,7 +359,7 @@ export const Profile = () => {
 
   // CardListModal 열기
   const openCardListModal = () => {
-    fetchNewsCardList();
+    fetchNewsCardList(1);
     setIsCardListModalOpen(true);
   };
 

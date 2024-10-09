@@ -2,27 +2,35 @@
 
 import { useNewsCardStore } from "entities/card/store/cardStore";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import cross from "shared/images/cross.png";
 import file from "shared/images/file.png";
-import card from "shared/images/card.svg";
 import arrowBack from "shared/images/arrowBack.png";
 import arrowFront from "shared/images/arrowForward.png";
 import { CardBack } from "entities/card/cardBack";
 import "./cardListModal.css";
 
 const CardListModal = ({ onClose }) => {
-  const { newsCards, fetchNewsCard, totalPage } = useNewsCardStore();
+  const { newsCards, fetchNewsCard, fetchNewsCardList, totalPage } =
+    useNewsCardStore();
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 관리
   const [animationDirection, setAnimationDirection] = useState(""); // 애니메이션 방향 관리
+  const [openCardBack, setOpenCardBack] = useState(false);
 
-  const navigate = useNavigate();
+  const handleCardClick = (newsId) => {
+    fetchNewsCard(newsId);
+    setOpenCardBack(true);
+  };
+
+  const closeCardBack = () => {
+    setOpenCardBack(false);
+  };
 
   // 이전 페이지로 이동
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
       setAnimationDirection("fade-out");
+      fetchNewsCardList(currentPage);
       setTimeout(() => {
         fetchNewsCard(currentPage);
         setAnimationDirection("fade-in");
@@ -35,6 +43,7 @@ const CardListModal = ({ onClose }) => {
     if (currentPage < totalPage) {
       setCurrentPage(currentPage + 1);
       setAnimationDirection("fade-out");
+      fetchNewsCardList(currentPage);
       setTimeout(() => {
         fetchNewsCard(currentPage);
         setAnimationDirection("fade-in");
@@ -70,7 +79,7 @@ const CardListModal = ({ onClose }) => {
               <button
                 key={newsCard.cardId}
                 className="bg-transparent flex items-center justify-center"
-                onClick={() => navigate(`/newzy/${newsCard.newsId}`)}
+                onClick={() => handleCardClick(newsCard.newsId)}
               >
                 <div className="w-full relative">
                   <div
@@ -137,7 +146,16 @@ const CardListModal = ({ onClose }) => {
           </footer>
         )}
       </div>
-      <CardBack />
+      {openCardBack && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={closeCardBack} // 모달 외부 클릭 시 닫기
+        >
+          <div className="relative z-50" onClick={(e) => e.stopPropagation()}>
+            <CardBack onClose={closeCardBack} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

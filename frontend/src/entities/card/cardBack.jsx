@@ -1,12 +1,13 @@
 // entities/card/cardBack.jsx
 import { useNavigate } from "react-router-dom";
 import { useNewsCardStore } from "./store/cardStore";
+import { formatKoreanDateFull } from "shared/utils/dateUtils";
 
 export const CardBack = ({ onClose }) => {
   const navigate = useNavigate();
   const { newsCard } = useNewsCardStore();
   const category = newsCard.category;
-  // const userDifficulty = newsCard.score
+  const userDifficulty = newsCard.score;
 
   const handleCardNews = (id) => {
     onClose();
@@ -29,12 +30,12 @@ export const CardBack = ({ onClose }) => {
       ? "bg-green-700"
       : "bg-blue-700";
   // 난이도 숫자를 한글로 변환
-  // const difficultyText =
-  //   userDifficulty === 0
-  //     ? "어려워요"
-  //     : userDifficulty === 1
-  //     ? "보통이예요"
-  // : "쉬어요";
+  const difficultyText =
+    userDifficulty === 0
+      ? "어려워요"
+      : userDifficulty === 1
+      ? "보통이예요"
+      : "쉬어요";
 
   // console.log(category);
 
@@ -54,21 +55,21 @@ export const CardBack = ({ onClose }) => {
         </div>
 
         <div className="px-2 pt-1 w-full">
-          <div className="flex justify-end items-center gap-x-[6px] w-full ">
+          <div className="flex justify-end items-center gap-x-[6px] w-full pb-3 ">
             <div className="text-white text-[14px] font-[ChosunilboNM]">
               획득날짜 :
             </div>
             <div className="text-white text-[14px] font-[ChosunilboNM]">
-              create_at
+              {formatKoreanDateFull(newsCard?.createdAt)}
             </div>
           </div>
 
           <div className="flex justify-end items-center gap-x-[6px] w-full">
             <div className="text-white text-[14px] font-[ChosunilboNM]">
-              체감난이도 : score
+              체감난이도 :
             </div>
             <div className="text-white text-[14px] font-[ChosunilboNM]">
-              {/* {difficultyText} */}
+              {difficultyText}
             </div>
           </div>
         </div>

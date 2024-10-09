@@ -30,3 +30,14 @@ export const formatKoreanDate = (dateString) => {
 
   return `${month}월 ${day}일`;
 };
+
+// 0000년 00월 00일
+export const formatKoreanDateFull = (dateString) => {
+  const date = new Date(dateString);
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1; // 월은 0부터 시작하므로 +1
+  const day = date.getDate();
+
+  return `${year}년 ${month}월 ${day}일`;
+};

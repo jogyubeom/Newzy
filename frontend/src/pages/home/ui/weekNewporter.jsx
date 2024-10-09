@@ -32,7 +32,7 @@ export const WeekNewpoter = () => {
               key={index}
               className="flex flex-col justify-start items-center gap-2 w-[125.67px] h-[129px]"
             >
-              <bustton onClick={() => handleNewporter(newporter.nickname)}>
+              <button onClick={() => handleNewporter(newporter.nickname)}>
                 <div className="avatar relative w-[75px] h-[75px]">
                   <img
                     src={newporter.profile}
@@ -43,7 +43,7 @@ export const WeekNewpoter = () => {
                 <div className="text-[14px] font-semibold text-center w-full truncate">
                   {newporter.nickname}
                 </div>
-              </bustton>
+              </button>
               <div className="flex items-center justify-center gap-1 text-[16px] text-gray-600">
                 <FaRegHeart />
                 <p>{newporter.count}</p>
