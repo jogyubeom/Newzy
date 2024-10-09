@@ -582,6 +582,8 @@ export const Profile = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         userInfo={nicknameData}
+        followerCnt={loggedInUserFollowersIndex.length}
+        followingCnt={loggedInUserFollowingsIndex.length}
       />
 
       {/* 하단에 고정된 버튼 추가 */}

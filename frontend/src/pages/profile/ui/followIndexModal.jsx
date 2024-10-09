@@ -7,7 +7,7 @@ import baseAxios from "shared/utils/baseAxios";
 import { useFollowStore } from "../store/useFollowStore";
 import useAuthStore from "shared/store/userStore";
 
-const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
+const FollowIndexModal = ({ isOpen, onClose, userInfo, followerCnt, followingCnt }) => {
 
   const [selectedMenu, setSelectedMenu] = useState(0);  // 메뉴 상태
   const { followers, followings, updateFollowStatus, fetchFollowers, fetchFollowings } = useFollowStore();
@@ -16,7 +16,7 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
   if (!isOpen) return null;
 
   // 메뉴 배열 생성 (팔로워와 팔로잉 목록을 선택할 수 있도록)
-  const menus = ["팔로워", "팔로잉"];
+  const menus = [`팔로워 ${followerCnt}명`, `팔로잉 ${followingCnt}명`];
   console.log(followers, '팔로워 목록') 
   console.log(followings, '팔로잉 목록') 
 
