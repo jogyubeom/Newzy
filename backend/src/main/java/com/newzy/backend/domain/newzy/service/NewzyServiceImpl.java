@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -89,11 +90,22 @@ public class NewzyServiceImpl implements NewzyService {
         Newzy newzy = newzyRepository.findById(newzyId).orElseThrow(
                 () -> new EntityNotFoundException("일치하는 뉴지 데이터를 찾을 수 없습니다.")
         );
+        // redis 조회수 증가
+        String todayDate = LocalDate.now().toString();  // 오늘 날짜
+        String redisKey = "ranking:newzy:" + todayDate + ":" + newzyId;  // Redis 키
 
-        newzy.setHit(newzy.getHit() + 1);
-        newzyRepository.save(newzy);
+        Long hit = redisTemplate.opsForValue().increment(redisKey);
+
+        // 키가 새로 생성된 경우에만 만료 시간 설정 (24시간)
+        if (hit == 1) {
+            redisTemplate.expire(redisKey, Duration.ofDays(2));  // 24시간 만료 설정
+        }
+
+//        newzy.setHit(newzy.getHit() + 1);
+//        newzyRepository.save(newzy);
 
         NewzyResponseDTO newzyResponseDTO = NewzyResponseDTO.convertToDTO(newzy);
+        newzyResponseDTO.setHit((int) (newzyResponseDTO.getHit() + hit));
 
         if (userId != 0) {
             User user = userRepository.findByUserId(userId).orElseThrow(
