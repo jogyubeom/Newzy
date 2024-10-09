@@ -26,8 +26,8 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
       }
   
       // ✅ 팔로워/팔로잉 수를 업데이트하기 위해 팔로워/팔로잉 목록 다시 불러오기
-      // await fetchFollowers(userInfo.nickname);  // 팔로워 목록 다시 불러오기
-      // await fetchFollowings(userInfo.nickname); // 팔로잉 목록 다시 불러오기
+      await fetchFollowers(userInfo.nickname);  // 팔로워 목록 다시 불러오기
+      await fetchFollowings(userInfo.nickname); // 팔로잉 목록 다시 불러오기
 
       // ✅ 로그인한 현재 사용자의 팔로워/팔로잉 목록도 다시 불러오기
       await loggedInUserFollowers(loggedInUser.nickname);  // 팔로워 목록 다시 불러오기
@@ -39,7 +39,7 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
   };
 
   // 메뉴 배열 생성 (팔로워와 팔로잉 목록을 선택할 수 있도록)
-  const menus = [`팔로워 ${followers.length}명`, `팔로잉 ${followings.length}명`];
+  const menus = ["팔로워", "팔로잉"];
   console.log(followers, '팔로워 목록') 
   console.log(followings, '팔로잉 목록') 
 
