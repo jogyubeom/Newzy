@@ -40,7 +40,9 @@ const FollowIndexModal = ({ isOpen, onClose, userInfo }) => {
 
   // 메뉴 배열 생성 (팔로워와 팔로잉 목록을 선택할 수 있도록)
   const menus = [`팔로워 ${followers.length}명`, `팔로잉 ${followings.length}명`];
-
+  console.log(followers, '팔로워 목록') 
+  console.log(followings, '팔로잉 목록') 
+  
   // 선택된 메뉴에 따라 팔로워 또는 팔로잉 목록을 렌더링하는 함수
   const renderContent = () => {
     if (selectedMenu === 0) {

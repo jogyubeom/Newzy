@@ -197,6 +197,10 @@ export const AnotherProfile = () => {
 
   // 모달 열기 및 닫기 함수
   const openModal = () => async () => {
+    
+    await fetchFollowings(nickname)
+    await fetchFollowers(nickname)
+
     // ✅ 로그인한 현재 사용자의 팔로워/팔로잉 목록도 다시 불러오기
     await loggedInUserFollowers(loggedInUser.nickname);  // 팔로워 목록 다시 불러오기
     await loggedInUserFollowings(loggedInUser.nickname); // 팔로잉 목록 다시 불러오기
