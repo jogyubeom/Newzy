@@ -21,7 +21,7 @@ export const useNewsCardStore = create(
     totalPage: 1,
     newsCard: {},
 
-    fetchNewsCardList: async (page = 1) => {
+    fetchNewsCardList: async (page) => {
       try {
         const newsCardListResponse = await baseAxios().get(
           "/news/news-card-list",

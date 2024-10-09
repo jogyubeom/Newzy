@@ -50,7 +50,6 @@ export const NewsDetail = () => {
 
   return (
     <div className="relative flex min-h-screen bg-white">
-      <CardGauge news={news} />
       <div className="w-[17%]"></div>
 
       <div className="flex-1 p-6">
@@ -84,6 +83,8 @@ export const NewsDetail = () => {
           category={news.category}
         />
       )}
+
+      <CardGauge news={news} />
     </div>
   );
 };

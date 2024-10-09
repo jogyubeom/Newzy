@@ -10,8 +10,6 @@ export const CardGauge = ({ news }) => {
   const [scrollPercent, setScrollPercent] = useState(0);
   const [isComplete, setIsComplete] = useState(false); // 카드 읽은 상태
   const [isCardAcquired, setIsCardAcquired] = useState(false); // 카드 획득 여부 상태
-  const [summary, setSummary] = useState(""); // 요약 상태
-  const [userDifficulty, setUserDifficulty] = useState(0); // 난이도 평가 (0: 쉬움, 1: 보통, 2: 어려움)
   const [modalStep, setModalStep] = useState(0); // 모달 상태 (0: 닫힘, 1: 요약 모달, 2: 뒷면 모달)
 
   console.log(news?.isCollected, isCardAcquired);
@@ -73,8 +71,9 @@ export const CardGauge = ({ news }) => {
       setModalStep(1); // 요약 모달 열기
     }
   };
+
   return (
-    <div className="fixed w-[120px] h-[172px] bottom-7 left-3 bg-gray-300 rounded-lg shadow-lg ">
+    <button className="fixed w-[120px] h-[172px] bottom-7 left-3 bg-gray-300 rounded-lg shadow-lg ">
       {isComplete && (
         <div
           className="absolute inset-0 rounded-lg border-2 border-white"
@@ -148,6 +147,6 @@ export const CardGauge = ({ news }) => {
           </div>
         </div>
       )}
-    </div>
+    </button>
   );
 };
