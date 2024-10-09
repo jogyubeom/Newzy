@@ -1,5 +1,5 @@
 import React from 'react';
-import CommentContent from '../../pages/newzyDetail/ui/comment';
+import CommentContent from '../../pages/newzyDetail/ui/commentContent';
 import SearchContent from './search';
 
 const Sidebar = ({ activeSidebar, onActiveSidebar, category, newzyId }) => {
