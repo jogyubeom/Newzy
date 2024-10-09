@@ -38,9 +38,9 @@ public class NewzyCommentServiceImpl implements NewzyCommentService {
         int size = 10;
         List<NewzyCommentListGetResponseDTO> commentList = newzyCommentRepositorySupport.findCommentList(newzyId);
 
-        if (commentList.isEmpty()) {
-            throw new EntityNotFoundException("일치하는 댓글 데이터를 조회할 수 없습니다.");
-        }
+//        if (commentList.isEmpty()) {
+//            throw new EntityNotFoundException("일치하는 댓글 데이터를 조회할 수 없습니다.");
+//        }
         return commentList;
     }
 

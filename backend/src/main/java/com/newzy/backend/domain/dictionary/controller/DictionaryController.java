@@ -34,7 +34,7 @@ public class DictionaryController {
     @Operation(summary = "어휘 검색 정보 조회", description = "입력으로 주어진 word의 검색 결과를 반환합니다.")
     public ResponseEntity<List<DictionaryResponseDTO>> searchByWord(
             @Parameter(description = "JWT")
-            @RequestHeader(value = "Authorization") String token,
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "뉴스 카테고리 (0: 경제, 1: 사회, 2: 세계, 3: 뉴지)", required = true)
             @RequestParam(value = "category") int category,
             @Parameter(description = "검색 단어", required = true, example = "나무")

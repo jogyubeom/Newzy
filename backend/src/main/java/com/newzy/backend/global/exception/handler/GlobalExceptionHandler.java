@@ -5,6 +5,7 @@ import com.newzy.backend.global.exception.EntityIsFoundException;
 import com.newzy.backend.global.exception.EntityNotFoundException;
 import com.newzy.backend.global.exception.NotValidRequestException;
 import com.newzy.backend.global.exception.model.ExceptionResponseDto;
+import com.newzy.backend.global.exception.StringLengthLimitException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -81,6 +82,21 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT.value(),
                 ex.getMessage()
         );
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(StringLengthLimitException.class)
+    public ResponseEntity<ExceptionResponseDto> handleStringLengthLimitException(
+            StringLengthLimitException ex, HttpServletRequest request
+    ) {
+        log.error("StringLengthLimitException 발생 - URL: {}, Message: {}", request.getRequestURI(), ex.getMessage());
+        ExceptionResponseDto response = ExceptionResponseDto.of(
+                request.getMethod(),
+                request.getRequestURI(),
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage()
+        );
+
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 }

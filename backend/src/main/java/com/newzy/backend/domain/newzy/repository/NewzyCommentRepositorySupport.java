@@ -41,7 +41,7 @@ public class NewzyCommentRepositorySupport extends QuerydslRepositorySupport {
                 .join(qNewzyComment.user, qUser)
                 .where(qNewzyComment.newzy.newzyId.eq(newzyId)
                         .and(qNewzyComment.isDeleted.eq(false)))
-                .orderBy(qNewzyComment.createdAt.desc()) // 전체 댓글을 작성 순으로 정렬하여 조회
+                .orderBy(qNewzyComment.createdAt.asc())
                 .fetch();
 
         return commentList;

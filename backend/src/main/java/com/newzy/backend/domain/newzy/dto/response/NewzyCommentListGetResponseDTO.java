@@ -17,7 +17,7 @@ public class NewzyCommentListGetResponseDTO {
     private Long userId;
     private String email;
     private String nickname;
-    private String imageUrl;
+    private String profile;
     private Long newzyCommentId;
     private String newzyComment;
     private LocalDateTime createdAt;
@@ -34,7 +34,7 @@ public class NewzyCommentListGetResponseDTO {
                 .userId(newzyComment.getUser().getUserId())
                 .email(newzyComment.getUser().getEmail())
                 .nickname(newzyComment.getUser().getNickname())
-                .imageUrl(newzyComment.getUser().getImage().getImageUrl())
+                .profile(newzyComment.getUser().getImage().getImageUrl())
                 .newzyCommentId(newzyComment.getNewzyCommentId())
                 .newzyComment(newzyComment.getNewzyComment())
                 .createdAt(newzyComment.getCreatedAt())

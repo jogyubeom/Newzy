@@ -9,6 +9,7 @@ import com.newzy.backend.domain.newzy.service.NewzyService;
 import com.newzy.backend.domain.user.service.UserService;
 import com.newzy.backend.global.exception.CustomIllegalStateException;
 import com.newzy.backend.global.exception.NoTokenRequestException;
+import com.newzy.backend.global.exception.StringLengthLimitException;
 import com.newzy.backend.global.model.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,6 +45,13 @@ public class NewzyController {
             userId = userService.getUser(token).getUserId();
         } else {
             throw new NoTokenRequestException("유효한 유저토큰이 없습니다.");
+        }
+
+        if (dto.getTitle() != null && dto.getTitle().length() > 500){
+            throw new StringLengthLimitException("제목은 최대 500자까지 입력할 수 있습니다.");
+        }
+        if (dto.getTitle() != null && dto.getContent().length() > 3000){
+            throw new StringLengthLimitException("본문은 최대 3000자까지 입력할 수 있습니다.");
         }
 
         log.info(">>> [POST] /newzy - 요청 파라미터: dto - {}, userId - {}", dto.toString(), userId);
@@ -244,13 +252,16 @@ public class NewzyController {
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "해당 뉴지의 좋아요를 삭제했습니다."));
     }
 
-    @GetMapping(value = "/upload-image")
+    @PostMapping(value = "/upload-image")
     @Operation(summary = "뉴지 이미지 url로 변환", description = "이미지 파일을 뉴지에 들어갈 url로 바꿔줍니다.")
     public ResponseEntity<NewzyImageResponseDTO> convertImgUrl(
             @Parameter(description = "JWT", required = true)
             @RequestHeader(value = "Authorization", required = true) String token,
             @RequestPart(value = "image", required = false) MultipartFile[] image
     ) {
+        if (token == null || token.isBlank()) {
+            throw new NoTokenRequestException("유효한 유저 토큰이 없습니다.");
+        }
 
         NewzyImageResponseDTO newzyImageResponseDTO = newzyService.convertImgUrl(image);
 
