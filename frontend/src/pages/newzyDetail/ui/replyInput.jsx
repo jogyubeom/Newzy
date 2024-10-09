@@ -3,7 +3,14 @@ import React from 'react';
 const ReplyInput = ({ replyText, setReplyText, commentId, handleReplySubmit }) => {
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleReplySubmit(replyText, commentId);
+      handleReplySubmit(replyText[commentId], commentId);
+    }
+  };
+
+  // 글자수 제한 500자
+  const handleInputChange = (e) => {
+    if (e.target.value.length <= 500) {
+      setReplyText({ ...replyText, [commentId]: e.target.value });
     }
   };
 
@@ -12,8 +19,8 @@ const ReplyInput = ({ replyText, setReplyText, commentId, handleReplySubmit }) =
       <input
         type="text"
         value={replyText[commentId] || ''}
-        onChange={(e) => setReplyText({ ...replyText, [commentId]: e.target.value })}
-        onKeyPress={(e) => handleKeyPress(e)}
+        onChange={handleInputChange}
+        onKeyPress={handleKeyPress}
         placeholder="대댓글을 입력하세요..."
         className="border border-gray-300 rounded-md p-1 mr-2"
       />
@@ -23,6 +30,7 @@ const ReplyInput = ({ replyText, setReplyText, commentId, handleReplySubmit }) =
       >
         추가
       </button>
+      <div className="text-sm text-gray-500">{(replyText[commentId] || '').length}/500</div>
     </div>
   );
 };

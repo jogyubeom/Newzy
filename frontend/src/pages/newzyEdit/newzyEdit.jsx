@@ -59,6 +59,14 @@ export const NewzyEdit = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // 제목의 글자 수 제한 (100자)
+    if (name === 'title' && value.length > 100) {
+      alert('제목은 최대 100자까지 입력할 수 있습니다.');
+      setFormData((prevData) => ({ ...prevData, title: title.slice(0, 100) }));
+      return;
+    }
+
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
@@ -121,7 +129,17 @@ export const NewzyEdit = () => {
             <CategorySelector category={formData.category} onCategoryChange={handleCategoryChange} />
           </div>
 
-          <ContentEditor content={formData.content} setContent={(content) => setFormData((prevData) => ({ ...prevData, content }))} />
+          <ContentEditor 
+            content={formData.content}
+            setContent={(content) => {
+              if (content.length <= 3000) {
+                setFormData((prevData) => ({ ...prevData, content }));
+              } else {
+                alert('콘텐츠는 최대 3000자까지 입력할 수 있습니다.');
+                setFormData((prevData) => ({ ...prevData, content: content.slice(0, 3000) }));
+              }
+            }}
+          />
         </div>
 
         <div className="w-[15%] relative"></div>
