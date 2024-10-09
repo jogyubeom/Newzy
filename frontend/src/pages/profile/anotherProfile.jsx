@@ -51,10 +51,10 @@ export const AnotherProfile = () => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false); // 말풍선 상태 관리
 
   const [user, setUser] = useState(null); // 유저 데이터 상태
-  const { fetchFollowings, isFollowing, updateFollowStatus } = useFollowStore();
+  const { followers, followings, fetchFollowers, fetchFollowings, isFollowing, updateFollowStatus } = useFollowStore();
   const [isUserFollowing, setIsUserFollowing] = useState(false);
 
-  const { userInfo } = useAuthStore();
+  const { userInfo: loggedInUser, fetchFollowers: loggedInUserFollowers, fetchFollowings: loggedInUserFollowings, followings: loggedInUserFollowingsIndex } = useAuthStore();  // ✅ 로그인된 사용자 정보
 
   const [profileData, setProfileData] = useState({
     name: '',
@@ -119,14 +119,15 @@ export const AnotherProfile = () => {
   }, [nickname]); // 닉네임이 변경될 때마다 다시 유저 정보를 불러옴
 
 
-  // 팔로잉 목록 가져오기 및 팔로우 여부 확인
+  // 팔로워/팔로잉 목록 가져오기 및 팔로우 여부 확인
   useEffect(() => {
     const checkIfFollowing = async () => {
-      await fetchFollowings(userInfo.nickname); // 자신의 닉네임으로 팔로잉 목록을 가져옴
+      await fetchFollowings(nickname); // 타 유저 닉네임으로 팔로잉 목록을 가져옴
       setIsUserFollowing(isFollowing(nickname)); // 해당 유저를 팔로우하는지 여부 확인
     };
 
     checkIfFollowing();
+    fetchFollowers(nickname);  // 팔로워 목록 불러오기
   }, [nickname, fetchFollowings, isFollowing]);
 
   // 팔로우/언팔로우 버튼 클릭 시
@@ -195,7 +196,13 @@ export const AnotherProfile = () => {
   const progress = (expRatio / 100) * circumference; // 현재 경험치에 해당하는 원형 길이
 
   // 모달 열기 및 닫기 함수
-  const openModal = () => setModalOpen(true);
+  const openModal = () => async () => {
+    // ✅ 로그인한 현재 사용자의 팔로워/팔로잉 목록도 다시 불러오기
+    await loggedInUserFollowers(loggedInUser.nickname);  // 팔로워 목록 다시 불러오기
+    await loggedInUserFollowings(loggedInUser.nickname); // 팔로잉 목록 다시 불러오기
+    
+    setModalOpen(true);
+  };
   const closeModal = () => setModalOpen(false);
 
   // 메뉴 클릭 시 경로를 변경
@@ -203,7 +210,7 @@ export const AnotherProfile = () => {
     setSelectedMenu(menuIndex);
     switch (menuIndex) {
       case 0:
-        navigate("/profile/:nickname"); 
+        navigate(`/profile/:${nickname}`); 
         break;
       default:
         break;
@@ -310,7 +317,7 @@ export const AnotherProfile = () => {
                 Followers
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-                {user.followerCnt}
+                {followers.length}
               </div>
             </div>
             <div className="flex flex-col items-center cursor-pointer" onClick={openModal}>
@@ -318,15 +325,15 @@ export const AnotherProfile = () => {
                 Followings
               </div>
               <div className="w-[100px] h-[60px] text-white font-[Poppins] text-[36px] leading-[24px] font-semibold flex items-center justify-center text-center">
-              {user.followingCnt}
+              {followings.length}
               </div>
             </div>
           </div>
-          <div className="h-[103px] mt-10 mb-7">
+          <div className="w-[293px] h-[103px] relative mt-10 mb-7">
             <button
               onClick={toggleFollow}
-              className={`w-full h-full px-4 py-2 border-2 rounded-[15px] font-semibold transition-colors duration-300
-                ${isUserFollowing ? 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white' : 'border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white'}`}
+              className={`w-full h-[73px] px-4 py-2 rounded-[10px] flex items-center justify-center text-white font-[Open Sans] text-[32px] font-semibold transition-colors duration-300
+                ${isUserFollowing ? 'bg-red-600 hover:bg-red-700' : 'bg-[#3578FF] hover:bg-[#2a61cc]'}`}
             >
               {isFollowing ? 'Unfollow' : 'Follow'}
             </button>
