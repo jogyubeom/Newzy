@@ -139,7 +139,8 @@ export const AnotherProfile = () => {
       } else {
         await baseAxios().post(`/user/${nickname}/follower`);
       }
-      updateFollowStatus(nickname, !isUserFollowing);
+      
+      await fetchFollowers(nickname);  // 팔로워 목록 불러오기
  
       setIsUserFollowing(!isUserFollowing); // 로컬 상태 업데이트
     } catch (error) {
@@ -355,7 +356,7 @@ export const AnotherProfile = () => {
 
       {renderContent()}
 
-      <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} userInfo={user} />
+      <FollowIndexModal isOpen={isModalOpen} onClose={closeModal} userInfo={user} followerCnt={followers.length} followingCnt={followings.length} />
     </div>
   );
 };
