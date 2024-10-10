@@ -15,6 +15,7 @@ def generate_prompt(cluster_id: int, content: str) -> str:
     '{cluster['interest_category']}'에 관심 있는 '{cluster['age_group']}'을(를) 위한 요약을 작성해줘.
     글자수는 15자 이내로 기사의 키워드 위주로 요약해주면 좋겠어.
     주요 정보를 빠르게 전달할 수 있도록 간결하고 흥미로운 요약을 작성해줘.
+    요약 내용에 사용자의 정보는 넣지 말고 오로지 기사에 대한 내용만 작성해줘.
     기사 내용: {content}
     """
 
