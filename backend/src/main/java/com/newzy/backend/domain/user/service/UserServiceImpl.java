@@ -517,7 +517,7 @@ public class UserServiceImpl implements UserService {
     public UserProfileResponseDTO getUserProfile(String nickname) {
         UserInfoResponseDTO userInfoResponseDTO = getUserByNickname(nickname);
 
-        int newzyCnt = Math.toIntExact(newzyRepository.countByUserUserId(userInfoResponseDTO.getUserId()));
+        int newzyCnt = Math.toIntExact(newzyRepository.countByUserUserIdAndIsDeletedFalse(userInfoResponseDTO.getUserId()));
         int followingCnt = Math.toIntExact(followRepository.countByFromUserUserId(userInfoResponseDTO.getUserId()));
         int followerCnt = Math.toIntExact(followRepository.countByToUserUserId(userInfoResponseDTO.getUserId()));
 

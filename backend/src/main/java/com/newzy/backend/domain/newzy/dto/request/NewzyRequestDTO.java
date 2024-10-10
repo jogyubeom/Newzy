@@ -26,4 +26,6 @@ public class NewzyRequestDTO {
     @Schema(description = "뉴지 카테고리", example = "category")
     private int category;
 
+//    @Schema(description = "뉴지 썸네일", example = "https://random.png")
+//    private String imageUrl;
 }

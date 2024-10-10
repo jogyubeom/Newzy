@@ -38,8 +38,6 @@ public interface NewzyRepository extends JpaRepository<Newzy, Long> {
         save(newzy);
     }
 
-    // 특정 userId에 해당하는 유저가 만든 뉴지 개수 조회
-    Long countByUserUserId(Long userId);
-
-
+    // 특정 userId에 해당하는 유저가 만든 뉴지 ( isDeleted = false )인 개수 조회
+    Long countByUserUserIdAndIsDeletedFalse(Long userId);
 }
