@@ -82,7 +82,7 @@ export const TodayNews = () => {
       ) : (
         <div className="absolute flex flex-col bottom-0 left-0 xl:flex-row">
           <button
-            className="w-[453px] h-[215px] bg-purple-600 flex flex-col items-center rounded-t-lg p-4 gap-2"
+            className="w-[453px] h-[215px] bg-purple-600 flex flex-col items-center rounded-t-lg gap-2"
             onClick={() => handleTodayNews(todayNews?.newsId)}
           >
             <div className="flex justify-center items-center text-center">
