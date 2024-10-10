@@ -11,7 +11,7 @@ export const TodayQuizModal = ({ isOpen, onClose }) => {
   // 새로고침 시 isSolved에 따른 처리
   useEffect(() => {
     if (todayNews?.isSolved) {
-      setSelectedOption(parseInt(todayNews.answer));
+      setSelectedOption(parseInt(todayNews.answer) - 1);
       setIsAnswered(true);
     }
   }, [todayNews]);
@@ -19,7 +19,7 @@ export const TodayQuizModal = ({ isOpen, onClose }) => {
   const handleOptionClick = (optionIndex) => {
     setSelectedOption(optionIndex);
 
-    if (optionIndex === parseInt(todayNews.answer)) {
+    if (optionIndex === parseInt(todayNews.answer) - 1) {
       setFeedback("정답입니다!");
       setIsAnswered(true);
       postAnswer();
@@ -33,7 +33,7 @@ export const TodayQuizModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white w-[500px] h-[400px] rounded-lg p-6 shadow-lg relative">
+      <div className="bg-white w-[500px] h-auto rounded-lg p-6 shadow-lg relative">
         <h2 className="text-2xl font-semibold text-center mb-6">
           {todayNews.question}
         </h2>
