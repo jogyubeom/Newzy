@@ -4,8 +4,9 @@ import com.newzy.backend.domain.news.entity.News;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -22,6 +23,21 @@ public class NewsListGetResponseDTO {
     private int hit;
     private int likeCnt;
     private LocalDateTime createdAt;
+
+    public NewsListGetResponseDTO(Long newsId, String link, String title, String contentText, int category, String publisher, String thumbnail, int hit, int likeCnt, LocalDateTime createdAt) {
+        this.newsId = newsId;
+        this.link = link;
+        this.title = title;
+        this.contentText = contentText;
+        this.category = category;
+        this.publisher = publisher;
+        this.thumbnail = thumbnail;
+        this.hit = hit;
+        this.likeCnt = likeCnt;
+
+        this.createdAt = createdAt.atZone(ZoneId.of("UTC"))
+                .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+    }
 
     public static NewsListGetResponseDTO convertToDTO(News news){
         if (news == null){
