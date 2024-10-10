@@ -61,7 +61,7 @@ public class Newzy extends BaseTimeEntity {
     }
 
     // save newzy
-    public static Newzy convertToEntity(User user, NewzyRequestDTO dto){
+    public static Newzy convertToEntity(User user, NewzyRequestDTO dto, String thumbnailUrl){
 
         if (dto.getTitle().length() > 100) {
             throw new StringLengthLimitException("제목은 최대 100자까지 입력할 수 있습니다.");
@@ -75,12 +75,13 @@ public class Newzy extends BaseTimeEntity {
         newzy.setTitle(dto.getTitle());
         newzy.setContent(dto.getContent());
         newzy.setCategory(dto.getCategory());
+        newzy.setThumbnail(thumbnailUrl);
 
         return newzy;
     }
 
     // update newzy
-    public static Newzy convertToEntity(User user, Long newzyId , NewzyRequestDTO dto, String contentText){
+    public static Newzy convertToEntity(User user, Long newzyId , NewzyRequestDTO dto, String contentText, String thumbnailUrl){
 
         if (dto.getTitle().length() > 100) {
             throw new StringLengthLimitException("제목은 최대 100자까지 입력할 수 있습니다.");
@@ -96,6 +97,7 @@ public class Newzy extends BaseTimeEntity {
         newzy.setContent(dto.getContent());
         newzy.setContentText(contentText);
         newzy.setCategory(dto.getCategory());
+        newzy.setThumbnail(thumbnailUrl);
 
         return newzy;
     }

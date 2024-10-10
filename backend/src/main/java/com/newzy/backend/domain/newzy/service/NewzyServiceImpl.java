@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.newzy.backend.domain.newzy.entity.QNewzy.newzy;
 
 @Slf4j
 @Service
@@ -189,8 +192,14 @@ public class NewzyServiceImpl implements NewzyService {
         // HTML 파싱 적용 by Jsoup
         String content = dto.getContent();
         String ContentText = parseHtmlToText(content);
+        String thumbnailUrl = extractFirstImageSrc(content);
 
-        Newzy newzy = Newzy.convertToEntity(user, dto);
+        // 첫 번째 이미지 URL이 존재하면 썸네일로 설정
+        if (thumbnailUrl == null) {
+            thumbnailUrl = "https://picsum.photos/400/300?random=1"; // 랜덤 이미지
+        }
+
+        Newzy newzy = Newzy.convertToEntity(user, dto, thumbnailUrl);
         newzy.setContentText(ContentText);
 
         // 경험치 업데이트
@@ -205,11 +214,6 @@ public class NewzyServiceImpl implements NewzyService {
         newzyRepository.save(newzy);
     }
 
-    // HTML 파싱
-    private String parseHtmlToText(String content) {
-        Document document = Jsoup.parse(content);
-        return document.text();
-    }
 
     @Override
     public NewzyResponseDTO update(Long userId, Long newzyId, NewzyRequestDTO dto) {
@@ -218,13 +222,35 @@ public class NewzyServiceImpl implements NewzyService {
         // HTML 파싱 적용 by Jsoup
         String content = dto.getContent();
         String ContentText = parseHtmlToText(content);
+        String thumbnailUrl = extractFirstImageSrc(content);
 
-        Newzy updatedNewzy = Newzy.convertToEntity(user, newzyId, dto, ContentText);
+        if (thumbnailUrl == null) {
+            thumbnailUrl = "https://picsum.photos/400/300?random=1"; // 랜덤 이미지
+        }
+
+        Newzy updatedNewzy = Newzy.convertToEntity(user, newzyId, dto, ContentText, thumbnailUrl);
 
         Newzy newzy = newzyRepository.updateNewzyInfo(updatedNewzy);
         NewzyResponseDTO newzyResponseDTO = NewzyResponseDTO.convertToDTO(newzy);
 
         return newzyResponseDTO;
+    }
+
+
+    // HTML 파싱
+    private String parseHtmlToText(String content) {
+        Document document = Jsoup.parse(content);
+        return document.text();
+    }
+
+
+    // HTML 파싱: 첫 번째 이미지 src 추출
+    private String extractFirstImageSrc(String content) {
+        Document document = Jsoup.parse(content);
+        Element firstImg = document.select("img").first();
+
+        // 첫 번째 이미지 태그가 있으면 src 속성 반환, 없으면 null 반환
+        return (firstImg != null) ? firstImg.attr("src") : null;
     }
 
 
