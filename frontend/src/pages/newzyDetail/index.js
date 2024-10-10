@@ -1,0 +1,1 @@
+export { NewzyDetail } from "./newzyDetail";

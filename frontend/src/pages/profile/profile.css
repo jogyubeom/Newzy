@@ -1,0 +1,16 @@
+/* 애니메이션 정의 */
+@keyframes tooltip {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 말풍선에 적용될 클래스 */
+.animate-tooltip {
+  animation: tooltip 0.3s ease-in-out forwards;
+}
