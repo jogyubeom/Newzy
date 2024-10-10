@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ReactTooltip from 'react-tooltip';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useFollowStore } from "./store/useFollowStore";
 import { getGrade } from "shared/getGrade";
@@ -476,25 +477,21 @@ export const Profile = () => {
                   setProfileData({ ...profileData, name: e.target.value })
                 }
                 className="outline-none w-full p-2 mr-5 text-white bg-gray-800 opacity-100"
-                maxLength={30} // 닉네임 최대 길이 설정
-                style={{
-                  width: "250px", // 고정된 너비
-                  whiteSpace: "nowrap", // 한 줄로 표시
-                  overflowX: "auto", // 가로 스크롤 가능
-                  textOverflow: "ellipsis", // 넘치는 텍스트는 생략 표시
-                }}
+                maxLength={10} // 닉네임 최대 길이 설정
               />
             ) : (
               <p 
               className="p-2"
+              data-tip={profileData.name} // 툴팁에 전체 닉네임 표시
               style={{
                 width: "250px", // 고정된 너비
-                whiteSpace: "nowrap",
-                overflowX: "auto", // 가로 스크롤 가능
-                textOverflow: "ellipsis",
+                whiteSpace: "nowrap", // 한 줄로 표시
+                overflow: "hidden", // 넘치는 텍스트 숨기기
+                textOverflow: "ellipsis", // 넘치는 텍스트는 생략 표시
               }}
               >{profileData.name}</p>
             )}
+            <ReactTooltip place="top" type="dark" effect="solid" />
           </div>
 
           <div className="w-[250px] h-[200px] text-white font-[Open Sans] text-[24px] leading-[36px] font-semibold flex items-center text-left break-words whitespace-pre-wrap">
@@ -604,9 +601,11 @@ export const Profile = () => {
 
       {/* 하단에 고정된 버튼 추가 */}
       <button
-        className="fixed bottom-5 left-1 bg-transparent flex items-center justify-center cursor-pointer"
+        className={`fixed bottom-5 left-1 bg-transparent flex items-center justify-center cursor-pointer ${
+          isModalOpen ? "pointer-events-none opacity-50" : ""
+        }`} // 모달이 열려 있으면 클릭 불가능하게 처리
         style={{ zIndex: 1000 }}
-        onClick={openCardListModal} // 버튼 클릭 시 CardListModal 열기
+        onClick={!isModalOpen ? openCardListModal : null} // 모달이 열렸을 때 클릭 비활성화
       >
         <div className="relative w-[120px] h-[172px] group">
           <div className="absolute bottom-4 left-4 w-full h-full bg-purple-300 rounded-lg shadow-lg pt-10 transition-all duration-500 ease-out group-hover:bottom-8 group-hover:left-10 group-hover:rotate-[10deg]">
