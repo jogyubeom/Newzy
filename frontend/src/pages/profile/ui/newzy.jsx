@@ -49,7 +49,7 @@ export const Newzy = ( { nickname } ) => {
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchPosts(); // 컴포넌트가 마운트될 때 API 호출
-  }, [state.currentPage]); // 페이지 변경 시 호출
+  }, [state.currentPage, nickname]); // 페이지 변경 시 호출
 
   const handlePostClick = (id) => navigate(`/newzy/${id}`);
 
