@@ -112,7 +112,7 @@ export const NewzyList = () => {
   };
 
   return (
-    <div>
+    <div className='min-w-[1150px]'>
       <NewzyListHeader
         selectedCategory={state.sort.selectedCategory}
         onCategoryClick={(category) => handleCategoryOrRangeClick("selectedCategory", category)}
