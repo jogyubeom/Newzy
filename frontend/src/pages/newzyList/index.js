@@ -1,0 +1,1 @@
+export { NewzyList } from "./newzyList";

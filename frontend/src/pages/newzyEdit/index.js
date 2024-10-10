@@ -1,0 +1,1 @@
+export { NewzyEdit } from "./newzyEdit";
