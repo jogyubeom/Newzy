@@ -176,6 +176,7 @@ public class NewzyServiceImpl implements NewzyService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
     public NewzyImageResponseDTO convertImgUrl(MultipartFile[] files) {
         String[] urls = imageService.uploadImages(files);
@@ -193,11 +194,6 @@ public class NewzyServiceImpl implements NewzyService {
         String content = dto.getContent();
         String ContentText = parseHtmlToText(content);
         String thumbnailUrl = extractFirstImageSrc(content);
-
-        // 첫 번째 이미지 URL이 존재하면 썸네일로 설정
-        if (thumbnailUrl == null) {
-            thumbnailUrl = "https://picsum.photos/400/300?random=1"; // 랜덤 이미지
-        }
 
         Newzy newzy = Newzy.convertToEntity(user, dto, thumbnailUrl);
         newzy.setContentText(ContentText);
@@ -223,10 +219,6 @@ public class NewzyServiceImpl implements NewzyService {
         String content = dto.getContent();
         String ContentText = parseHtmlToText(content);
         String thumbnailUrl = extractFirstImageSrc(content);
-
-        if (thumbnailUrl == null) {
-            thumbnailUrl = "https://picsum.photos/400/300?random=1"; // 랜덤 이미지
-        }
 
         Newzy updatedNewzy = Newzy.convertToEntity(user, newzyId, dto, ContentText, thumbnailUrl);
 
