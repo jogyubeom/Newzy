@@ -217,7 +217,7 @@ export const AnotherProfile = () => {
     setSelectedMenu(menuIndex);
     switch (menuIndex) {
       case 0:
-        navigate(`/profile/:${nickname}`); 
+        navigate(`/profile/${nickname}`); 
         break;
       default:
         break;
@@ -228,7 +228,7 @@ export const AnotherProfile = () => {
   const renderContent = () => {
     switch (selectedMenu) {
       case 0:
-        return <Newzy nickname={nickname} />;
+        return <Newzy nickname={user?.nickname} />;
       default:
         return null;
     }

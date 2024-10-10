@@ -7,7 +7,6 @@ const BookMark = () => {
 
   return (
     <div className="px-10 py-5">
-      <h1 className="text-2xl font-bold mb-4">Bookmark Page</h1>
       <div className="mb-4">
         <button 
           onClick={() => setShowNews(true)} // BookmarkNews 버튼
