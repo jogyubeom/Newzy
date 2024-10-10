@@ -110,6 +110,20 @@ const Words = () => {
     setWordList((prevList) => prevList.filter((word) => !removedWords.includes(word.name)));
   };
 
+  // 화면 스크롤을 막기 위한 useEffect
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden'; // 스크롤 막기
+    } else {
+      document.body.style.overflow = ''; // 스크롤 복구
+    }
+
+    // 컴포넌트 언마운트 시에도 스크롤을 복구
+    return () => {
+      document.body.style.overflow = ''; 
+    };
+  }, [isModalOpen]);
+
   // 모달 열기 및 닫기 함수
   const openModal = async () => {
     // 단어 테스트를 열기 전에 모든 단어 리스트 불러오기
@@ -194,15 +208,26 @@ const Words = () => {
             )}
           </div>
         )}
-
-         {/* 모달 컴포넌트 렌더링 */}
-         <WordTestModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          wordList={allWords}
-          userName={user && user.nickname ? user.nickname : "사용자"}
-          onWordsRemoved={handleWordsRemoved} // 맞힌 단어 제거 콜백 전달
-        />
+        {isModalOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={closeModal} // 모달 외부 클릭 시 닫기
+        >
+          <div
+            className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[400px]"
+            onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 전파 막기
+          >
+            {/* 모달 내용 */}
+            <WordTestModal
+              isOpen={isModalOpen}
+              onClose={closeModal}
+              wordList={allWords}
+              userName={user && user.nickname ? user.nickname : "사용자"}
+              onWordsRemoved={handleWordsRemoved} // 맞힌 단어 제거 콜백 전달
+            />
+          </div>
+        </div>
+      )}
       </div>
     </>
   );

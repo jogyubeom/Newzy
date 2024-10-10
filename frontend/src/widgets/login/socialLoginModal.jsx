@@ -26,7 +26,8 @@ export const SocialLoginModal = ({ isOpen, onClose }) => {
 
       } else if (platform === 'Naver') {
         console.log(`${platform} 로그인 시도`);
-        response = await axios.get('https://j11b305.p.ssafy.io/api/oauth2/naver/authorize');
+        alert("네이버 로그인은 향후 추가될 예정입니다.");
+        return;
       }
       
       let url = response.data;
