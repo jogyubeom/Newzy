@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ReactTooltip from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useFollowStore } from "./store/useFollowStore";
 import { getGrade } from "shared/getGrade";
