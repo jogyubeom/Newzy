@@ -54,7 +54,7 @@ const PrivateRoute = () => {
   }
 
   // 로그인된 상태면 자식 라우트를 렌더링
-  return <Outlet />;
+  return isLoggedIn ? <Outlet /> : <Navigate to="/" />;
 };
 
 export const AppRouter = () => {
