@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import useAuthStore from '../../shared/store/userStore';
-import TitleInput from './ui/titleInput';
-import CategorySelector from './ui/categorySelector';
-import ContentEditor from './ui/contentEditor';
-import baseAxios from 'shared/utils/baseAxios';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import useAuthStore from "../../shared/store/userStore";
+import TitleInput from "./ui/titleInput";
+import CategorySelector from "./ui/categorySelector";
+import ContentEditor from "./ui/contentEditor";
+import baseAxios from "shared/utils/baseAxios";
 
 export const NewzyEdit = () => {
   const navigate = useNavigate();
@@ -12,17 +12,17 @@ export const NewzyEdit = () => {
   const { userInfo, token } = useAuthStore(); // 토큰 가져오기
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
+    title: "",
     category: 0,
-    content: '',
-    nickname: ''
+    content: "",
+    nickname: "",
   });
 
   // 토큰이 없는 경우 로그인 페이지로 리다이렉트
   useEffect(() => {
     if (!token) {
-      alert('로그인이 필요합니다.');
-      navigate('/newzy');
+      alert("로그인이 필요합니다.");
+      navigate("/newzy");
     }
   }, [token, navigate]);
 
@@ -43,17 +43,17 @@ export const NewzyEdit = () => {
         setFormData({ title, category, content, nickname });
 
         if (userInfo?.nickname !== nickname) {
-          alert('본인의 게시물만 수정할 수 있습니다.');
-          navigate('/newzy');
+          alert("본인의 게시물만 수정할 수 있습니다.");
+          navigate("/newzy");
         }
       } else {
-        alert('게시물을 찾을 수 없습니다.'); // 게시물이 존재하지 않을 때
-        navigate('/newzy');
+        alert("게시물을 찾을 수 없습니다."); // 게시물이 존재하지 않을 때
+        navigate("/newzy");
       }
     } catch (error) {
       console.error("Error fetching newzy data:", error);
-      alert('데이터를 불러오는 데 실패했습니다.');
-      navigate('/newzy'); // 오류 발생 시 목록 페이지로 이동
+      alert("데이터를 불러오는 데 실패했습니다.");
+      navigate("/newzy"); // 오류 발생 시 목록 페이지로 이동
     }
   };
 
@@ -61,9 +61,9 @@ export const NewzyEdit = () => {
     const { name, value } = e.target;
 
     // 제목의 글자 수 제한 (100자)
-    if (name === 'title' && value.length > 100) {
+    if (name === "title" && value.length > 100) {
       setFormData((prevData) => ({ ...prevData, title: value.slice(0, 100) }));
-      alert('제목은 최대 100자까지 입력할 수 있습니다.');
+      alert("제목은 최대 100자까지 입력할 수 있습니다.");
       return;
     }
 
@@ -76,13 +76,13 @@ export const NewzyEdit = () => {
 
   const handleSave = async () => {
     if (!formData.title || formData.category === null || !formData.content) {
-      alert('모든 내용을 채워주세요.');
+      alert("모든 내용을 채워주세요.");
       return;
     }
 
     // 콘텐츠 길이 체크 (3000자 이하인지 확인)
     if (formData.content.length > 3000) {
-      alert('콘텐츠는 최대 3000자까지 입력할 수 있습니다.');
+      alert("콘텐츠는 최대 3000자까지 입력할 수 있습니다.");
       return;
     }
 
@@ -91,23 +91,23 @@ export const NewzyEdit = () => {
         // 수정 로직 (PATCH 요청)
         const response = await baseAxios().patch(`/newzy/${newzyId}`, formData);
         if (response.status === 200) {
-          alert('수정되었습니다.');
-          navigate('/newzy');
+          alert("수정되었습니다.");
+          navigate("/newzy");
         } else {
-          alert('수정에 실패했습니다.');
+          alert("수정에 실패했습니다.");
         }
       } else {
         // 새 글 저장 로직 (POST 요청)
-        const response = await baseAxios().post('/newzy', formData);
+        const response = await baseAxios().post("/newzy", formData);
         if (response.status === 201) {
-          alert('저장되었습니다.');
-          navigate('/newzy');
+          alert("저장되었습니다.");
+          navigate("/newzy");
         } else {
-          alert('저장에 실패했습니다.');
+          alert("저장에 실패했습니다.");
         }
       }
     } catch (error) {
-      alert('오류가 발생했습니다.');
+      alert("오류가 발생했습니다.");
       console.error("Error saving data:", error);
     }
   };
@@ -119,7 +119,7 @@ export const NewzyEdit = () => {
           onClick={handleSave}
           className="w-[80px] h-[30px] bg-[#565656] text-white text-[20px] font-bold rounded-md absolute top-[10px] right-0 mr-4"
         >
-          {isEditing ? '수정' : '저장'}
+          {isEditing ? "수정" : "저장"}
         </button>
       </div>
 
@@ -132,10 +132,13 @@ export const NewzyEdit = () => {
           </div>
 
           <div className="mb-8">
-            <CategorySelector category={formData.category} onCategoryChange={handleCategoryChange} />
+            <CategorySelector
+              category={formData.category}
+              onCategoryChange={handleCategoryChange}
+            />
           </div>
 
-          <ContentEditor 
+          <ContentEditor
             content={formData.content}
             setContent={(content) => {
               setFormData((prevData) => ({ ...prevData, content }));

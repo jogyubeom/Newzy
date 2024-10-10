@@ -1,24 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useHomeStore from "../store/useHomeStore";
 
 export const TodayQuizModal = ({ isOpen, onClose }) => {
   const { todayNews, postAnswer } = useHomeStore();
-  console.log(todayNews?.isSolved);
   const [selectedOption, setSelectedOption] = useState(null);
   const [disabledOptions, setDisabledOptions] = useState([]);
   const [isAnswered, setIsAnswered] = useState(false);
   const [feedback, setFeedback] = useState("");
+
+  // 새로고침 시 isSolved에 따른 처리
+  useEffect(() => {
+    if (todayNews?.isSolved) {
+      setSelectedOption(parseInt(todayNews.answer));
+      setIsAnswered(true);
+    }
+  }, [todayNews]);
 
   const handleOptionClick = (optionIndex) => {
     setSelectedOption(optionIndex);
 
     if (optionIndex === parseInt(todayNews.answer)) {
       setFeedback("정답입니다!");
-      setIsAnswered(true); // 정답을 맞추면 모든 버튼 비활성화
+      setIsAnswered(true);
       postAnswer();
     } else {
       setFeedback("오답입니다. 다시 시도해보세요.");
-      setDisabledOptions([...disabledOptions, optionIndex]); // 틀린 버튼만 비활성화
+      setDisabledOptions([...disabledOptions, optionIndex]);
     }
   };
 
@@ -27,7 +34,7 @@ export const TodayQuizModal = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white w-[500px] h-[400px] rounded-lg p-6 shadow-lg relative">
-        <h2 className="text-xl font-semibold text-center mb-4">
+        <h2 className="text-2xl font-semibold text-center mb-6">
           {todayNews.question}
         </h2>
         <div className="grid grid-cols-2 gap-4">
@@ -39,15 +46,16 @@ export const TodayQuizModal = ({ isOpen, onClose }) => {
           ].map((option, index) => (
             <button
               key={index}
-              className={`w-full p-3 rounded-lg text-white font-semibold transition-colors ${
-                isAnswered
-                  ? "bg-gray-300"
-                  : disabledOptions.includes(index)
-                  ? "bg-gray-500 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
-              }`}
+              className={`w-full p-3 rounded-lg text-white font-semibold transition-colors
+                ${
+                  selectedOption === index
+                    ? "bg-purple-700" // 정답 선택된 버튼은 보라색
+                    : disabledOptions.includes(index) || isAnswered
+                    ? "bg-gray-300 cursor-not-allowed" // 틀린 답이나 답변이 완료된 버튼은 회색
+                    : "bg-purple-500 hover:bg-purple-400" // 선택 가능한 버튼은 파란색
+                }`}
               onClick={() => handleOptionClick(index)}
-              disabled={isAnswered || disabledOptions.includes(index)} // 정답을 맞추면 모든 버튼 비활성화, 틀린 버튼은 계속 비활성화
+              disabled={isAnswered || disabledOptions.includes(index)}
             >
               {option}
             </button>
