@@ -22,7 +22,7 @@ export const HotNewzy = () => {
               <div className="flex h-full flex-col items-start gap-2">
                 <div className="flex flex-col gap-1">
                   {/* Title */}
-                  <div className="w-full text-[#26262C] font-sans text-md leading-5 font-semibold">
+                  <div className="w-full text-[#26262C] text-start font-sans text-md leading-5 font-semibold">
                     {item.title}
                   </div>
                   {/* 날짜, 조회수 */}
@@ -50,7 +50,7 @@ export const HotNewzy = () => {
 
                 {/* Content (ellipsis 처리) */}
                 <div
-                  className="flex-grow flex items-center w-full text-[#747483] text-sm font-normal overflow-hidden whitespace-normal"
+                  className="flex-grow flex items-center w-full text-[#747483] text-start text-sm font-normal overflow-hidden whitespace-normal"
                   style={{
                     display: "-webkit-box",
                     WebkitLineClamp: 3,
@@ -64,7 +64,7 @@ export const HotNewzy = () => {
               {item.thumbnail && ( //썸네일이 있다면...
                 <img
                   src={item.thumbnail}
-                  className="flex-shrink-0 w-[76px] h-[76px] rounded-lg object-cover"
+                  className="flex-shrink-0 w-[76px] h-full rounded-lg object-cover"
                   alt={item.title}
                 />
               )}
