@@ -39,8 +39,8 @@ def yna(driver, society_article_count_by_hour, society_yna_news_link_list,
     insert_count = 0
 
     for news in society_yna_news_link_list:
-        if insert_count >= 10:
-            logging.info(f"삽입된 기사의 개수가 10개가 되어 종료합니다.")
+        if insert_count >= 5:
+            logging.info(f"삽입된 기사의 개수가 5개가 되어 종료합니다.")
             break
 
         success = crawl_news_detail(

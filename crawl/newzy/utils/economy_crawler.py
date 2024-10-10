@@ -39,8 +39,8 @@ def hankyung(driver, economy_article_count_by_hour, economy_hankyung_news_link_l
     insert_count = 0
 
     for news in economy_hankyung_news_link_list:
-        if insert_count >= 10:
-            logging.info(f"삽입된 기사의 개수가 10개가 되어 종료합니다.")
+        if insert_count >= 5:
+            logging.info(f"삽입된 기사의 개수가 5개가 되어 종료합니다.")
             break
         success = crawl_news_detail(
             driver=driver,
@@ -93,8 +93,8 @@ def mk(driver, economy_article_count_by_hour, economy_mk_news_link_list,
     insert_count = 0
 
     for news in economy_mk_news_link_list:
-        if insert_count >= 10:
-            logging.info(f"삽입된 기사의 개수가 10개가 되어 종료합니다.")
+        if insert_count >= 5:
+            logging.info(f"삽입된 기사의 개수가 5개가 되어 종료합니다.")
             break
         success = crawl_news_detail(
             driver=driver,
