@@ -40,17 +40,17 @@ export const Footer = () => {
           </h3>
           <ul className="space-y-2">
             <li>
-              <a href="/news" className="hover:text-gray-400">
+              <a href="/news/경제" className="hover:text-gray-400">
                 경제
               </a>
             </li>
             <li>
-              <a href="/news" className="hover:text-gray-400">
+              <a href="/news/사회" className="hover:text-gray-400">
                 사회
               </a>
             </li>
             <li>
-              <a href="/news" className="hover:text-gray-400">
+              <a href="/news/세계" className="hover:text-gray-400">
                 세계
               </a>
             </li>
@@ -67,11 +67,11 @@ export const Footer = () => {
           <ul className="space-y-2">
             <li>
               <a href="/newzy" className="hover:text-gray-400">
-                구독 뉴지
+                최신 뉴지 보기
               </a>
             </li>
             <li>
-              <a href="/newzy" className="hover:text-gray-400">
+              <a href="/newzy/edit" className="hover:text-gray-400">
                 뉴지 작성하기
               </a>
             </li>
@@ -87,17 +87,17 @@ export const Footer = () => {
           </h3>
           <ul className="space-y-2">
             <li>
-              <a href="/profile" className="hover:text-gray-400">
+              <a href="/profile/myNewzy" className="hover:text-gray-400">
                 나의 뉴지
               </a>
             </li>
             <li>
-              <a href="/profile" className="hover:text-gray-400">
+              <a href="/profile/bookMark" className="hover:text-gray-400">
                 북마크 뉴스
               </a>
             </li>
             <li>
-              <a href="/profile" className="hover:text-gray-400">
+              <a href="/profile/words" className="hover:text-gray-400">
                 단어장
               </a>
             </li>

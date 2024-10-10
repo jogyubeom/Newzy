@@ -56,7 +56,7 @@ export const HotNewzy = () => {
               {/* Thumbnail 이미지 */}
               {item.thumbnail && ( //썸네일이 있다면...
                 <img
-                  src={item.thumbnail || "https://via.placeholder.com/76"} // 썸네일 없을 때 기본 이미지
+                  src={item.thumbnail} // 썸네일 없을 때 기본 이미지
                   className="flex-shrink-0 w-[76px] h-[76px] rounded-lg object-cover"
                   alt={item.title}
                 />
