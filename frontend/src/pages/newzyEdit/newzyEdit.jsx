@@ -123,7 +123,7 @@ export const NewzyEdit = () => {
         </button>
       </div>
 
-      <div className="flex h-screen">
+      <div className="flex min-h-screen">
         <div className="w-[15%]"></div>
 
         <div className="flex-1 p-6">

@@ -65,10 +65,10 @@ const ContentEditor = ({ content, setContent }) => {
   }), []);
 
   return (
-    <div style={{ width: '100%', maxWidth: '800px', overflowY: 'auto' }}>
+    <div style={{ width: '100%', maxWidth: '800px', minHeight: '600px', maxHeight: '600px', overflowY: 'auto' }}>
       <ReactQuill
         ref={quillRef}
-        style={{ minHeight: '400px', maxHeight: '400px', overflowY: 'auto' }} // 최소 및 최대 높이 설정
+        style={{ height: '500px' }}
         modules={modules}
         value={content}
         onChange={setContent}

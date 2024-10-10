@@ -4,7 +4,6 @@ import {
   RouterProvider,
   Route,
   Navigate,
-  useNavigate,
   Outlet,
 } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -24,35 +23,23 @@ import { UserTest } from "pages/userTest";
 
 // PrivateRoute 컴포넌트
 const PrivateRoute = () => {
-  const navigate = useNavigate();
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn());
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  const openLoginModal = () => {
-    setIsLoginModalOpen(true);
-  };
-
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false);
-  };
-
   useEffect(() => {
     if (!isLoggedIn) {
-      // 로그인되어 있지 않으면 홈으로 보내고 로그인 모달을 띄움
-      openLoginModal();
+      setIsLoginModalOpen(true); // 로그인 모달을 띄움
     }
   }, [isLoggedIn]);
 
-  // 로그인 상태가 아니라면 아무것도 렌더링하지 않음
   if (!isLoggedIn) {
     return (
       <div>
-        <SocialLoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
+        <SocialLoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
       </div>
     );
   }
 
-  // 로그인된 상태면 자식 라우트를 렌더링
   return <Outlet />;
 };
 
@@ -62,18 +49,15 @@ export const AppRouter = () => {
       <Route index element={<Home />} />
       <Route path="news">
         <Route index element={<NewsList />} />
+        <Route path=":category" element={<NewsList />} /> {/* 카테고리별 목록 */}
         <Route path=":id" element={<NewsDetail />} />
-        <Route path="economy" element={<NewsList category="economy" />} />
-        <Route path="social" element={<NewsList category="social" />} />
-        <Route path="global" element={<NewsList category="global" />} />
       </Route>
       <Route path="newzy">
         <Route index element={<NewzyList />} />
-        {/* 새 글 작성 라우트 */}
-        <Route path="edit" element={<NewzyEdit />} />
-        {/* 수정 라우트 */}
-        <Route path="edit/:newzyId" element={<NewzyEdit />} />
-        <Route path=":id" element={<NewzyDetail />} />
+        <Route path=":category" element={<NewzyList />} /> {/* 카테고리별 목록 */}
+        <Route path="edit" element={<NewzyEdit />} /> {/* 새 글 작성 */}
+        <Route path="edit/:newzyId" element={<NewzyEdit />} /> {/* 수정 라우트 */}
+        <Route path=":id" element={<NewzyDetail />} /> {/* 상세 페이지 */}
       </Route>
       {/* PrivateRoute로 보호된 경로들 */}
       <Route element={<PrivateRoute />}>
