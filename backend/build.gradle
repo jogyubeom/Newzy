@@ -83,6 +83,7 @@ dependencies {
 
     // JSON library
     implementation 'org.json:json:20210307'
+    implementation 'org.jsoup:jsoup:1.14.3'
 
     // Jsoup : 뉴지 post 할 때 html 파싱
     implementation group: 'org.jsoup', name: 'jsoup', version: '1.7.2'
