@@ -58,7 +58,6 @@ export const MyNewzy = () => {
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     fetchPosts(); // 컴포넌트가 마운트될 때 API 호출
   }, [state.currentPage]); // 페이지 변경 시 호출
 
