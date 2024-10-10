@@ -336,15 +336,18 @@ export const AnotherProfile = () => {
               </div>
             </div>
           </div>
-          <div className="w-[293px] h-[103px] relative mt-10 mb-7">
-            <button
-              onClick={toggleFollow}
-              className={`w-full h-[73px] px-4 py-2 rounded-[10px] flex items-center justify-center text-white font-[Open Sans] text-[32px] font-semibold transition-colors duration-300
-                ${isUserFollowing ? 'bg-red-600 hover:bg-red-700' : 'bg-[#3578FF] hover:bg-[#2a61cc]'}`}
-            >
-              {isUserFollowing ? 'Unfollow' : 'Follow'}
-            </button>
-          </div>
+          {/* 팔로우 버튼 - 로그인한 유저와 다른 유저일 때만 표시 */}
+          {loggedInUser.nickname !== nickname && (
+            <div className="w-[293px] h-[103px] relative mt-10 mb-7">
+              <button
+                onClick={toggleFollow}
+                className={`w-full h-[73px] px-4 py-2 rounded-[10px] flex items-center justify-center text-white font-[Open Sans] text-[32px] font-semibold transition-colors duration-300
+                  ${isUserFollowing ? 'bg-red-600 hover:bg-red-700' : 'bg-[#3578FF] hover:bg-[#2a61cc]'}`}
+              >
+                {isUserFollowing ? 'Unfollow' : 'Follow'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
