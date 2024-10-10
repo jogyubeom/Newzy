@@ -35,7 +35,7 @@ export const TodayNews = () => {
   return (
     <div className="flex flex-col lg:flex-row justify-between items-center px-6 py-8 space-y-6 lg:space-y-0 lg:space-x-6">
       {isLoggedIn ? (
-        <div className="absolute flex bottom-0 left-0 xl:flex-row w-full p-6">
+        <div className="absolute flex bottom-0 left-0 xl:flex-row w-full ">
           {/* 추천 뉴스 섹션 */}
           <button
             className="w-[453px] h-[215px] bg-purple-600 flex flex-col items-center rounded-t-lg p-4 gap-2 relative"
@@ -82,7 +82,7 @@ export const TodayNews = () => {
       ) : (
         <div className="absolute flex flex-col bottom-0 left-0 xl:flex-row">
           <button
-            className="w-[453px] h-[215px] bg-purple-600 flex flex-col items-center rounded-t-lg gap-2"
+            className="w-[453px] h-[215px] bg-purple-600 flex flex-col items-center rounded-t-lg p-4 gap-2"
             onClick={() => handleTodayNews(todayNews?.newsId)}
           >
             <div className="flex justify-center items-center text-center">
