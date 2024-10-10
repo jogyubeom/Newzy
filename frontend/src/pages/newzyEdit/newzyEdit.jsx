@@ -113,7 +113,7 @@ export const NewzyEdit = () => {
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-white min-w-[1150px]">
       <div className="w-full h-[50px] border-b border-gray-200 shadow relative">
         <button
           onClick={handleSave}

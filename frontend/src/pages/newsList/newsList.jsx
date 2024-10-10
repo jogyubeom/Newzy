@@ -104,7 +104,7 @@ export const NewsList = () => {
     }));
 
   return (
-    <div>
+    <div className='min-w-[1150px]'>
       <NewsListHeader
         selectedCategory={state.sort.selectedCategory}
         onCategoryClick={(category) =>

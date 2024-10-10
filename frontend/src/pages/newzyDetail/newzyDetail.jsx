@@ -53,7 +53,7 @@ export const NewzyDetail = () => {
   const htmlContent = newzy ? newzy.content : "";
 
   return (
-    <div className="relative flex min-h-screen bg-white">
+    <div className="relative flex min-h-screen bg-white bg-white min-w-[1150px]">
       <div className="w-[17%]"></div>
 
       <div className="flex-1 p-6">
