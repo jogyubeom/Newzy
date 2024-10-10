@@ -36,7 +36,7 @@ export const BookmarkNewzy = () => {
     fetchPosts();
   }, [state.currentPage]);
 
-  const handlePostClick = (id) => navigate(`/newzy/${id}`);
+  const handlePostClick = (id) => navigate(`/newzy/detail/${id}`);
 
   return (
     <div>

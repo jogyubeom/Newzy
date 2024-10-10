@@ -62,7 +62,7 @@ export const MyNewzy = () => {
     fetchPosts(); // 컴포넌트가 마운트될 때 API 호출
   }, [state.currentPage]); // 페이지 변경 시 호출
 
-  const handlePostClick = (id) => navigate(`/newzy/${id}`);
+  const handlePostClick = (id) => navigate(`/newzy/detail/${id}`);
 
   return (
     <div className="bg-white px-10">
