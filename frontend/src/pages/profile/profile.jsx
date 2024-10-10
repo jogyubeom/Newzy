@@ -179,6 +179,11 @@ export const Profile = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    // 툴팁을 동적으로 다시 설정 (필요한 경우)
+    ReactTooltip.rebuild();
+  }, [profileData.name]); // profileData.name이 바뀔 때마다 툴팁 재설정
+
   // 유저 정보가 로드되지 않았을 때 로딩 메시지 표시
   if (!user || !user.nickname) {
     return <div>로딩 중...</div>; // 유저 정보가 없으면 로딩 메시지 표시
