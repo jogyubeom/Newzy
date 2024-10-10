@@ -13,6 +13,7 @@ export const TodayQuizModal = ({ isOpen, onClose }) => {
     if (todayNews?.isSolved) {
       setSelectedOption(parseInt(todayNews.answer) - 1);
       setIsAnswered(true);
+      setFeedback("오늘의 문제를 풀었어요. 내일 또 풀어봐요!");
     }
   }, [todayNews]);
 
