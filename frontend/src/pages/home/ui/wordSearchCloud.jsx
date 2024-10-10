@@ -11,18 +11,21 @@ const options = {
 };
 
 const categories = [
-  { id: 0, label: "전체" },
-  { id: 1, label: "경제" },
-  { id: 2, label: "사회" },
-  { id: 3, label: "세계" },
+  { id: 0, label: "전체", apiCategory: null },
+  { id: 1, label: "경제", apiCategory: 0 },
+  { id: 2, label: "사회", apiCategory: 1 },
+  { id: 3, label: "세계", apiCategory: 2 },
 ];
 
 export function WordSearchCloud() {
   const { wordSearchCloud } = useHomeStore();
   const [category, setCategory] = useState(0);
 
+  // 선택된 카테고리와 매칭되는 단어 필터링
   const searchWords = wordSearchCloud?.filter(
-    (word) => category === 0 || word.category === category
+    (word) =>
+      categories[category].apiCategory === null ||
+      word.category === categories[category].apiCategory
   );
 
   return (
