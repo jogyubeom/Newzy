@@ -17,7 +17,7 @@ export const WeekCardWinner = () => {
 
   return (
     <div className="w-full ">
-      <div className="flex justify-between items-center w-[639px] h-[188px] p-6 bg-[#002F10] rounded-lg overflow-hidden">
+      <div className="flex justify-between items-center h-[188px] p-6 bg-[#002F10] rounded-lg overflow-hidden">
         {/* Content Section */}
         <div className="flex flex-col items-center space-y-2 w-[296px]">
           <div className="flex justify-center items-center space-x-2 w-full">

@@ -55,8 +55,8 @@ export const TodayNews = () => {
           </button>
 
           {/* 퀴즈 섹션 */}
-          <div className="flex w-full lg:w-1/2">
-            <div className="w-full bg-white shadow-lg rounded-lg p-4">
+          <button className="w-[453px] h-[215px] bg-yellow-400 flex flex-col items-center rounded-t-lg p-4 gap-2">
+            <div className="w-full shadow-lg rounded-lg p-4">
               <h2 className="text-lg font-semibold text-gray-900">
                 오늘의 퀴즈!
               </h2>
@@ -70,7 +70,7 @@ export const TodayNews = () => {
                 퀴즈 풀기
               </button>
             </div>
-          </div>
+          </button>
         </div>
       ) : (
         <div className="absolute flex flex-col bottom-0 left-0 xl:flex-row">

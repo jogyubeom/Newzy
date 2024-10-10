@@ -1,8 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import useHomeStore from "../store/useHomeStore";
 import { formatKoreanDate } from "shared/utils/dateUtils";
 
 export const HotNewzy = () => {
+  const navigate = useNavigate();
   const { hotNewzy } = useHomeStore();
+  const handleHotNewzy = (id) => navigate(`/newzy/detail/${id}`);
 
   return (
     <div className="flex flex-col">
@@ -13,6 +16,7 @@ export const HotNewzy = () => {
             <div
               key={item.newzyId}
               className="w-[312px] h-[180px] shadow-lg rounded-lg flex flex-row justify-start items-center gap-4 p-4 overflow-hidden bg-[#F7F4F4]"
+              onClick={() => handleHotNewzy(item.newzyId)}
             >
               {/* Text 컨텐츠 */}
               <div className="flex h-full flex-col items-start gap-2">
@@ -23,6 +27,7 @@ export const HotNewzy = () => {
                   </div>
                   {/* 날짜, 조회수 */}
                   <div className="flex items-center w-full text-xs text-gray-500 gap-1">
+                    <span>{item.nickname}</span>·
                     <span>{formatKoreanDate(item.createdAt)}</span>·
                     <span className="flex">
                       <svg
@@ -44,7 +49,7 @@ export const HotNewzy = () => {
                 </div>
 
                 {/* Content (ellipsis 처리) */}
-                <div className="flex-grow flex items-center w-full text-[#747483] text-sm leading-4 font-normal overflow-hidden text-ellipsis whitespace-nowrap">
+                <div className="flex-grow flex items-center w-full text-[#747483] text-sm leading-4 font-normal overflow-hidden whitespace-normal text-ellipsis">
                   {item.contentText}
                 </div>
               </div>
