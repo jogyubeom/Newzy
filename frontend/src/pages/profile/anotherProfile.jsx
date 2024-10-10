@@ -337,7 +337,7 @@ export const AnotherProfile = () => {
             </div>
           </div>
           {/* 팔로우 버튼 - 로그인한 유저와 다른 유저일 때만 표시 */}
-          {loggedInUser.nickname !== nickname && (
+          {loggedInUser.nickname !== nickname ? (
             <div className="w-[293px] h-[103px] relative mt-10 mb-7">
               <button
                 onClick={toggleFollow}
@@ -347,7 +347,8 @@ export const AnotherProfile = () => {
                 {isUserFollowing ? 'Unfollow' : 'Follow'}
               </button>
             </div>
-          )}
+          ) : <div className="w-[293px] h-[103px] relative mt-10 mb-7">
+        </div>}
         </div>
       </div>
 
