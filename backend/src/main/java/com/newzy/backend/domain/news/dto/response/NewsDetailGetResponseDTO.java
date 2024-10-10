@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,11 +47,15 @@ public class NewsDetailGetResponseDTO {
         this.difficulty = difficulty;
         this.category = category;
         this.publisher = publisher;
-        this.createdAt = createdAt;
-        this.crawledAt = crawledAt;
         this.hit = hit;
         this.likeCnt = likeCnt;
         this.thumbnail = thumbnail;
-        this.updatedAt = updatedAt;
+
+        this.createdAt = createdAt.atZone(ZoneId.of("UTC"))
+                .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+        this.createdAt = updatedAt.atZone(ZoneId.of("UTC"))
+                .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+        this.crawledAt = crawledAt.atZone(ZoneId.of("UTC")).
+                withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();
     }
 }
