@@ -210,7 +210,7 @@ const Words = () => {
         )}
         {isModalOpen && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-1100"
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
           onClick={closeModal} // 모달 외부 클릭 시 닫기
         >
           <div
