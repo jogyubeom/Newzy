@@ -39,10 +39,38 @@ export const CardBack = ({ onClose }) => {
 
   // console.log(category);
 
+  const magicalGirlAnimation = `
+  @keyframes magical-transform {
+  0% {
+    background-color: white; /* 발광할 때 배경색 */
+    box-shadow: none;
+    transform: scale(1);
+    opacity: 1;
+    }
+    75% {
+      background-color: ${
+        category === 0 ? "#DC2626" : category === 1 ? "#16A34A" : "#2563EB"
+      }; /* 원래 배경색 */
+      box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.7); /* 발광 효과 */
+      transform: scale(1.1);
+      opacity: 0.7;
+      }
+      100% {
+        background-color: ${
+          category === 0 ? "#DC2626" : category === 1 ? "#16A34A" : "#2563EB"
+        }; /* 다시 원래 배경색 */
+        box-shadow: none;  
+        transform: scale(1);
+        opacity: 1;
+  `;
+
   return (
     <div
       className={`relative w-[360px] h-[480px] rounded-2xl flex flex-col items-center py-4 ${categoryBgColor}`}
+      style={{ animation: "magical-transform 1s ease-in-out" }}
     >
+      {/* 애니메이션 스타일 적용 */}
+      <style>{magicalGirlAnimation}</style>
       <div className="flex flex-col items-center gap-y-[3px] px-5 w-full">
         <div className="flex flex-col items-center gap-y-[8px] w-full">
           <div className="text-white text-4xl font-card flex justify-center items-center h-16">

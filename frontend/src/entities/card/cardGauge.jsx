@@ -69,9 +69,10 @@ export const CardGauge = ({ news }) => {
   console.log(news);
 
   const handleCardClick = () => {
-    if (!isLoggedIn) {
-      openLoginModal();
-    } else if (isCardAcquired) {
+    // if (!isLoggedIn) {
+    //   openLoginModal();
+    // } else
+    if (isCardAcquired) {
       fetchNewsCard(news.newsId);
       setModalStep(2); // 카드 뒷면 모달 열기
     } else if (isComplete) {
@@ -97,7 +98,6 @@ export const CardGauge = ({ news }) => {
           }}
         />
       )}
-
       {/* Ping 애니메이션을 위한 스타일 */}
       <style>{pingAnimation}</style>
 

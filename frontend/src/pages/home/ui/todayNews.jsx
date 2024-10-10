@@ -72,7 +72,7 @@ export const TodayNews = () => {
               {todayNews?.question}
             </p>
             <button
-              className="mt-4 w-full h-12 bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
+              className="mt-4 w-full h-12 bg-yellow-600 hover:bg-purple-700 text-white rounded-lg"
               onClick={openQuizModal}
             >
               퀴즈 풀기
@@ -83,7 +83,7 @@ export const TodayNews = () => {
         <div className="absolute flex flex-col bottom-0 left-0 xl:flex-row">
           <button
             className="w-[453px] h-[215px] bg-purple-600 flex flex-col items-center rounded-t-lg p-4 gap-2"
-            onClick={() => handleTodayNews(todayNews?.newsId)}
+            onClick={openLoginModal}
           >
             <div className="flex justify-center items-center text-center">
               <div className="text-white text-6xl font-semibold">
@@ -94,7 +94,8 @@ export const TodayNews = () => {
               </div>
             </div>
             <div className="text-center text-purple-200 opacity-80 text-[12px]">
-              <p>{userInfo?.nickname}님을 위한 추천 뉴스 제발 읽어주세요</p>
+              <p>로그인하고 오늘의 추천 뉴스를 확인해 보세요!</p>
+              <p>추천 뉴스는 나의 문해력, 관심도에 따라 제공됩니다.</p>
             </div>
           </button>
 

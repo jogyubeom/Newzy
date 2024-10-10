@@ -31,6 +31,7 @@ const CardListModal = ({ onClose }) => {
       setCurrentPage(currentPage - 1);
       setAnimationDirection("fade-out");
       fetchNewsCardList(currentPage);
+      console.log(currentPage);
       setTimeout(() => {
         fetchNewsCard(currentPage);
         setAnimationDirection("fade-in");
