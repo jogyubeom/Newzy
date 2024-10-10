@@ -13,12 +13,11 @@ export const Header = () => {
 
   const CategoryButton = ({ color, label }) => (
     <button
-      className={`w-full h-[64px] flex justify-center items-center rounded-l-full`}
-      style={{ backgroundColor: color }}
+      className={`w-full h-[64px] ${color} flex justify-center items-center rounded-l-full`}
       onClick={() => handleNewsCategory(label)}
     >
       <svg className="w-[94px] h-[94px]"></svg>
-      <div className="text-center text-[32px] font-semibold leading-[20px]">
+      <div className="text-white text-center text-[32px] font-semibold leading-[20px]">
         {label}
       </div>
     </button>
@@ -39,9 +38,9 @@ export const Header = () => {
 
       <div className="absolute bottom-0 right-0 flex flex-col justify-end items-center gap-3 pb-4">
         <div className="w-[256px] h-[228px] flex flex-col items-center gap-[18px]">
-          <CategoryButton color="#ef8885" label="경제" />
-          <CategoryButton color="#93cf96" label="사회" />
-          <CategoryButton color="#78b7ef" label="세계" />
+          <CategoryButton color="bg-red-800" label="경제" />
+          <CategoryButton color="bg-green-800" label="사회" />
+          <CategoryButton color="bg-blue-800" label="세계" />
         </div>
       </div>
     </div>
