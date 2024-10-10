@@ -47,7 +47,7 @@ const PrivateRoute = () => {
   // 로그인 상태가 아니라면 아무것도 렌더링하지 않음
   if (!isLoggedIn) {
     return (
-      <div>
+      <div className="flex">
         <SocialLoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
       </div>
     );

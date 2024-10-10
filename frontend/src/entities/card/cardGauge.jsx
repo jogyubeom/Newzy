@@ -4,15 +4,20 @@ import { useEffect, useState } from "react";
 import { useNewsCardStore } from "./store/cardStore";
 import { CardSummary } from "./cardSummary";
 import { CardBack } from "./cardBack";
+import useAuthStore from "shared/store/userStore";
+import { SocialLoginModal } from "widgets/login/socialLoginModal";
 
 export const CardGauge = ({ news }) => {
   const { fetchNewsCard } = useNewsCardStore();
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn());
   const [scrollPercent, setScrollPercent] = useState(0);
   const [isComplete, setIsComplete] = useState(false); // 카드 읽은 상태
   const [isCardAcquired, setIsCardAcquired] = useState(false); // 카드 획득 여부 상태
   const [modalStep, setModalStep] = useState(0); // 모달 상태 (0: 닫힘, 1: 요약 모달, 2: 뒷면 모달)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // 로그인 모달
 
-  console.log(news?.isCollected, isCardAcquired);
+  // console.log(news?.isCollected, isCardAcquired);
+
   useEffect(() => {
     if (news?.isCollected) {
       setIsCardAcquired(true);
@@ -64,12 +69,22 @@ export const CardGauge = ({ news }) => {
   console.log(news);
 
   const handleCardClick = () => {
-    if (isCardAcquired) {
+    if (!isLoggedIn) {
+      openLoginModal();
+    } else if (isCardAcquired) {
       fetchNewsCard(news.newsId);
       setModalStep(2); // 카드 뒷면 모달 열기
     } else if (isComplete) {
       setModalStep(1); // 요약 모달 열기
     }
+  };
+
+  const openLoginModal = () => {
+    setIsLoginModalOpen(true);
+  };
+
+  const closeLoginModal = () => {
+    setIsLoginModalOpen(false);
   };
 
   return (
@@ -147,6 +162,8 @@ export const CardGauge = ({ news }) => {
           </div>
         </div>
       )}
+      {/* 소셜 로그인 모달 */}
+      <SocialLoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
     </button>
   );
 };
