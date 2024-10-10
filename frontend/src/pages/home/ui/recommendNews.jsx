@@ -23,7 +23,7 @@ export const RecommendNews = () => {
     );
   };
 
-  const handleRecommendNews = (id) => navigate(`/news/${id}`);
+  const handleRecommendNews = (id) => navigate(`/news/detail/${id}`);
 
   return (
     <div className="flex items-center justify-center max-w-[100%]">

@@ -35,7 +35,7 @@ export const BookmarkNews = () => {
     fetchPosts(); // 컴포넌트가 마운트될 때 API 호출
   }, [state.currentPage]); // 페이지 변경 시 호출
 
-  const handlePostClick = (id) => navigate(`/news/${id}`);
+  const handlePostClick = (id) => navigate(`/news/detail/${id}`);
 
   return (
     <div>

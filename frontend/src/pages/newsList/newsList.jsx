@@ -64,7 +64,7 @@ export const NewsList = () => {
     category, // URL 파라미터 카테고리 변경 시 다시 호출
   ]);
 
-  const handlePostClick = (id) => navigate(`/news/${id}`);
+  const handlePostClick = (id) => navigate(`/news/detail/${id}`);
 
   // 카테고리나 구독/인기 상태 변경 핸들러
   const handleCategoryOrRangeClick = (key, value) => {

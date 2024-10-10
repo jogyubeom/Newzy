@@ -64,7 +64,7 @@ export const NewzyList = () => {
     fetchPosts(); // 컴포넌트가 마운트될 때 API 호출
   }, [state.currentPage, state.sort.selectedCategory, state.sort.selectedRange, category]); // URL의 카테고리 변화도 감지
 
-  const handlePostClick = (id) => navigate(`/newzy/${id}`);
+  const handlePostClick = (id) => navigate(`/newzy/detail/${id}`);
 
   const handleCategoryOrRangeClick = (key, value) => {
     setState((prevState) => ({

@@ -11,7 +11,7 @@ export const CardBack = ({ onClose }) => {
 
   const handleCardNews = (id) => {
     onClose();
-    navigate(`/news/${id}`);
+    navigate(`/news/detail/${id}`);
   };
 
   // 카테고리에 따른 배경색 설정
@@ -35,7 +35,7 @@ export const CardBack = ({ onClose }) => {
       ? "어려워요"
       : userDifficulty === 1
       ? "보통이예요"
-      : "쉬어요";
+      : "쉬워요";
 
   // console.log(category);
 

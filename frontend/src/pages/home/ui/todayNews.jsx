@@ -14,7 +14,7 @@ export const TodayNews = () => {
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false); // 퀴즈 모달
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // 로그인 모달
 
-  const handleTodayNews = (id) => navigate(`/news/${id}`);
+  const handleTodayNews = (id) => navigate(`/news/detail/${id}`);
 
   const openQuizModal = () => {
     setIsQuizModalOpen(true);

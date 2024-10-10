@@ -4,7 +4,7 @@ import useHomeStore from "../store/useHomeStore";
 export const Top3News = () => {
   const navigate = useNavigate();
   const { top3News } = useHomeStore();
-  const handleTop3News = (id) => navigate(`/news/${id}`);
+  const handleTop3News = (id) => navigate(`/news/detail/${id}`);
   // console.log(top3News);
   return (
     <div className="shadow-md rounded bg-gray-200 p-3 flex flex-col gap-2">
