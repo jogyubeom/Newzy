@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useFollowStore } from "./store/useFollowStore";
 import { getGrade } from "shared/getGrade";
@@ -178,11 +177,6 @@ export const Profile = () => {
       fetchStatusData();
     }
   }, [user]);
-
-  useEffect(() => {
-    // 툴팁을 동적으로 다시 설정 (필요한 경우)
-    ReactTooltip.rebuild();
-  }, [profileData.name]); // profileData.name이 바뀔 때마다 툴팁 재설정
 
   // 유저 정보가 로드되지 않았을 때 로딩 메시지 표시
   if (!user || !user.nickname) {
@@ -482,21 +476,13 @@ export const Profile = () => {
                   setProfileData({ ...profileData, name: e.target.value })
                 }
                 className="outline-none w-full p-2 mr-5 text-white bg-gray-800 opacity-100"
-                maxLength={10} // 닉네임 최대 길이 설정
+                maxLength={6} // 닉네임 최대 길이 설정
               />
             ) : (
               <p 
               className="p-2"
-              data-tip={profileData.name} // 툴팁에 전체 닉네임 표시
-              style={{
-                width: "250px", // 고정된 너비
-                whiteSpace: "nowrap", // 한 줄로 표시
-                overflow: "hidden", // 넘치는 텍스트 숨기기
-                textOverflow: "ellipsis", // 넘치는 텍스트는 생략 표시
-              }}
               >{profileData.name}</p>
             )}
-            <ReactTooltip place="top" type="dark" effect="solid" />
           </div>
 
           <div className="w-[250px] h-[200px] text-white font-[Open Sans] text-[24px] leading-[36px] font-semibold flex items-center text-left break-words whitespace-pre-wrap">
@@ -607,9 +593,8 @@ export const Profile = () => {
       {/* 하단에 고정된 버튼 추가 */}
       <button
         className={`fixed bottom-5 left-1 bg-transparent flex items-center justify-center cursor-pointer ${
-          isModalOpen ? "pointer-events-none opacity-50" : ""
+          isModalOpen ? "pointer-events-none opacity-50" : "z-[1000]"
         }`} // 모달이 열려 있으면 클릭 불가능하게 처리
-        style={{ zIndex: 1000 }}
         onClick={!isModalOpen ? openCardListModal : null} // 모달이 열렸을 때 클릭 비활성화
       >
         <div className="relative w-[120px] h-[172px] group">
