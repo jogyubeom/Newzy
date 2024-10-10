@@ -34,6 +34,7 @@ const PrivateRoute = () => {
 
   const closeLoginModal = () => {
     setIsLoginModalOpen(false);
+    navigate("/");
   };
 
   useEffect(() => {
@@ -41,7 +42,7 @@ const PrivateRoute = () => {
       // 로그인되어 있지 않으면 홈으로 보내고 로그인 모달을 띄움
       openLoginModal();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, navigate]);
 
   // 로그인 상태가 아니라면 아무것도 렌더링하지 않음
   if (!isLoggedIn) {
@@ -82,8 +83,8 @@ export const AppRouter = () => {
           <Route path="bookMark" element={<Profile />} />
           <Route path="words" element={<Profile />} />
         </Route>
-        <Route path="profile/:nickname" element={<AnotherProfile />} />
       </Route>
+      <Route path="profile/:nickname" element={<AnotherProfile />} />
       <Route path="usertest" element={<UserTest />} />
     </Route>
   );
