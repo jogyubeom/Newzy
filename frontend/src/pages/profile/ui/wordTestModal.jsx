@@ -94,7 +94,7 @@ const WordTestModal = ({ isOpen, onClose, wordList, userName, onWordsRemoved }) 
     setUserAnswer("");
   };
 
-  // 맞힌 단어들을 서버에서 삭제하는 함수
+  // 맞힌 단어들을 서버에서 삭제하는 함수!
   const removeWordsFromList = async () => {
     try {
       // correctWords 배열을 콤마로 구분된 문자열로 변환
