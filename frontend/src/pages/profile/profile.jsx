@@ -476,9 +476,24 @@ export const Profile = () => {
                   setProfileData({ ...profileData, name: e.target.value })
                 }
                 className="outline-none w-full p-2 mr-5 text-white bg-gray-800 opacity-100"
+                maxLength={30} // 닉네임 최대 길이 설정
+                style={{
+                  width: "250px", // 고정된 너비
+                  whiteSpace: "nowrap", // 한 줄로 표시
+                  overflowX: "auto", // 가로 스크롤 가능
+                  textOverflow: "ellipsis", // 넘치는 텍스트는 생략 표시
+                }}
               />
             ) : (
-              <p className="p-2">{profileData.name}</p>
+              <p 
+              className="p-2"
+              style={{
+                width: "250px", // 고정된 너비
+                whiteSpace: "nowrap",
+                overflowX: "auto", // 가로 스크롤 가능
+                textOverflow: "ellipsis",
+              }}
+              >{profileData.name}</p>
             )}
           </div>
 
@@ -500,6 +515,7 @@ export const Profile = () => {
                 maxLength={maxIntroduceLength}
                 className="outline-none w-full h-[200px] p-2 text-white bg-gray-800 opacity-100"
                 placeholder={`자기소개 문구를\n작성해주세요!`}
+                style={{ resize: "none" }} // 크기 조절 불가
               />
             ) : (
               <p className="p-2">{profileData.introduce}</p>
