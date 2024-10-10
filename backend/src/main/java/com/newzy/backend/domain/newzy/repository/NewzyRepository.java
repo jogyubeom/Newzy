@@ -13,8 +13,6 @@ public interface NewzyRepository extends JpaRepository<Newzy, Long> {
 
     Newzy findByNewzyId(Long id);
 
-    List<Newzy> findTop3ByIsDeletedFalseOrderByHitDesc();
-
     default Newzy updateNewzyInfo(Newzy nzy) {
         Newzy newzy = findByNewzyId(nzy.getNewzyId());
 
@@ -27,6 +25,7 @@ public interface NewzyRepository extends JpaRepository<Newzy, Long> {
         newzy.setContent(nzy.getContent());
         newzy.setContentText(nzy.getContentText());
         newzy.setCategory(nzy.getCategory());
+        newzy.setThumbnail(nzy.getThumbnail());
 
         return save(newzy);
     }
