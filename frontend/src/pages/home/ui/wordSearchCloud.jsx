@@ -30,7 +30,7 @@ export function WordSearchCloud() {
 
   return (
     <div className="w-full min-h-[400px] flex flex-col">
-      <div className="mb-5 flex justify-center gap-2.5">
+      <div className="mb-2 flex justify-center gap-2.5">
         {categories.map((cat) => (
           <button
             key={cat.id}
@@ -46,8 +46,11 @@ export function WordSearchCloud() {
           </button>
         ))}
       </div>
+      <div className="text-sm text-gray-500 flex justify-center">
+        지금 사람들이 모르는 단어들을 살펴보세요.
+      </div>
       {/* 필터링된 단어 구름 */}
-      <div style={{ height: "400px", width: "100%" }}>
+      <div style={{ height: "100%", width: "100%" }}>
         <WordCloud words={searchWords} options={options} spiral="archimedean" />
       </div>
     </div>
