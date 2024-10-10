@@ -592,7 +592,7 @@ export const Profile = () => {
 
       {/* 하단에 고정된 버튼 추가 */}
       <button
-        className={`fixed bottom-5 left-1 bg-transparent flex items-center justify-center cursor-pointer transition-opacity duration-300 ${isModalOpen ? "pointer-events-none opacity-50 z-[900]" : "z-[1000]"}`} // 모달이 열려 있으면 클릭 비활성화
+        className={`fixed bottom-5 left-1 bg-transparent flex items-center justify-center cursor-pointer transition-opacity duration-300 ${isModalOpen ? "pointer-events-none opacity-50 z-[10]" : "z-[1000]"}`} // 모달이 열려 있으면 클릭 비활성화
         onClick={!isModalOpen ? openCardListModal : null} // 모달이 열렸을 때 클릭 비활성화
       >
         <div className="relative w-[120px] h-[172px] group">
