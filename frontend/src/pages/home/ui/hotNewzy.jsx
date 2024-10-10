@@ -27,6 +27,7 @@ export const HotNewzy = () => {
                   </div>
                   {/* 날짜, 조회수 */}
                   <div className="flex items-center w-full text-xs text-gray-500 gap-1">
+                    <span>{item.nickname}</span>·
                     <span>{formatKoreanDate(item.createdAt)}</span>·
                     <span className="flex">
                       <svg
@@ -48,7 +49,7 @@ export const HotNewzy = () => {
                 </div>
 
                 {/* Content (ellipsis 처리) */}
-                <div className="flex-grow flex items-center w-full text-[#747483] text-sm leading-4 font-normal overflow-hidden text-ellipsis whitespace-nowrap">
+                <div className="flex-grow flex items-center w-full text-[#747483] text-sm leading-4 font-normal overflow-hidden text-ellipsis ">
                   {item.contentText}
                 </div>
               </div>

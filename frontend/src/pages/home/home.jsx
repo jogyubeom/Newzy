@@ -123,11 +123,11 @@ export const Home = () => {
             </div>
           </div>
 
-          <div className="flex flex-col">
-            <div className="mb-4">
+          <div className="flex flex-col justify-center items-center">
+            <div className="flex mb-4">
               <WeekCardWinner />
             </div>
-            <div>
+            <div className="flex">
               <HotNewzy />
             </div>
           </div>
